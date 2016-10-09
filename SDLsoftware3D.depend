@@ -1,11 +1,14 @@
 # depslib dependency file v1.0
-1475956033 source:/home/tschmitz/Programmier-Projekte/Software-Rendering/SDLsoftware3D/main.cpp
-	<cstdlib>
-	<stdlib.h>
+1476034560 source:/home/tschmitz/Programmier-Projekte/Software-Rendering/SDLsoftware3D/main.cpp
 	"window.h"
+	<vector>
 
-1475955801 /home/tschmitz/Programmier-Projekte/Software-Rendering/SDLsoftware3D/window.h
+1476032797 /home/tschmitz/Programmier-Projekte/Software-Rendering/SDLsoftware3D/window.h
 	<stdio.h>
 	<SDL2/SDL.h>
 	<string>
+	<iostream>
+
+1476032079 source:/home/tschmitz/Programmier-Projekte/Software-Rendering/SDLsoftware3D/window.cpp
+	"window.h"
 
