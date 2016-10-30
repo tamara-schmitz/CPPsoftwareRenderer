@@ -1,15 +1,19 @@
 #include "window.h"
+#include "starfield.h"
 #include <vector>
 
 int main ( int argc, char** argv )
 {
-    Window window = Window(800, 600, "Software Renderer", 60);
+    Window window = Window(800, 600, "Software Renderer", 30);
     SDL_Texture* texture = window.GetRenderTexture();
+    Starfield field = Starfield(window.Getwidth(), window.Getheight(), 0.2, 0.8, 1000, 5);
 
-    std::vector< unsigned char > pixels( window.Getwidth() * window.Getheight() * 4, 0 );
+    std::vector< unsigned char > pixels( window.Getwidth() * window.Getheight() * 4, 0);
+
     bool running = true;
     while ( running )
     {
+        // event handling
         SDL_Event e;
         while ( SDL_PollEvent( &e ) )
         {
@@ -20,22 +24,12 @@ int main ( int argc, char** argv )
             }
         }
 
-        // splat down some random pixels
-        for ( unsigned int i = 0; i < 1000; i++ )
-        {
-            const unsigned int x = rand() % window.Getwidth();
-            const unsigned int y = rand() % window.Getheight();
 
-            const unsigned int offset = ( window.Getwidth() * 4 * y ) + x * 4;
-            pixels[ offset + 0 ] = rand() % 256;        // b
-            pixels[ offset + 1 ] = rand() % 256;        // g
-            pixels[ offset + 2 ] = rand() % 256;        // r
-            pixels[ offset + 3 ] = SDL_ALPHA_OPAQUE;    // a
-        }
-
+        window.clearRenderer();
+        pixels = field.drawStarfield();
         SDL_UpdateTexture(texture, NULL, &pixels[0], window.Getwidth() * 4);
         window.updateWindow();
-        std::cout << "Frametime: " << window.GetFramerate() << std::endl;
+        std::cout << "Framerate: " << window.GetFramerate() << std::endl;
     }
 
     return 0;

@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -22,6 +23,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -37,7 +39,10 @@
 			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="cb.bmp" />
+		<Unit filename="include/starfield.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/window.h" />
+		<Unit filename="starfield.cpp" />
 		<Unit filename="window.cpp" />
 		<Unit filename="window.h" />
 		<Extensions>

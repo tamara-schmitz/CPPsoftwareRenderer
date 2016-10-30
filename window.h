@@ -35,6 +35,7 @@ class Window
 
         // Render functions
         void updateWindow();
+        void clearRenderer();
 
     protected:
 
