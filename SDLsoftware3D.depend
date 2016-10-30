@@ -31,9 +31,12 @@
 1476169790 /home/tschmitz/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/starfield.h
 	<vector>
 
-1476169641 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/main.cpp
+1477862440 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/main.cpp
 	"window.h"
+	"starfield.h"
 	<vector>
+	<exception>
+	<stdexcept>
 
 1476100502 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/window.h
 	<stdio.h>
@@ -41,16 +44,17 @@
 	<string>
 	<iostream>
 
-1476101151 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/window.cpp
+1477862577 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/window.cpp
 	"window.h"
 
 1477836321 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.cpp
 	"starfield.h"
 
-1477835327 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/starfield.h
+1477853682 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/starfield.h
 	<SDL2/SDL.h>
 	<cstdlib>
 	<vector>
+	<iostream>
 
 1477835564 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"window.h"
@@ -65,4 +69,7 @@
 
 1476101151 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
 	"window.h"
+
+1477861957 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/starfield.cpp
+	"starfield.h"
 

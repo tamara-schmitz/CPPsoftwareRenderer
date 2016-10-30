@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <cstdlib>
 #include <vector>
+#include <iostream>
 
 class Starfield
 {
@@ -35,6 +36,7 @@ class Starfield
             float y;
             float z;
         } star;
+        const star nullStar { 0, 0, 0};
         typedef struct
         {
             // a structure that represents a pixel on a screen

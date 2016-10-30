@@ -23,7 +23,7 @@ Window::Window( int width, int height, const std::string& title, int fpsLock )
     // Create Window
     w_window = SDL_CreateWindow( title.c_str(),
                                       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                      w_width, w_height, SDL_WINDOW_SHOWN );
+                                      w_width, w_height, SDL_WINDOW_SHOWN | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_INPUT_FOCUS );
     if ( w_window == NULL )
     {
         std::cout << "Couldn't init window!" << std::endl << SDL_GetError();
