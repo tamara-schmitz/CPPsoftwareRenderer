@@ -47,13 +47,16 @@ void demo_randomPixels(Window *window, SDL_Texture *texture)
 
         SDL_UpdateTexture(texture, NULL, &pixels[0], window->Getwidth() * 4);
         window->updateWindow();
-        std::cout << "Frametime: " << window->GetFramerate() << std::endl;
+        std::cout << "Framerate: "  << window->GetFramerate()
+                  << " Frametime: " << window->GetFrametime()
+                  << " Maintime: "  << window->GetMaintime()
+                  << std::endl;
     }
 }
 
 void demo_starfield(Window *window, SDL_Texture *texture)
 {
-    Starfield field = Starfield( window->Getwidth(), window->Getheight(), 0.2, 0.8, 2000, 1);
+    Starfield field = Starfield( window->Getwidth(), window->Getheight(), 0.3, 0.8, 80, 100000, .5);
 
     std::vector< unsigned char > pixels( window->Getwidth() * window->Getheight() * 4, 0);
 
@@ -71,11 +74,15 @@ void demo_starfield(Window *window, SDL_Texture *texture)
             }
         }
 
-            window->clearRenderer();
+            //window->clearRenderer();
             pixels = field.drawStarfield();
             SDL_UpdateTexture(texture, NULL, &pixels[0], window->Getwidth() * 4);
             window->updateWindow();
-            std::cout << "Framerate: " << window->GetFramerate() << std::endl;
+            std::cout << "Framerate: "  << window->GetFramerate()
+                  << " Frametime: " << window->GetFrametime()
+                  << " Maintime: "  << window->GetMaintime()
+                  << std::endl;
+
     }
 }
 
@@ -87,7 +94,7 @@ int main ( int argc, char** argv )
     const int current_demo = 1;
 
     // create window and texture
-    Window window = Window(1024, 768, "Software Renderer", 60);
+    Window window = Window(1024, 768, "Software Renderer", 61);
     SDL_Texture *texture = window.GetRenderTexture();
 
     switch( current_demo )

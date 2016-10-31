@@ -1,4 +1,5 @@
 #include "window.h"
+#include <unistd.h>
 
 
 Window::Window( int width, int height, const std::string& title, int fpsLock )
@@ -11,7 +12,7 @@ Window::Window( int width, int height, const std::string& title, int fpsLock )
     r_fpsLimit = fpsLock;
     if ( fpsLock > 0 )
     {
-        r_tickLimit = 1000 / double(fpsLock);
+        r_tickLimit = (1000.0 * 1000.0 * 1000.0) / fpsLock;
     }
 
     // Initialise SDL context
@@ -84,24 +85,28 @@ void Window::tickCall()
     // Measures frametime and enforces FPS limit
 
     // update time tracker vars
+    r_tickNow_main = std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch();
     r_tickLast = r_tickNow;
-    r_tickLast_main = r_tickNow_main;
-
-    r_tickNow = double( SDL_GetPerformanceCounter() );
+    r_tickNow = std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch();
 
     // Calculate frametime and maintime
-    double tickFreq = SDL_GetPerformanceFrequency();
-    r_frametime = ( r_tickNow - r_tickLast ) * 1000 / tickFreq;
-    r_maintime  = ( r_tickNow_main - r_tickLast_main ) * 1000 / tickFreq;
+    r_frametime_nano = (r_tickNow      - r_tickLast      ).count();
+    r_maintime_nano  = (r_tickNow_main - r_tickLast_main ).count();
+
 
     // Sleep if maintime shorter than FPS-Limit
-    if ( r_fpsLimit > 0 && r_maintime < r_tickLimit )
+    if ( r_fpsLimit > 0 && r_maintime_nano < r_tickLimit )
     {
-        SDL_Delay( Uint32( r_tickLimit - r_maintime ) );
+        //usleep( (unsigned int) ( r_tickLimit - r_maintime) * 1000);
+        struct timespec framesleep,sleepremains;
+        framesleep.tv_sec  = 0;
+        framesleep.tv_nsec = r_tickLimit - r_maintime_nano;
+        nanosleep( &framesleep, &sleepremains );
     }
 
     // update time tracker var
-    r_tickNow_main = double( SDL_GetPerformanceCounter() );
+    r_tickLast_main = std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch();
+
 }
 
 

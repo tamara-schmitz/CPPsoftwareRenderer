@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <iostream>
+#include <chrono>
 
 
 class Window
@@ -20,16 +21,17 @@ class Window
         unsigned int Getwidth() { return w_width; }
         unsigned int Getheight() { return w_height; }
         unsigned int GetFPSLimit() { return r_fpsLimit; }
-        double GetFrametime() { return r_frametime; }
-        double GetFramerate()
+        float GetFrametime() { return r_frametime_nano / ( 1000.0 * 1000.0 ); }
+        float GetMaintime()  { return r_maintime_nano  / ( 1000.0 * 1000.0 ); }
+        float GetFramerate()
         {
-            if ( r_frametime > 0 )
+            if ( r_frametime_nano > 0 )
             {
-                return 1000 / r_frametime;
+                return (1000.0 * 1000.0 * 1000.0) / r_frametime_nano;
             }
             else
             {
-                return 1000;
+                return 1000.0;
             }
         }
 
@@ -49,13 +51,17 @@ class Window
         unsigned int r_fpsLimit;
 
         // tick vars
-        double r_tickLast;
-        double r_tickNow      = 0;
-        double r_tickLast_main;
-        double r_tickNow_main = 0;
-        double r_frametime    = 0; // time between last 2 frames were shown
-        double r_maintime     = 0; // time required to actually render a frame
-        double r_tickLimit    = 0;
+        //long r_tickLast;
+        //long r_tickNow      = 0;
+        //long r_tickLast_main;
+        //long r_tickNow_main = 0;
+        std::chrono::nanoseconds r_tickLast;
+        std::chrono::nanoseconds r_tickNow = std::chrono::nanoseconds::zero();
+        std::chrono::nanoseconds r_tickLast_main;
+        std::chrono::nanoseconds r_tickNow_main = std::chrono::nanoseconds::zero();
+        long r_frametime_nano = 0; // time between last 2 frames were shown
+        long r_maintime_nano  = 0; // time required to actually render a frame
+        double r_tickLimit      = 0;
 
         // internal logic functions
         void tickCall();

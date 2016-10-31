@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <cstdlib>
+#include <cmath>
 #include <vector>
 #include <iostream>
 
@@ -18,14 +19,17 @@ class Starfield
         unsigned int w_height;
         float z_near;
         float z_far;
+        float fov;
 
         //cstor and dstor
         Starfield( unsigned int screen_width, unsigned int screen_height,
                    float camera_near_z, float camera_far_z,
+                   float camera_fov,
                    unsigned int numOfStars, float star_speed ) :
                         numStars( numOfStars ), speed( star_speed ),
                         w_width( screen_width ), w_height( screen_height ),
-                        z_near( camera_near_z ), z_far( camera_far_z ) {};
+                        z_near( camera_near_z ), z_far( camera_far_z ),
+                        fov( camera_fov ) {};
         virtual ~Starfield();
 
         // structs
@@ -57,9 +61,13 @@ class Starfield
 
         std::vector< star > stars_posi;
 
+        // vars
+        float tanHalfFOV = std::tan( ( (fov / 2) * M_PI ) /180 );
+
         // functions
         void spawnPixel( unsigned int *index );
         pixel toScreenSpace( star *posi );
+        void processStar( std::vector< unsigned char > *pixels, unsigned int id );
 
 
 };
