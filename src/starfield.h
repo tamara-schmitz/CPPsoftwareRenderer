@@ -63,6 +63,7 @@ class Starfield
         float tanHalfFOV;
 
         // functions
+        void clearZBuffer();
         void spawnStar( unsigned int *index );
         pixel toScreenSpace( star *posi );
         void processStar( unsigned int id );

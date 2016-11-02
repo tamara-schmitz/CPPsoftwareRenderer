@@ -19,12 +19,19 @@ Starfield::Starfield( float camera_near_z, float camera_far_z,
 
     stars_posi.resize( numStars );
     z_buffer.resize( w_width * w_height );
+    clearZBuffer();
+
+    std::cout << "Starfield initialised!" << std::endl;
+}
+
+void Starfield::clearZBuffer()
+{
+    z_buffer.clear();
+    z_buffer.resize( w_width * w_height );
     for ( unsigned int i = 0; i < w_width * w_height; i++ )
     {
         z_buffer[ i ] = z_far + 1;
     }
-
-    std::cout << "Starfield initialised!" << std::endl;
 }
 
 void Starfield::spawnStar( unsigned int *index )
@@ -80,7 +87,7 @@ void Starfield::processStar( unsigned int id )
     pixel pos = toScreenSpace( current_star );
 
     // finally draw pixel!
-    // first check if pixel inside screen rect
+    // first check if pixel visible
     if ( pos.x >= 0 && pos.x < (int) w_width  &&
          pos.y >= 0 && pos.y < (int) w_height &&
          current_star->z > z_near && current_star->z < z_far )
@@ -89,8 +96,7 @@ void Starfield::processStar( unsigned int id )
         int offset = pos.y * w_width + pos.x;
 
         // do depth test
-        //std::cout << "Star z: " << current_star->z << " Buffer z: " << z_buffer[ offset ] << std::endl;
-        if ( z_buffer[ offset ] >= current_star->z )
+        if ( current_star->z < z_buffer[ offset ] )
         {
             // set new z
             z_buffer[ offset ] = current_star->z;
@@ -111,15 +117,20 @@ void Starfield::processStar( unsigned int id )
     // debug star print
     if ( id == 0 )
     {
+        int offset = pos.y * w_width + pos.x;
         std::cout << "Star worldpos : " << current_star->x << ", " << current_star->y << ", " << current_star->z << std::endl;
         std::cout << "Star screenpos: " << pos.x << ", " << pos.y << std::endl;
+        std::cout << "Star z: " << current_star->z << " Buffer z: " << z_buffer[ offset ] << std::endl;
     }
     */
+
 }
 
 //std::vector< unsigned char > Starfield::drawStarfield()
 void Starfield::drawStarfield()
 {
+    clearZBuffer();
+
     // loop for every star
     for ( unsigned int i = 0; i < numStars; i++ )
     {

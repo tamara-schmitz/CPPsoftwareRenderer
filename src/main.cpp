@@ -3,21 +3,26 @@
 #include "scanRenderer.h"
 #include <vector>
 
+bool checkSDLQuit()
+{
+    SDL_Event e;
+    while ( SDL_PollEvent( &e ) )
+    {
+        if ( e.type == SDL_QUIT )
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void demo_randomPixels( Window *window )
 {
     bool running = true;
 
     while ( running )
     {
-        SDL_Event e;
-        while ( SDL_PollEvent( &e ) )
-        {
-            if ( e.type == SDL_QUIT )
-            {
-                running = false;
-                break;
-            }
-        }
+        running = !checkSDLQuit();
 
         //window->clearBuffers();
         // splat down some random pixels
@@ -44,23 +49,14 @@ void demo_randomPixels( Window *window )
 
 void demo_starfield( Window *window )
 {
-    Starfield field = Starfield( 0.3, 0.8, 100, window, 5000, 1);
+    Starfield field = Starfield( 0.3, 0.8, 100, window, 2000, .5);
 
     //std::vector< unsigned char > pixels( window->Getwidth() * window->Getheight() * 4, 0);
 
     bool running = true;
     while ( running )
     {
-        // event handling
-        SDL_Event e;
-        while ( SDL_PollEvent( &e ) )
-        {
-            if ( e.type == SDL_QUIT )
-            {
-                running = false;
-                break;
-            }
-        }
+        running = !checkSDLQuit();
 
         window->clearBuffers();
         field.drawStarfield();
@@ -86,16 +82,7 @@ void demo_shapes( Window *window )
     bool running = true;
     while ( running )
     {
-        // event handling
-        SDL_Event e;
-        while ( SDL_PollEvent( &e ) )
-        {
-            if ( e.type == SDL_QUIT )
-            {
-                running = false;
-                break;
-            }
-        }
+        running = !checkSDLQuit();
 
         window->clearBuffers();
 
@@ -110,16 +97,16 @@ void demo_shapes( Window *window )
     }
 }
 
-int main ( int argc, char** argv )
+int main( int argc, char** argv )
 {
     // --switch between demos
     // 0: random pixels
     // 1: starfield
     // 2: shapes
-    const int current_demo = 2;
+    const int current_demo = 1;
 
     // create window and texture
-    Window window = Window(1024, 768, "Software Renderer", 62);
+    Window window = Window(800, 600, 1, "Software Renderer", 62);
 
     switch( current_demo )
     {
@@ -135,3 +122,4 @@ int main ( int argc, char** argv )
 
     return 0;
 }
+

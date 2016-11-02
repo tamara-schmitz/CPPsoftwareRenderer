@@ -2,7 +2,7 @@
 #include <unistd.h>
 
 
-Window::Window( int width, int height, const std::string& title, int fpsLock )
+Window::Window( int width, int height, double scale, const std::string& title, int fpsLock )
 {
     //ctor
 
@@ -10,7 +10,10 @@ Window::Window( int width, int height, const std::string& title, int fpsLock )
     pixels.resize( width * height * 4 );
     w_width    = width;
     w_height   = height;
+    r_scale    = scale;
     r_fpsLimit = fpsLock;
+    r_width    = width  * scale;
+    r_height   = height * scale;
     if ( fpsLock > 0 )
     {
         r_tickLimit = (1000.0 * 1000.0 * 1000.0) / fpsLock;
@@ -25,12 +28,12 @@ Window::Window( int width, int height, const std::string& title, int fpsLock )
     // Create Window
     w_window = SDL_CreateWindow( title.c_str(),
                                       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                      w_width, w_height, SDL_WINDOW_SHOWN | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_INPUT_FOCUS );
+                                      w_width, w_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
     if ( w_window == NULL )
     {
         std::cout << "Couldn't init window!" << std::endl << SDL_GetError();
     }
-    SDL_SetWindowMinimumSize(w_window, w_width, w_height);
+    SDL_SetWindowMinimumSize( w_window, w_width, w_height );
 
     // Create Renderer
     r_renderer = SDL_CreateRenderer( w_window, -1, 0 );
@@ -38,12 +41,13 @@ Window::Window( int width, int height, const std::string& title, int fpsLock )
     {
         std::cout << "Couldn't init renderer!" << std::endl << SDL_GetError();
     }
-    SDL_SetRenderDrawBlendMode(r_renderer, SDL_BLENDMODE_NONE);
+    SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
+    SDL_RenderSetLogicalSize( r_renderer, r_width, r_height );
 
     // Create Texture for Renderer
     r_texture = SDL_CreateTexture( r_renderer,
                                         SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-                                        w_width, w_height );
+                                        r_width, r_height );
     if ( r_texture == NULL )
     {
         std::cout << "Couldn't init texture!" << std::endl << SDL_GetError();
@@ -56,7 +60,7 @@ Window::Window( int width, int height, const std::string& title, int fpsLock )
 
 void Window::drawPixel( int x, int y, SDL_Color color )
 {
-    int offset = y * w_width + x;
+    int offset = y * r_width + x;
     pixels[ offset * 4 + 0] = color.b; // b
     pixels[ offset * 4 + 1] = color.g; // g
     pixels[ offset * 4 + 2] = color.r; // r
@@ -66,7 +70,7 @@ void Window::drawPixel( int x, int y, SDL_Color color )
 void Window::updateWindow()
 {
     // Draw pixels to render texture
-    SDL_UpdateTexture(r_texture, NULL, &pixels[0], w_width * 4);
+    SDL_UpdateTexture(r_texture, NULL, &pixels[0], r_width * 4);
 
     // Displays changes made to renderTexture
     // flow: texture -> renderer -> window
@@ -86,12 +90,12 @@ void Window::clearBuffers()
 
     // empty pixel array
     pixels.clear();
-    pixels.resize( w_width * w_height * 4 );
+    pixels.resize( r_width * r_height * 4 );
 
     SDL_SetRenderTarget( r_renderer, r_texture );
     SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
     SDL_SetRenderDrawColor( r_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE );
-    SDL_RenderFillRect( r_renderer, NULL );
+    SDL_RenderClear( r_renderer );
 
 }
 

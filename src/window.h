@@ -13,14 +13,14 @@ class Window
 {
     public:
         // cstor
-        Window( int width, int height, const std::string& title, int fpsLock );
+        Window( int width, int height, double scale, const std::string& title, int fpsLock );
         // dstor
         virtual ~Window();
 
         // Getters
         SDL_Texture* GetRenderTexture() { return r_texture; }
-        unsigned int Getwidth() { return w_width; }
-        unsigned int Getheight() { return w_height; }
+        unsigned int Getwidth() { return r_width; }
+        unsigned int Getheight() { return r_height; }
         unsigned int GetFPSLimit() { return r_fpsLimit; }
         float GetFrametime() { return r_frametime_nano / ( 1000.0 * 1000.0 ); }
         float GetMaintime()  { return r_maintime_nano  / ( 1000.0 * 1000.0 ); }
@@ -51,6 +51,9 @@ class Window
         std::vector< Uint8 > pixels;
         unsigned int w_width;
         unsigned int w_height;
+        double r_scale;
+        unsigned int r_width;
+        unsigned int r_height;
         unsigned int r_fpsLimit;
 
         // tick vars
