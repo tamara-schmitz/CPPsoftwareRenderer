@@ -6,12 +6,13 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include "window.h"
 
 class Starfield
 {
     public:
         // general values
-        const unsigned int numStars;
+        unsigned int numStars;
         float speed;
 
         // render settings
@@ -20,16 +21,12 @@ class Starfield
         float z_near;
         float z_far;
         float fov;
+        Window *w_window;
 
         //cstor and dstor
-        Starfield( unsigned int screen_width, unsigned int screen_height,
-                   float camera_near_z, float camera_far_z,
-                   float camera_fov,
-                   unsigned int numOfStars, float star_speed ) :
-                        numStars( numOfStars ), speed( star_speed ),
-                        w_width( screen_width ), w_height( screen_height ),
-                        z_near( camera_near_z ), z_far( camera_far_z ),
-                        fov( camera_fov ) {};
+        Starfield( float camera_near_z, float camera_far_z,
+                   float camera_fov, Window *window,
+                   unsigned int numOfStars, float star_speed );
         virtual ~Starfield();
 
         // structs
@@ -40,7 +37,6 @@ class Starfield
             float y;
             float z;
         } star;
-        const star nullStar { 0, 0, 0};
         typedef struct
         {
             // a structure that represents a pixel on a screen
@@ -49,7 +45,8 @@ class Starfield
         } pixel;
 
         // functions
-        std::vector< unsigned char > drawStarfield();
+        //std::vector< unsigned char > drawStarfield();
+        void drawStarfield();
 
     protected:
 
@@ -60,14 +57,15 @@ class Starfield
         // from -1 to 1 (x left to right, y top to bottom, z front to behind camera)
 
         std::vector< star > stars_posi;
+        std::vector< float > z_buffer;
 
         // vars
-        float tanHalfFOV = std::tan( ( (fov / 2) * M_PI ) /180 );
+        float tanHalfFOV;
 
         // functions
-        void spawnPixel( unsigned int *index );
+        void spawnStar( unsigned int *index );
         pixel toScreenSpace( star *posi );
-        void processStar( std::vector< unsigned char > *pixels, unsigned int id );
+        void processStar( unsigned int id );
 
 
 };

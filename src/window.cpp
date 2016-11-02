@@ -7,6 +7,7 @@ Window::Window( int width, int height, const std::string& title, int fpsLock )
     //ctor
 
     // set window parameters
+    pixels.resize( width * height * 4 );
     w_width    = width;
     w_height   = height;
     r_fpsLimit = fpsLock;
@@ -16,7 +17,7 @@ Window::Window( int width, int height, const std::string& title, int fpsLock )
     }
 
     // Initialise SDL context
-    if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER) < 0 )
+    if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS ) < 0 )
     {
         std::cout << "Couldn't init SDL!" << std::endl << SDL_GetError();
     }
@@ -53,9 +54,20 @@ Window::Window( int width, int height, const std::string& title, int fpsLock )
     std::cout << "Init complete!" << std::endl;
 }
 
+void Window::drawPixel( int x, int y, SDL_Color color )
+{
+    int offset = y * w_width + x;
+    pixels[ offset * 4 + 0] = color.b; // b
+    pixels[ offset * 4 + 1] = color.g; // g
+    pixels[ offset * 4 + 2] = color.r; // r
+    pixels[ offset * 4 + 3] = color.a; // a
+}
 
 void Window::updateWindow()
 {
+    // Draw pixels to render texture
+    SDL_UpdateTexture(r_texture, NULL, &pixels[0], w_width * 4);
+
     // Displays changes made to renderTexture
     // flow: texture -> renderer -> window
 
@@ -67,10 +79,14 @@ void Window::updateWindow()
     tickCall();
 }
 
-void Window::clearRenderer()
+void Window::clearBuffers()
 {
-    // Clears the render texture
+    // Clears the render texture and pixel array
     // (no need to clear the window or renderer as it's not blending textures
+
+    // empty pixel array
+    pixels.clear();
+    pixels.resize( w_width * w_height * 4 );
 
     SDL_SetRenderTarget( r_renderer, r_texture );
     SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
@@ -100,7 +116,7 @@ void Window::tickCall()
         //usleep( (unsigned int) ( r_tickLimit - r_maintime) * 1000);
         struct timespec framesleep,sleepremains;
         framesleep.tv_sec  = 0;
-        framesleep.tv_nsec = r_tickLimit - r_maintime_nano;
+        framesleep.tv_nsec = r_tickLimit - (double) r_maintime_nano;
         nanosleep( &framesleep, &sleepremains );
     }
 
@@ -114,6 +130,7 @@ Window::~Window()
 {
     //dtor
 
+    pixels.clear();
     // Properly shutdown SDL
     SDL_DestroyTexture(  r_texture  );
     SDL_DestroyRenderer( r_renderer );

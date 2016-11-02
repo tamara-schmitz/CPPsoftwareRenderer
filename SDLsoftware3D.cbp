@@ -33,19 +33,19 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="`sdl-config --cflags`" />
-			<Add option="`-fopenmp`" />
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --libs`" />
-			<Add option="`-fopenmp`" />
 			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="cb.bmp" />
-		<Unit filename="include/starfield.h" />
-		<Unit filename="main.cpp" />
-		<Unit filename="starfield.cpp" />
-		<Unit filename="window.cpp" />
-		<Unit filename="window.h" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/scanRenderer.cpp" />
+		<Unit filename="src/scanRenderer.h" />
+		<Unit filename="src/starfield.cpp" />
+		<Unit filename="src/starfield.h" />
+		<Unit filename="src/window.cpp" />
+		<Unit filename="src/window.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

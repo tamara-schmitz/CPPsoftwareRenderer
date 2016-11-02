@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <chrono>
+#include <vector>
 
 
 class Window
@@ -36,8 +37,9 @@ class Window
         }
 
         // Render functions
+        void drawPixel( int x, int y, SDL_Color color );
         void updateWindow();
-        void clearRenderer();
+        void clearBuffers();
 
     protected:
 
@@ -46,6 +48,7 @@ class Window
         SDL_Window* w_window;
         SDL_Renderer* r_renderer;
         SDL_Texture* r_texture;
+        std::vector< Uint8 > pixels;
         unsigned int w_width;
         unsigned int w_height;
         unsigned int r_fpsLimit;
@@ -61,7 +64,7 @@ class Window
         std::chrono::nanoseconds r_tickNow_main = std::chrono::nanoseconds::zero();
         long r_frametime_nano = 0; // time between last 2 frames were shown
         long r_maintime_nano  = 0; // time required to actually render a frame
-        double r_tickLimit      = 0;
+        double r_tickLimit    = 0;
 
         // internal logic functions
         void tickCall();
