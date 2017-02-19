@@ -16,7 +16,7 @@ Window::Window( int width, int height, double scale, const std::string& title, i
     r_height   = height * scale;
     if ( fpsLock > 0 )
     {
-        r_tickLimit = (1000.0 * 1000.0 * 1000.0) / fpsLock;
+        r_tickLimit = (1000.0 * 1000.0 * 1000.0) / (double)fpsLock;
     }
 
     // Initialise SDL context
@@ -29,7 +29,7 @@ Window::Window( int width, int height, double scale, const std::string& title, i
     w_window = SDL_CreateWindow( title.c_str(),
                                       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                       w_width, w_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
-    if ( w_window == NULL )
+    if ( w_window == nullptr )
     {
         std::cout << "Couldn't init window!" << std::endl << SDL_GetError();
     }
@@ -37,7 +37,7 @@ Window::Window( int width, int height, double scale, const std::string& title, i
 
     // Create Renderer
     r_renderer = SDL_CreateRenderer( w_window, -1, 0 );
-    if ( r_renderer == NULL )
+    if ( r_renderer == nullptr )
     {
         std::cout << "Couldn't init renderer!" << std::endl << SDL_GetError();
     }
@@ -58,13 +58,28 @@ Window::Window( int width, int height, double scale, const std::string& title, i
     std::cout << "Init complete!" << std::endl;
 }
 
-void Window::drawPixel( int x, int y, SDL_Color color )
+void Window::drawPixel( int x, int y, SDL_Color color)
 {
-    int offset = y * r_width + x;
-    pixels[ offset * 4 + 0] = color.b; // b
-    pixels[ offset * 4 + 1] = color.g; // g
-    pixels[ offset * 4 + 2] = color.r; // r
-    pixels[ offset * 4 + 3] = color.a; // a
+    return drawPixel( x, y, color, true);
+}
+
+void Window::drawPixel( int x, int y, SDL_Color color, bool checkBounds)
+{
+    if (checkBounds)
+    {
+        // return if outside of screen bounds
+        if ( x >= (int) r_width  || x < 0 ||
+             y >= (int) r_height || y < 0 )
+        {
+            return;
+        }
+    }
+
+    int offset = y * 4 * r_width + x * 4;
+    pixels[ offset + 0] = color.b; // b
+    pixels[ offset + 1] = color.g; // g
+    pixels[ offset + 2] = color.r; // r
+    pixels[ offset + 3] = color.a; // a
 }
 
 void Window::updateWindow()

@@ -49,7 +49,7 @@
 	"window.h"
 	<unistd.h>
 
-1478097116 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.cpp
+1487541790 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.cpp
 	"starfield.h"
 	<unistd.h>
 	<omp.h>
@@ -62,13 +62,15 @@
 	<iostream>
 	"window.h"
 
-1478104989 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1487541849 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"window.h"
 	"starfield.h"
 	"scanRenderer.h"
 	<vector>
+	"typedefs.h"
+	<exception>
 
-1478104271 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.h
+1487542134 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.h
 	<stdio.h>
 	<SDL2/SDL.h>
 	<string>
@@ -76,7 +78,7 @@
 	<chrono>
 	<vector>
 
-1478105055 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
+1487542080 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
 	"window.h"
 	<unistd.h>
 
@@ -93,7 +95,7 @@
 	<chrono>
 	<vector>
 
-1478094829 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/scanRenderer.cpp
+1478196587 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/scanRenderer.cpp
 	"scanRenderer.h"
 
 1478082232 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/scanRenderer.h
@@ -101,7 +103,7 @@
 	<SDL2/SDL.h>
 	"window.h"
 
-1478096769 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.h
+1487540609 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.h
 	<SDL2/SDL.h>
 	<cstdlib>
 	<cmath>
@@ -109,8 +111,12 @@
 	<iostream>
 	"window.h"
 
-1478082232 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/scanRenderer.h
+1478195860 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/scanRenderer.h
 	<vector>
 	<SDL2/SDL.h>
 	"window.h"
+	"typedefs.h"
+
+1478197423 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/typedefs.h
+	<math.h>
 

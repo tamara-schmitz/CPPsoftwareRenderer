@@ -39,6 +39,8 @@
 			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="cb.bmp" />
+		<Unit filename="include/typedefs.h" />
+		<Unit filename="include/vmath.h" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/scanRenderer.cpp" />
 		<Unit filename="src/scanRenderer.h" />

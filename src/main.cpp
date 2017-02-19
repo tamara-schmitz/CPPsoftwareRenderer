@@ -2,6 +2,8 @@
 #include "starfield.h"
 #include "scanRenderer.h"
 #include <vector>
+#include "typedefs.h"
+#include <exception>
 
 bool checkSDLQuit()
 {
@@ -24,9 +26,9 @@ void demo_randomPixels( Window *window )
     {
         running = !checkSDLQuit();
 
-        //window->clearBuffers();
+        window->clearBuffers();
         // splat down some random pixels
-        for ( unsigned int i = 0; i < 1000; i++ )
+        for ( unsigned int i = 0; i < 50000; i++ )
         {
             const unsigned int x = rand() % window->Getwidth();
             const unsigned int y = rand() % window->Getheight();
@@ -41,15 +43,15 @@ void demo_randomPixels( Window *window )
 
         window->updateWindow();
         std::cout << "Framerate: "  << window->GetFramerate()
-                  << " Frametime: " << window->GetFrametime()
-                  << " Maintime: "  << window->GetMaintime()
+                  << " Frametime: " << window->GetFrametime() / ( 1000.0f * 1000.0f )
+                  << " Maintime: "  << window->GetMaintime() / ( 1000.0f * 1000.0f )
                   << std::endl;
     }
 }
 
 void demo_starfield( Window *window )
 {
-    Starfield field = Starfield( 0.3, 0.8, 100, window, 2000, .5);
+    Starfield field = Starfield( 0.3f, 0.8f, 70, window, 10000, 0.25f);
 
     //std::vector< unsigned char > pixels( window->Getwidth() * window->Getheight() * 4, 0);
 
@@ -62,8 +64,8 @@ void demo_starfield( Window *window )
         field.drawStarfield();
         window->updateWindow();
         std::cout << "Framerate: "  << window->GetFramerate()
-                  << " Frametime: " << window->GetFrametime()
-                  << " Maintime: "  << window->GetMaintime()
+                  << " Frametime: " << window->GetFrametime() / ( 1000.0 * 1000.0 )
+                  << " Maintime: "  << window->GetMaintime() / ( 1000.0 * 1000.0 )
                   << std::endl;
 
     }
@@ -78,6 +80,20 @@ void demo_shapes( Window *window )
     shapeColor.g = 200;
     shapeColor.b = 200;
     shapeColor.a = SDL_ALPHA_OPAQUE;
+    SDL_Color triangleColor;
+    triangleColor.r = 255;
+    triangleColor.g = 50;
+    triangleColor.b = 50;
+    triangleColor.a = SDL_ALPHA_OPAQUE;
+
+    // triangle
+    vertex2D v1 = vertex2D {  50,  50 };
+    vertex2D v2 = vertex2D { 300, 200 };
+    vertex2D v3 = vertex2D { 100, 350 };
+
+    vector2D vv1 = vector2D { 20, 10 };
+    vv1 = vv1.normalised();
+    std::cout << "VV1: " << vv1.x << " " << vv1.y;
 
     bool running = true;
     while ( running )
@@ -87,11 +103,14 @@ void demo_shapes( Window *window )
         window->clearBuffers();
 
         // draw a shape
-        for ( int i = 100; i < 200; i++ )
+        for ( int i = 100; i < 150; i++ )
         {
-            renderer.DrawToScanBuffer( i, 400 - i, 400 + i );
+            renderer.DrawToScanBuffer( i, 300 - i, 300 + i );
         }
-        renderer.FillShape( 100, 200, shapeColor );
+        renderer.FillShape( 100, 150, shapeColor );
+
+        // draw a triangle
+        renderer.FillTriangle( v1, v2, v3, triangleColor );
 
         window->updateWindow();
     }
@@ -105,21 +124,29 @@ int main( int argc, char** argv )
     // 2: shapes
     const int current_demo = 1;
 
-    // create window and texture
-    Window window = Window(800, 600, 1, "Software Renderer", 62);
-
-    switch( current_demo )
+    try
     {
-        case 0:
-            demo_randomPixels( &window );
-            break;
-        case 1:
-            demo_starfield( &window );
-            break;
-        case 2:
-            demo_shapes( &window );
-    }
+        // create window and texture
+        Window *window = new Window(800, 600, 1, "Software Renderer", 60);
 
+        switch( current_demo )
+        {
+            case 0:
+                demo_randomPixels( window );
+                break;
+            case 1:
+                demo_starfield( window );
+                break;
+            case 2:
+                demo_shapes( window );
+        }
+
+        //delete window;
+    }
+    catch ( std::exception& e )
+    {
+        std::cout << "Standard exception: " << e.what() << std::endl;
+    }
     return 0;
 }
 

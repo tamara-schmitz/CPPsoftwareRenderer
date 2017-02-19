@@ -58,13 +58,14 @@ class Starfield
 
         std::vector< star > stars_posi;
         std::vector< float > z_buffer;
+        std::vector< float > null_z_buffer;
 
         // vars
         float tanHalfFOV;
 
         // functions
         void clearZBuffer();
-        void spawnStar( unsigned int *index );
+        void spawnStar( unsigned int index );
         pixel toScreenSpace( star *posi );
         void processStar( unsigned int id );
 

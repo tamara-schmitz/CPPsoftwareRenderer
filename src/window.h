@@ -22,8 +22,8 @@ class Window
         unsigned int Getwidth() { return r_width; }
         unsigned int Getheight() { return r_height; }
         unsigned int GetFPSLimit() { return r_fpsLimit; }
-        float GetFrametime() { return r_frametime_nano / ( 1000.0 * 1000.0 ); }
-        float GetMaintime()  { return r_maintime_nano  / ( 1000.0 * 1000.0 ); }
+        long GetFrametime() { return r_frametime_nano; }
+        long GetMaintime()  { return r_maintime_nano; }
         float GetFramerate()
         {
             if ( r_frametime_nano > 0 )
@@ -38,6 +38,7 @@ class Window
 
         // Render functions
         void drawPixel( int x, int y, SDL_Color color );
+        void drawPixel( int x, int y, SDL_Color color, bool checkBounds );
         void updateWindow();
         void clearBuffers();
 
@@ -65,7 +66,7 @@ class Window
         std::chrono::nanoseconds r_tickNow = std::chrono::nanoseconds::zero();
         std::chrono::nanoseconds r_tickLast_main;
         std::chrono::nanoseconds r_tickNow_main = std::chrono::nanoseconds::zero();
-        long r_frametime_nano = 0; // time between last 2 frames were shown
+        long r_frametime_nano = 0; // time between last and previous frames were shown
         long r_maintime_nano  = 0; // time required to actually render a frame
         double r_tickLimit    = 0;
 
