@@ -1,5 +1,11 @@
-#include "window.h"
+// import unix/windows library for tickCall()
+#ifdef __unix__
+    #include <unistd.h>
+#elif __cplusplus <= 199711L
+    #include <chrono>
+#endif
 
+#include "window.h"
 
 Window::Window( int width, int height, double scale, const std::string& title, int fpsLock )
 {
@@ -120,8 +126,19 @@ void Window::tickCall()
     // Sleep if maintime shorter than FPS-Limit
     if ( r_fpsLimit > 0 && r_maintime_nano < r_tickLimit )
     {
-        Uint32 framesleep = (r_tickLimit - (double) r_maintime_nano) / 1000 / 1000;
-        SDL_Delay(framesleep);
+        // Use native sleep function if available
+        #ifdef __unix__
+            struct timespec framesleep,sleepremains;
+            framesleep.tv_sec  = 0;
+            framesleep.tv_nsec = r_tickLimit - (double) r_maintime_nano;
+            nanosleep( &framesleep, &sleepremains );
+        #elif __cplusplus <= 199711L
+            std::this_thread::sleep_for(std::chrono::nanoseconds(r_tickLimit - (double) r_maintime_nano));
+        #else
+            Uint32 framesleep = (r_tickLimit - (double) r_maintime_nano) / 1000 / 1000;
+            SDL_Delay(framesleep);
+        #endif
+
     }
 
     // update time tracker vars
