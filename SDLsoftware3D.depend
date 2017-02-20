@@ -49,7 +49,7 @@
 	"window.h"
 	<unistd.h>
 
-1487541790 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.cpp
+1487600409 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.cpp
 	"starfield.h"
 	<unistd.h>
 	<omp.h>
@@ -62,7 +62,7 @@
 	<iostream>
 	"window.h"
 
-1487541849 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1487542424 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"window.h"
 	"starfield.h"
 	"scanRenderer.h"
@@ -70,7 +70,7 @@
 	"typedefs.h"
 	<exception>
 
-1487542134 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.h
+1487600887 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.h
 	<stdio.h>
 	<SDL2/SDL.h>
 	<string>
@@ -78,7 +78,7 @@
 	<chrono>
 	<vector>
 
-1487542080 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
+1487600041 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
 	"window.h"
 	<unistd.h>
 

@@ -1,5 +1,4 @@
 #include "window.h"
-#include <unistd.h>
 
 
 Window::Window( int width, int height, double scale, const std::string& title, int fpsLock )
@@ -60,19 +59,11 @@ Window::Window( int width, int height, double scale, const std::string& title, i
 
 void Window::drawPixel( int x, int y, SDL_Color color)
 {
-    return drawPixel( x, y, color, true);
-}
-
-void Window::drawPixel( int x, int y, SDL_Color color, bool checkBounds)
-{
-    if (checkBounds)
+    // return if outside of screen bounds
+    if ( x >= (int) r_width  || x < 0 ||
+         y >= (int) r_height || y < 0 )
     {
-        // return if outside of screen bounds
-        if ( x >= (int) r_width  || x < 0 ||
-             y >= (int) r_height || y < 0 )
-        {
-            return;
-        }
+        return;
     }
 
     int offset = y * 4 * r_width + x * 4;
@@ -85,7 +76,7 @@ void Window::drawPixel( int x, int y, SDL_Color color, bool checkBounds)
 void Window::updateWindow()
 {
     // Draw pixels to render texture
-    SDL_UpdateTexture(r_texture, NULL, &pixels[0], r_width * 4);
+    SDL_UpdateTexture( r_texture, NULL, &pixels[0], r_width * 4 );
 
     // Displays changes made to renderTexture
     // flow: texture -> renderer -> window
@@ -120,27 +111,26 @@ void Window::tickCall()
     // Measures frametime and enforces FPS limit
 
     // update time tracker vars
-    r_tickNow_main = std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch();
-    r_tickLast = r_tickNow;
-    r_tickNow = std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch();
+    r_tickNow_main = SDL_GetPerformanceCounter();
 
-    // Calculate frametime and maintime
-    r_frametime_nano = (r_tickNow      - r_tickLast      ).count();
-    r_maintime_nano  = (r_tickNow_main - r_tickLast_main ).count();
+    // Calculate maintime
+    r_maintime_nano  = (r_tickNow_main - r_tickLast_main) / (SDL_GetPerformanceFrequency()/(1000 * 1000 * 1000));
 
 
     // Sleep if maintime shorter than FPS-Limit
     if ( r_fpsLimit > 0 && r_maintime_nano < r_tickLimit )
     {
-        //usleep( (unsigned int) ( r_tickLimit - r_maintime) * 1000);
-        struct timespec framesleep,sleepremains;
-        framesleep.tv_sec  = 0;
-        framesleep.tv_nsec = r_tickLimit - (double) r_maintime_nano;
-        nanosleep( &framesleep, &sleepremains );
+        Uint32 framesleep = (r_tickLimit - (double) r_maintime_nano) / 1000 / 1000;
+        SDL_Delay(framesleep);
     }
 
-    // update time tracker var
-    r_tickLast_main = std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch();
+    // update time tracker vars
+    r_tickLast_main = SDL_GetPerformanceCounter();
+    r_tickLast = r_tickNow;
+    r_tickNow = SDL_GetPerformanceCounter();
+
+    // Calculate frametime
+    r_frametime_nano = (r_tickNow - r_tickLast) / (SDL_GetPerformanceFrequency()/(1000 * 1000 * 1000));
 
 }
 
