@@ -140,7 +140,6 @@ void Starfield::drawStarfield()
     clearZBuffer();
 
     // loop for every star
-    #pragma omp parallel for
     for ( unsigned int i = 0; i < numStars; i++ )
     {
         processStar( i );
