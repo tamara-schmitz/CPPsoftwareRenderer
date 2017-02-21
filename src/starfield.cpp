@@ -88,7 +88,7 @@ void Starfield::processStar( unsigned int id )
     else
     {
         // transform z of star
-        current_star->z -= w_window->GetFrametime() / ( 1000.0f * 1000.0f * 1000.0f ) * speed;
+        current_star->z -= w_window->timer.GetFrametime()/ ( 1000.0f * 1000.0f * 1000.0f ) * speed;
     }
 
     // to screen space
@@ -122,14 +122,14 @@ void Starfield::processStar( unsigned int id )
     }
 
 
-    // debug star print
-    if ( id == 3 )
-    {
-        int offset = pos.y * w_width + pos.x;
-        std::cout << "Star worldpos : " << current_star->x << ", " << current_star->y << ", " << current_star->z << std::endl;
-        std::cout << "Star screenpos: " << pos.x << ", " << pos.y << std::endl;
-        std::cout << "Star z: " << current_star->z << " Buffer z: " << z_buffer[ offset ] << std::endl;
-    }
+//    // debug star print
+//    if ( id == 3 )
+//    {
+//        int offset = pos.y * w_width + pos.x;
+//        std::cout << "Star worldpos : " << current_star->x << ", " << current_star->y << ", " << current_star->z << std::endl;
+//        std::cout << "Star screenpos: " << pos.x << ", " << pos.y << std::endl;
+//        std::cout << "Star z: " << current_star->z << " Buffer z: " << z_buffer[ offset ] << std::endl;
+//    }
 
 
 }
@@ -140,6 +140,7 @@ void Starfield::drawStarfield()
     clearZBuffer();
 
     // loop for every star
+    #pragma omp parallel for
     for ( unsigned int i = 0; i < numStars; i++ )
     {
         processStar( i );

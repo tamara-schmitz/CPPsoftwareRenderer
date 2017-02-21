@@ -42,16 +42,16 @@ void demo_randomPixels( Window *window )
         }
 
         window->updateWindow();
-        std::cout << "Framerate: "  << window->GetFramerate()
-                  << " Frametime: " << window->GetFrametime() / ( 1000.0f * 1000.0f )
-                  << " Maintime: "  << window->GetMaintime() / ( 1000.0f * 1000.0f )
+        std::cout << "Framerate: "  << window->timer.GetCurrentFPS()
+                  << " Frametime: " << window->timer.GetFrametime() / ( 1000.0f * 1000.0f )
+                  << " Maintime: "  << window->timer.GetMaintime() / ( 1000.0f * 1000.0f )
                   << std::endl;
     }
 }
 
 void demo_starfield( Window *window )
 {
-    Starfield field = Starfield( 0.3f, 0.8f, 70, window, 10000, 0.25f);
+    Starfield field = Starfield( 0.3f, 0.8f, 80, window, 50000, 0.1f);
 
     //std::vector< unsigned char > pixels( window->Getwidth() * window->Getheight() * 4, 0);
 
@@ -63,9 +63,9 @@ void demo_starfield( Window *window )
         window->clearBuffers();
         field.drawStarfield();
         window->updateWindow();
-        std::cout << "Framerate: "  << window->GetFramerate()
-                  << " Frametime: " << window->GetFrametime() / ( 1000.0 * 1000.0 )
-                  << " Maintime: "  << window->GetMaintime() / ( 1000.0 * 1000.0 )
+        std::cout << "Framerate: "  << window->timer.GetCurrentFPS()
+                  << " Frametime: " << window->timer.GetFrametime() / ( 1000.0f * 1000.0f )
+                  << " Maintime: "  << window->timer.GetMaintime() / ( 1000.0f * 1000.0f )
                   << std::endl;
 
     }

@@ -16,13 +16,11 @@ Window::Window( int width, int height, double scale, const std::string& title, i
     w_width    = width;
     w_height   = height;
     r_scale    = scale;
-    r_fpsLimit = fpsLock;
     r_width    = width  * scale;
     r_height   = height * scale;
-    if ( fpsLock > 0 )
-    {
-        r_tickLimit = (1000.0 * 1000.0 * 1000.0) / (double)fpsLock;
-    }
+
+    // set FPS limit in Timer class
+    timer.SetFPSLimit( fpsLock );
 
     // Initialise SDL context
     if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS ) < 0 )
@@ -92,7 +90,7 @@ void Window::updateWindow()
     SDL_UpdateWindowSurface( w_window );
 
     // TickCall (after every frame!)
-    tickCall();
+    timer.TickCall();
 }
 
 void Window::clearBuffers()
@@ -110,47 +108,6 @@ void Window::clearBuffers()
     SDL_RenderClear( r_renderer );
 
 }
-
-void Window::tickCall()
-{
-    // Should be called whenever a frame has finished rendering
-    // Measures frametime and enforces FPS limit
-
-    // update time tracker vars
-    r_tickNow_main = SDL_GetPerformanceCounter();
-
-    // Calculate maintime
-    r_maintime_nano  = (r_tickNow_main - r_tickLast_main) / (SDL_GetPerformanceFrequency()/(1000 * 1000 * 1000));
-
-
-    // Sleep if maintime shorter than FPS-Limit
-    if ( r_fpsLimit > 0 && r_maintime_nano < r_tickLimit )
-    {
-        // Use native sleep function if available
-        #ifdef __unix__
-            struct timespec framesleep,sleepremains;
-            framesleep.tv_sec  = 0;
-            framesleep.tv_nsec = r_tickLimit - (double) r_maintime_nano;
-            nanosleep( &framesleep, &sleepremains );
-        #elif __cplusplus <= 199711L
-            std::this_thread::sleep_for(std::chrono::nanoseconds(r_tickLimit - (double) r_maintime_nano));
-        #else
-            Uint32 framesleep = (r_tickLimit - (double) r_maintime_nano) / 1000 / 1000;
-            SDL_Delay(framesleep);
-        #endif
-
-    }
-
-    // update time tracker vars
-    r_tickLast_main = SDL_GetPerformanceCounter();
-    r_tickLast = r_tickNow;
-    r_tickNow = SDL_GetPerformanceCounter();
-
-    // Calculate frametime
-    r_frametime_nano = (r_tickNow - r_tickLast) / (SDL_GetPerformanceFrequency()/(1000 * 1000 * 1000));
-
-}
-
 
 Window::~Window()
 {
