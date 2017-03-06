@@ -4,7 +4,7 @@
 #include <vector>
 #include <SDL2/SDL.h>
 #include "window.h"
-#include "typedefs.h"
+#include "vmath-0.12/vmath.h"
 
 class ScanRenderer
 {
@@ -16,14 +16,14 @@ class ScanRenderer
         // render functions
         void DrawToScanBuffer( int yCoord, int xMin, int xMax );
         void FillShape( int yMin, int yMax, SDL_Color color );
-        void DrawLine( vertex2D yMinVert, vertex2D yMaxVert, bool isMinX );
-        void DrawTriangle( vertex2D yMinVert,
-                           vertex2D yMidVert,
-                           vertex2D yMaxVert,
+        void DrawLine( Vector2f yMinVert, Vector2f yMaxVert, bool isMinX );
+        void DrawTriangle( Vector2f yMinVert,
+                           Vector2f yMidVert,
+                           Vector2f yMaxVert,
                            bool orientation );
-        void FillTriangle( vertex2D v1,
-                           vertex2D v2,
-                           vertex2D v3,
+        void FillTriangle( Vector2f v1,
+                           Vector2f v2,
+                           Vector2f v3,
                            SDL_Color color );
 
     protected:
@@ -40,7 +40,7 @@ class ScanRenderer
         int  getScanValue( int yCoord, bool isMin );
         void setScanValue( int yCoord, int value, bool isMin );
         int clipInt( int i, int iMin, int iMax );
-        float triangleArea( vertex2D v1, vertex2D v2, vertex2D v3 );
+        float triangleArea( Vector2f v1, Vector2f v2, Vector2f v3 );
 };
 
 #endif // SCANRENDERER_H

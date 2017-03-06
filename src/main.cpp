@@ -3,6 +3,7 @@
 #include "scanRenderer.h"
 #include <vector>
 #include "typedefs.h"
+#include "vmath-0.12/vmath.h"
 #include <exception>
 
 bool checkSDLQuit()
@@ -18,7 +19,7 @@ bool checkSDLQuit()
     return false;
 }
 
-void demo_randomPixels( Window *window )
+void demo_randomPixels( Window* window )
 {
     bool running = true;
 
@@ -42,18 +43,13 @@ void demo_randomPixels( Window *window )
         }
 
         window->updateWindow();
-        std::cout << "Framerate: "  << window->timer.GetCurrentFPS()
-                  << " Frametime: " << window->timer.GetFrametime() / ( 1000.0f * 1000.0f )
-                  << " Maintime: "  << window->timer.GetMaintime() / ( 1000.0f * 1000.0f )
-                  << std::endl;
+        window->timer.printTimes();
     }
 }
 
 void demo_starfield( Window *window )
 {
     Starfield field = Starfield( 0.3f, 0.8f, 80, window, 50000, 0.1f);
-
-    //std::vector< unsigned char > pixels( window->Getwidth() * window->Getheight() * 4, 0);
 
     bool running = true;
     while ( running )
@@ -63,10 +59,7 @@ void demo_starfield( Window *window )
         window->clearBuffers();
         field.drawStarfield();
         window->updateWindow();
-        std::cout << "Framerate: "  << window->timer.GetCurrentFPS()
-                  << " Frametime: " << window->timer.GetFrametime() / ( 1000.0f * 1000.0f )
-                  << " Maintime: "  << window->timer.GetMaintime() / ( 1000.0f * 1000.0f )
-                  << std::endl;
+        window->timer.printTimes();
 
     }
 }
@@ -87,12 +80,12 @@ void demo_shapes( Window *window )
     triangleColor.a = SDL_ALPHA_OPAQUE;
 
     // triangle
-    vertex2D v1 = vertex2D {  50,  50 };
-    vertex2D v2 = vertex2D { 300, 200 };
-    vertex2D v3 = vertex2D { 100, 350 };
+    Vector2f v1 = Vector2f {  50,  50 };
+    Vector2f v2 = Vector2f { 300, 200 };
+    Vector2f v3 = Vector2f { 100, 350 };
 
-    vector2D vv1 = vector2D { 20, 10 };
-    vv1 = vv1.normalised();
+    Vector2f vv1 = Vector2f { 20, 10 };
+    vv1.normalize();
     std::cout << "VV1: " << vv1.x << " " << vv1.y;
 
     bool running = true;
@@ -113,6 +106,7 @@ void demo_shapes( Window *window )
         renderer.FillTriangle( v1, v2, v3, triangleColor );
 
         window->updateWindow();
+        window->timer.printTimes();
     }
 }
 

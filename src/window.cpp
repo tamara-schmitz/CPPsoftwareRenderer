@@ -12,12 +12,23 @@ Window::Window( int width, int height, double scale, const std::string& title, i
     //ctor
 
     // set window parameters
-    pixels.resize( width * height * 4 );
     w_width    = width;
     w_height   = height;
     r_scale    = scale;
     r_width    = width  * scale;
     r_height   = height * scale;
+
+    // create null_pixels array
+    null_pixels.clear();
+    null_pixels.resize( w_width * w_height *4 );
+    // fill null_pixel_array with nulls
+    for ( unsigned int i = 0; i < w_width * w_height * 4; i++ )
+    {
+        null_pixels[ i ] = 0;
+    }
+    // copy to normal pixels array
+    pixels.resize( r_width * r_height * 4 );
+    pixels = null_pixels;
 
     // set FPS limit in Timer class
     timer.SetFPSLimit( fpsLock );
@@ -98,9 +109,8 @@ void Window::clearBuffers()
     // Clears the render texture and pixel array
     // (no need to clear the window or renderer as it's not blending textures
 
-    // empty pixel array
-    pixels.clear();
-    pixels.resize( r_width * r_height * 4 );
+    // copy null_pixel array to pixel array
+    pixels = null_pixels;
 
     SDL_SetRenderTarget( r_renderer, r_texture );
     SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );

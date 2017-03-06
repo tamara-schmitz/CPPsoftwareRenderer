@@ -12,6 +12,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++11" />
 					<Add option="-g" />
 					<Add directory="include" />
 				</Compiler>
@@ -22,7 +23,9 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-march=corei7" />
 					<Add option="-O2" />
+					<Add option="-std=c++11" />
 					<Add directory="include" />
 				</Compiler>
 				<Linker>
@@ -39,6 +42,7 @@
 			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="cb.bmp" />
+		<Unit filename="include/timer.h" />
 		<Unit filename="include/typedefs.h" />
 		<Unit filename="include/vmath.h" />
 		<Unit filename="src/main.cpp" />
@@ -46,6 +50,7 @@
 		<Unit filename="src/scanRenderer.h" />
 		<Unit filename="src/starfield.cpp" />
 		<Unit filename="src/starfield.h" />
+		<Unit filename="src/timer.cpp" />
 		<Unit filename="src/window.cpp" />
 		<Unit filename="src/window.h" />
 		<Extensions>

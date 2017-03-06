@@ -38,6 +38,7 @@ class Window
         SDL_Renderer*   r_renderer;
         SDL_Texture*    r_texture;
         std::vector< Uint8 > pixels;
+        std::vector< Uint8 > null_pixels;
         unsigned int w_width;
         unsigned int w_height;
         double r_scale;

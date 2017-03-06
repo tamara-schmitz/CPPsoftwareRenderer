@@ -65,7 +65,7 @@ int ScanRenderer::clipInt( int i, int iMin, int iMax )
     }
 }
 
-float ScanRenderer::triangleArea( vertex2D v1, vertex2D v2, vertex2D v3 )
+float ScanRenderer::triangleArea( Vector2f v1, Vector2f v2, Vector2f v3 )
 {
     int x1 = v2.x - v1.x;
     int y1 = v2.y - v1.y;
@@ -90,7 +90,7 @@ void ScanRenderer::DrawToScanBuffer( int yCoord, int xMin, int xMax )
 }
 
 
-void ScanRenderer::DrawLine( vertex2D yMinVert, vertex2D yMaxVert, bool isMinX )
+void ScanRenderer::DrawLine( Vector2f yMinVert, Vector2f yMaxVert, bool isMinX )
 {
     // draws a line to the scan buffer
     // either at xMin or at xMax
@@ -143,7 +143,7 @@ void ScanRenderer::FillShape( int yMin, int yMax, SDL_Color color )
     }
 }
 
-void ScanRenderer::DrawTriangle( vertex2D yMinVert, vertex2D yMidVert, vertex2D yMaxVert, bool rightHanded )
+void ScanRenderer::DrawTriangle( Vector2f yMinVert, Vector2f yMidVert, Vector2f yMaxVert, bool rightHanded )
 {
     // draw triangle lines
     DrawLine( yMinVert, yMaxVert,  rightHanded );
@@ -151,28 +151,28 @@ void ScanRenderer::DrawTriangle( vertex2D yMinVert, vertex2D yMidVert, vertex2D 
     DrawLine( yMidVert, yMaxVert, !rightHanded );
 }
 
-void ScanRenderer::FillTriangle( vertex2D v1, vertex2D v2, vertex2D v3, SDL_Color color )
+void ScanRenderer::FillTriangle( Vector2f v1, Vector2f v2, Vector2f v3, SDL_Color color )
 {
-    vertex2D yMinVert = v1;
-    vertex2D yMidVert = v2;
-    vertex2D yMaxVert = v3;
+    Vector2f yMinVert = v1;
+    Vector2f yMidVert = v2;
+    Vector2f yMaxVert = v3;
 
     // sort verts
     if ( yMaxVert.y < yMidVert.y )
     {
-        vertex2D temp = yMaxVert;
+        Vector2f temp = yMaxVert;
         yMaxVert = yMidVert;
         yMidVert = temp;
     }
     if ( yMidVert.y < yMinVert.y )
     {
-        vertex2D temp = yMidVert;
+        Vector2f temp = yMidVert;
         yMidVert = yMinVert;
         yMinVert = temp;
     }
     if ( yMaxVert.y < yMidVert.y )
     {
-        vertex2D temp = yMaxVert;
+        Vector2f temp = yMaxVert;
         yMaxVert = yMidVert;
         yMidVert = temp;
     }

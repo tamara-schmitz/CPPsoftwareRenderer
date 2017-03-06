@@ -20,6 +20,9 @@ class Timer
         // tick functions
         void   TickCall(); // called whenever a tick is finished
 
+        // pretty print
+        void   printTimes();
+
     private:
         // usr vars
         Uint32 fpsLimit = 0; // limit to specified fps

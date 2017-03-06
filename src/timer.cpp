@@ -1,4 +1,5 @@
 #include "timer.h"
+#include <iostream>
 
 Timer::Timer()
 {
@@ -48,7 +49,7 @@ double Timer::GetCurrentFPS()
     }
 }
 
-// wrappers
+// clock wrapper
 Uint64 Timer::GetHighResClockNs()
 {
     return std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count();
@@ -64,7 +65,7 @@ void   Timer::nsSleep(Uint64 ns)
     #endif
 }
 
-// tick functions
+// tick function
 void Timer::TickCall()
 {
     // update maintime counter
@@ -84,4 +85,13 @@ void Timer::TickCall()
     r_tickNow = GetHighResClockNs();
     // calculate frametime diff
     r_frametime_nano = r_tickNow - r_tickLast;
+}
+
+// pretty print
+void Timer::printTimes()
+{
+    std::cout << "Framerate: "  << GetCurrentFPS()
+              << " Frametime: " << GetFrametime() / ( 1000.0f * 1000.0f ) << " ms"
+              << " Maintime: "  << GetMaintime() / ( 1000.0f * 1000.0f )  << " ms"
+              << std::endl;
 }
