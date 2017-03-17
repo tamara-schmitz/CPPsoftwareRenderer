@@ -49,7 +49,7 @@
 	"window.h"
 	<unistd.h>
 
-1487706534 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.cpp
+1489771435 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.cpp
 	"starfield.h"
 	<unistd.h>
 	<omp.h>
@@ -62,7 +62,7 @@
 	<iostream>
 	"window.h"
 
-1488829871 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1489772853 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"window.h"
 	"starfield.h"
 	"scanRenderer.h"
@@ -71,16 +71,17 @@
 	"vmath-0.12/vmath.h"
 	<exception>
 
-1488828857 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.h
+1489767079 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.h
 	<stdio.h>
 	<SDL2/SDL.h>
 	<string>
 	<iostream>
 	<chrono>
 	<vector>
+	"typedefs.h"
 	"timer.h"
 
-1488829064 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
+1488896397 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
 	<unistd.h>
 	<chrono>
 	"window.h"
@@ -98,7 +99,7 @@
 	<chrono>
 	<vector>
 
-1488823682 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/scanRenderer.cpp
+1489772524 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/scanRenderer.cpp
 	"scanRenderer.h"
 
 1478082232 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/scanRenderer.h
@@ -106,21 +107,22 @@
 	<SDL2/SDL.h>
 	"window.h"
 
-1487540609 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.h
+1489770789 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.h
 	<SDL2/SDL.h>
 	<cstdlib>
 	<cmath>
 	<vector>
 	<iostream>
 	"window.h"
+	"typedefs.h"
 
-1488823579 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/scanRenderer.h
+1489772186 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/scanRenderer.h
 	<vector>
 	<SDL2/SDL.h>
 	"window.h"
 	"vmath-0.12/vmath.h"
 
-1478197423 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/typedefs.h
+1489771013 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/typedefs.h
 	<math.h>
 
 1488825498 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/timer.cpp
@@ -131,7 +133,7 @@
 	<SDL2/SDL_stdinc.h>
 	<chrono>
 
-1478162170 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/vmath-0.12/vmath.h
+1489773192 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/vmath-0.12/vmath.h
 	<cmath>
 	<cstring>
 	<iostream>

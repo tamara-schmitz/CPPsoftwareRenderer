@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include "window.h"
+#include "typedefs.h"
 
 class Starfield
 {
@@ -37,12 +38,6 @@ class Starfield
             float y;
             float z;
         } star;
-        typedef struct
-        {
-            // a structure that represents a pixel on a screen
-            int x;
-            int y;
-        } pixel;
 
         // functions
         //std::vector< unsigned char > drawStarfield();

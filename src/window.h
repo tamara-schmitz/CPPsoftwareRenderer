@@ -8,6 +8,7 @@
 #include <chrono>
 #include <vector>
 
+#include "typedefs.h"
 #include "timer.h"
 
 class Window

@@ -122,8 +122,9 @@ void Window::clearBuffers()
 Window::~Window()
 {
     //dtor
-
+    null_pixels.clear();
     pixels.clear();
+
     // Properly shutdown SDL
     SDL_DestroyTexture(  r_texture  );
     SDL_DestroyRenderer( r_renderer );

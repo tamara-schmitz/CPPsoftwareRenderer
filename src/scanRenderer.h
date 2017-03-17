@@ -14,6 +14,7 @@ class ScanRenderer
         virtual ~ScanRenderer();
 
         // render functions
+        void ClearScanBuffer();
         void DrawToScanBuffer( int yCoord, int xMin, int xMax );
         void FillShape( int yMin, int yMax, SDL_Color color );
         void DrawLine( Vector2f yMinVert, Vector2f yMaxVert, bool isMinX );
@@ -25,19 +26,25 @@ class ScanRenderer
                            Vector2f v2,
                            Vector2f v3,
                            SDL_Color color );
+        void FillTriangle( Vector4f v1,
+                           Vector4f v2,
+                           Vector4f v3,
+                           SDL_Color color );
 
     protected:
 
     private:
         // render params
         Window *w_window;
-        unsigned int w_width;
-        unsigned int w_height;
+        int w_width;
+        int w_height;
+        Matrix4f screenSpaceTransformMatrix;
         // scan buffer
         std::vector< int > r_scanBuffer;
+        std::vector< int > null_scanBuffer;
 
         // functions
-        int  getScanValue( int yCoord, bool isMin );
+        int getScanValue( int yCoord, bool isMin );
         void setScanValue( int yCoord, int value, bool isMin );
         int clipInt( int i, int iMin, int iMax );
         float triangleArea( Vector2f v1, Vector2f v2, Vector2f v3 );

@@ -47,7 +47,7 @@ void Starfield::spawnStar( unsigned int index )
 
 }
 
-Starfield::pixel Starfield::toScreenSpace( star *posi )
+pixel Starfield::toScreenSpace( star *posi )
 {
     float half_width  = w_width  / 2;
     float half_height = w_height / 2;
@@ -65,10 +65,6 @@ Starfield::pixel Starfield::toScreenSpace( star *posi )
         x_pixel = half_width;
         y_pixel = half_height;
     }
-
-    // debug print
-    //std::cout << "screenspace: " << x_pixel << ", " << y_pixel << std::endl;
-    //std::cout << "worldspace: " << posi->x << ", " << posi->y << ", " << posi->z << std::endl;
 
         return pixel {
             x_pixel,
@@ -122,15 +118,17 @@ void Starfield::processStar( unsigned int id )
     }
 
 
-//    // debug star print
-//    if ( id == 3 )
-//    {
-//        int offset = pos.y * w_width + pos.x;
-//        std::cout << "Star worldpos : " << current_star->x << ", " << current_star->y << ", " << current_star->z << std::endl;
-//        std::cout << "Star screenpos: " << pos.x << ", " << pos.y << std::endl;
-//        std::cout << "Star z: " << current_star->z << " Buffer z: " << z_buffer[ offset ] << std::endl;
-//    }
-
+    #ifdef PRINT_DEBUG_STUFF
+    // debug star print
+    if ( id == 3 )
+    {
+        int offset = pos.y * w_width + pos.x;
+        std::cout << "Star id: " << id << std::endl;
+        std::cout << "Star worldpos : " << current_star->x << ", " << current_star->y << ", " << current_star->z << std::endl;
+        std::cout << "Star screenpos: " << pos.x << ", " << pos.y << std::endl;
+        std::cout << "Star z: " << current_star->z << " Buffer z: " << z_buffer[ offset ] << std::endl;
+    }
+    #endif // PRINT_DEBUG_STUFF
 
 }
 
@@ -149,6 +147,7 @@ void Starfield::drawStarfield()
 Starfield::~Starfield()
 {
     //dtor
+    null_z_buffer.clear();
     z_buffer.clear();
     stars_posi.clear();
 }

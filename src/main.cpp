@@ -43,7 +43,9 @@ void demo_randomPixels( Window* window )
         }
 
         window->updateWindow();
+        #ifdef PRINT_DEBUG_STUFF
         window->timer.printTimes();
+        #endif // PRINT_DEBUG_STUFF
     }
 }
 
@@ -59,7 +61,9 @@ void demo_starfield( Window *window )
         window->clearBuffers();
         field.drawStarfield();
         window->updateWindow();
+        #ifdef PRINT_DEBUG_STUFF
         window->timer.printTimes();
+        #endif // PRINT_DEBUG_STUFF
 
     }
 }
@@ -78,15 +82,20 @@ void demo_shapes( Window *window )
     triangleColor.g = 50;
     triangleColor.b = 50;
     triangleColor.a = SDL_ALPHA_OPAQUE;
+    SDL_Color color2D;
+    color2D.r = 50;
+    color2D.g = 200;
+    color2D.b = 20;
+    color2D.a = SDL_ALPHA_OPAQUE;
 
-    // triangle
-    Vector2f v1 = Vector2f {  50,  50 };
-    Vector2f v2 = Vector2f { 300, 200 };
-    Vector2f v3 = Vector2f { 100, 350 };
-
-    Vector2f vv1 = Vector2f { 20, 10 };
-    vv1.normalize();
-    std::cout << "VV1: " << vv1.x << " " << vv1.y;
+    // triangle 2D
+    Vector2f v1_2d = Vector2f { 400, 53};
+    Vector2f v2_2d = Vector2f { -20, 299};
+    Vector2f v3_2d = Vector2f { 120, 364};
+    // triangle 3D
+    Vector4f v1 = Vector4f {  50,  50, 0, 0 };
+    Vector4f v2 = Vector4f { 300, 200, 0, 0 };
+    Vector4f v3 = Vector4f { 100, 350, 0, 0 };
 
     bool running = true;
     while ( running )
@@ -102,11 +111,14 @@ void demo_shapes( Window *window )
         }
         renderer.FillShape( 100, 150, shapeColor );
 
-        // draw a triangle
+        // draw triangles
+        renderer.FillTriangle( v1_2d, v2_2d, v3_2d, color2D );
         renderer.FillTriangle( v1, v2, v3, triangleColor );
 
         window->updateWindow();
+        #ifdef PRINT_DEBUG_STUFF
         window->timer.printTimes();
+        #endif // PRINT_DEBUG_STUFF
     }
 }
 
@@ -116,7 +128,7 @@ int main( int argc, char** argv )
     // 0: random pixels
     // 1: starfield
     // 2: shapes
-    const int current_demo = 1;
+    const int current_demo = 2;
 
     try
     {

@@ -1,36 +1,38 @@
 /* -*- C++ -*- */
 /** @page license License
  * vmath, set of classes for computer graphics mathematics.
- * Copyright (c) 2005-2016, Jan Bartipan < barzto at gmail dot com >
+ * Copyright (c) 2005-2016, Jan Bartipan < barzto at gmail dot com >, Thomas Schmitz < agrar.pfurtz at gmail dot com >
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
  * are met:
  *
- * - Redistributions of source code must retain the above copyright 
+ * - Redistributions of source code must retain the above copyright
  *   notice, this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright 
- *   notice, this list of conditions and the following disclaimer in 
- *   the documentation and/or other materials provided with the 
+ * - Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in
+ *   the documentation and/or other materials provided with the
  *   distribution.
- * - Neither the names of its contributors may be used to endorse or 
- *   promote products derived from this software without specific 
+ * - Neither the names of its contributors may be used to endorse or
+ *   promote products derived from this software without specific
  *   prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
- * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+ // This is a modified version of vmath-0.12
 
 /**
  * @mainpage Intro
@@ -52,7 +54,7 @@
  *  v.r = 1; v.g = 0.5; v.b = 0;
  *    </pre>
  *    </li>
- *    <li> conversion constructor and assign operators - so you can assign a value of Vector3&lt;T1&gt; type 
+ *    <li> conversion constructor and assign operators - so you can assign a value of Vector3&lt;T1&gt; type
  *    to a variable of Vector3&lt;T2&gt; type for any convertible T1, T2 type pairs. In other words, you can do this:
  *    <pre>
  *
@@ -250,7 +252,7 @@ public:
 	/**
 	 * Array access operator
 	 * @param n Array index
-	 * @return For n = 0, reference to x coordinate, else reference to y 
+	 * @return For n = 0, reference to x coordinate, else reference to y
 	 * y coordinate.
 	 */
 	T& operator[](int n)
@@ -509,7 +511,7 @@ public:
 	 * Linear interpolation of two vectors
 	 * @param fact Factor of interpolation. For translation from position
 	 * of this vector to vector r, values of factor goes from 0.0 to 1.0.
-	 * @param r Second Vector for interpolation 
+	 * @param r Second Vector for interpolation
 	 * @note However values of fact parameter are reasonable only in interval
 	 * [0.0 , 1.0], you can pass also values outside of this interval and you
 	 * can get result (extrapolation?)
@@ -542,7 +544,7 @@ public:
 	//-------------[ output operator ]------------------------
 	/**
 	 * Output to stream operator
-	 * @param lhs Left hand side argument of operator (commonly ostream instance). 
+	 * @param lhs Left hand side argument of operator (commonly ostream instance).
 	 * @param rhs Right hand side argument of operator.
 	 * @return Left hand side argument - the ostream object passed to operator.
 	 */
@@ -715,7 +717,7 @@ public:
 	 * Array access operator
 	 * @param n Array index
 	 * @return For n = 0, reference to x coordinate, n = 1
-	 * reference to y, else reference to z 
+	 * reference to y, else reference to z
 	 * y coordinate.
 	 */
 	T & operator[](int n)
@@ -1029,7 +1031,7 @@ public:
 	 * Linear interpolation of two vectors
 	 * @param fact Factor of interpolation. For translation from positon
 	 * of this vector to vector r, values of factor goes from 0.0 to 1.0.
-	 * @param r Second Vector for interpolation 
+	 * @param r Second Vector for interpolation
 	 * @note However values of fact parameter are reasonable only in interval
 	 * [0.0 , 1.0], you can pass also values outside of this interval and you
 	 * can get result (extrapolation?)
@@ -1061,10 +1063,19 @@ public:
 		return (const T*) this;
 	}
 
+	/**
+	 * Conversion to Vector2. Takes x and y and copies them to a new Vector2.
+     * @return Vector2 where x and y where copied from the original Vector3.
+	 */
+    Vector2<T> xy()
+	{
+        return Vector2<T>(this->x, this->y);
+	}
+
 	//-------------[ output operator ]------------------------
 	/**
 	 * Output to stream operator
-	 * @param lhs Left hand side argument of operator (commonly ostream instance). 
+	 * @param lhs Left hand side argument of operator (commonly ostream instance).
 	 * @param rhs Right hand side argument of operator.
 	 * @return Left hand side argument - the ostream object passed to operator.
 	 */
@@ -1243,7 +1254,7 @@ public:
 	 * Array access operator
 	 * @param n Array index
 	 * @return For n = 0, reference to x coordinate, n = 1
-	 * reference to y coordinate, n = 2 reference to z,  
+	 * reference to y coordinate, n = 2 reference to z,
 	 * else reference to w coordinate.
 	 */
 	T & operator[](int n)
@@ -1531,7 +1542,7 @@ public:
 	 * Linear interpolation of two vectors
 	 * @param fact Factor of interpolation. For translation from position
 	 * of this vector to vector r, values of factor goes from 0.0 to 1.0.
-	 * @param r Second Vector for interpolation 
+	 * @param r Second Vector for interpolation
 	 * @note However values of fact parameter are reasonable only in interval
 	 * [0.0 , 1.0], you can pass also values outside of this interval and you
 	 * can get result (extrapolation?)
@@ -1577,10 +1588,23 @@ public:
 		return Vector3<T>(x * invW, y * invW, z * invW);
 	}
 
+	/**
+	 * Conversion to Vector2. Takes x and y and copies them to a new Vector2.
+     * @return Vector2 where x and y where copied from the original Vector4.
+	 */
+    Vector2<T> xy()
+	{
+        if (w == 0 || w == 1)
+            return Vector2<T>(x, y);
+
+        const T invW = 1.0 / w;
+		return Vector2<T>(x * invW, y * invW);
+	}
+
 	//-------------[ output operator ]------------------------
 	/**
 	 * Output to stream operator
-	 * @param lhs Left hand side argument of operator (commonly ostream instance). 
+	 * @param lhs Left hand side argument of operator (commonly ostream instance).
 	 * @param rhs Right hand side argument of operator.
 	 * @return Left hand side argument - the ostream object passed to operator.
 	 */
@@ -1610,7 +1634,7 @@ typedef Vector4<double> Vector4d;
 typedef Vector4<int> Vector4i;
 
 /**
- * Class for matrix 3x3. 
+ * Class for matrix 3x3.
  * @note Data stored in this matrix are in column major order. This arrangement suits OpenGL.
  * If you're using row major matrix, consider using fromRowMajorArray as way for construction
  * Matrix3<T> instance.
@@ -1767,7 +1791,7 @@ public:
 	 * Equality test operator
 	 * @param rhs Right hand side argument of binary operator.
 	 * @note Test of equality is based of threshold EPSILON value. To be two
-	 * values equal, must satisfy this condition all elements of matrix 
+	 * values equal, must satisfy this condition all elements of matrix
 	 * | lhs[i] - rhs[i] | < EPSILON,
 	 * same for y-coordinate, z-coordinate, and w-coordinate.
 	 */
@@ -2008,7 +2032,7 @@ public:
 	 * Linear interpolation of two matrices
 	 * @param fact Factor of interpolation. For translation from positon
 	 * of this matrix (lhs) to matrix rhs, values of factor goes from 0.0 to 1.0.
-	 * @param rhs Second Matrix for interpolation 
+	 * @param rhs Second Matrix for interpolation
 	 * @note However values of fact parameter are reasonable only in interval
 	 * [0.0 , 1.0], you can pass also values outside of this interval and you
 	 * can get result (extrapolation?)
@@ -2069,7 +2093,7 @@ public:
 	//----------[ output operator ]----------------------------
 	/**
 	 * Output to stream operator
-	 * @param lhs Left hand side argument of operator (commonly ostream instance). 
+	 * @param lhs Left hand side argument of operator (commonly ostream instance).
 	 * @param rhs Right hand side argument of operator.
 	 * @return Left hand side argument - the ostream object passed to operator.
 	 */
@@ -2106,7 +2130,7 @@ typedef Matrix3<double> Matrix3d;
 typedef Matrix3<int> Matrix3i;
 
 /**
- * Class for matrix 4x4 
+ * Class for matrix 4x4
  * @note Data stored in this matrix are in column major order. This arrangement suits OpenGL.
  * If you're using row major matrix, consider using fromRowMajorArray as way for construction
  * Matrix4<T> instance.
@@ -2232,7 +2256,7 @@ public:
 
 		return ret;
 	}
-	
+
 	/**
 	 * Create scale matrix with @a sx, @a sy, and @a sz
 	 * being values of matrix main diagonal.
@@ -2442,12 +2466,33 @@ public:
 		return retData;
 	}
 
+	/**
+	 * --Added by Zennoe 2017-03-07
+	 * Creates ScreenSpace Transform matrix
+	 * @param halfwidth Half of the screen width
+	 * @param halfheight Half of the screen height
+	 * @return An instance of the screenspace transform matrix
+	 */
+
+	static Matrix4<T> screenspaceTransform( T halfwidth, T halfheight)
+	{
+		Matrix4<T> ret;
+        ret.at( 0, 0 ) = halfwidth;
+        ret.at( 0, 3 ) = halfwidth;
+        ret.at( 1, 1 ) = -halfheight;
+        ret.at( 1, 3 ) = halfheight;
+
+		return ret;
+	}
+
+
+
 	//---------------------[ Equality operators ]------------------------------
 	/**
 	 * Equality test operator
 	 * @param rhs Right hand side argument of binary operator.
 	 * @note Test of equality is based of threshold EPSILON value. To be two
-	 * values equal, must satisfy this condition all elements of matrix 
+	 * values equal, must satisfy this condition all elements of matrix
 	 * | lhs[i] - rhs[i] | < EPSILON,
 	 * same for y-coordinate, z-coordinate, and w-coordinate.
 	 */
@@ -2866,7 +2911,7 @@ public:
 	 * Linear interpolation of two matrices
 	 * @param fact Factor of interpolation. For translation from positon
 	 * of this matrix (lhs) to matrix rhs, values of factor goes from 0.0 to 1.0.
-	 * @param rhs Second Matrix for interpolation 
+	 * @param rhs Second Matrix for interpolation
 	 * @note However values of fact parameter are reasonable only in interval
 	 * [0.0 , 1.0], you can pass also values outside of this interval and you
 	 * can get result (extrapolation?)
@@ -2901,7 +2946,7 @@ public:
 	//----------[ output operator ]----------------------------
 	/**
 	 * Output to stream operator
-	 * @param lhs Left hand side argument of operator (commonly ostream instance). 
+	 * @param lhs Left hand side argument of operator (commonly ostream instance).
 	 * @param rhs Right hand side argument of operator.
 	 * @return Left hand side argument - the ostream object passed to operator.
 	 */
@@ -3226,11 +3271,11 @@ public:
 		/*ret.at(0,0) = 1 - 2*v.y*v.y - 2*v.z*v.z;
 		 ret.at(1,0) = 2*v.x*v.y - 2*w*v.z;
 		 ret.at(2,0) = 2*v.x*v.z - 2*w*v.y;
-		 
+
 		 ret.at(0,1) = 2*v.x*v.y + 2*w*v.z;
 		 ret.at(1,1) = 1 - 2*v.x*v.x - 2*v.z*v.z;
 		 ret.at(2,1) = 2*v.y*v.z - 2*w*v.x;
-		 
+
 		 ret.at(0,2) = 2*v.x*v.z - 2*w*v.y;
 		 ret.at(1,2) = 2*v.y*v.z + 2*w*v.x;
 		 ret.at(2,2) = 1 - 2*v.x*v.x - 2*v.y*v.y;*/
@@ -3264,7 +3309,7 @@ public:
 
 	/**
 	 * Converts quaternion into transformation matrix.
-	 * @note This method performs same operation as rotMatrix() 
+	 * @note This method performs same operation as rotMatrix()
 	 * conversion method. But returns Matrix of 4x4 elements.
 	 * @return Transformation matrix expressing this quaternion.
 	 */
@@ -3312,7 +3357,7 @@ public:
 	 * Linear interpolation of two quaternions
 	 * @param fact Factor of interpolation. For translation from position
 	 * of this vector to quaternion rhs, values of factor goes from 0.0 to 1.0.
-	 * @param rhs Second Quaternion for interpolation 
+	 * @param rhs Second Quaternion for interpolation
 	 * @note However values of fact parameter are reasonable only in interval
 	 * [0.0 , 1.0], you can pass also values outside of this interval and you
 	 * can get result (extrapolation?)
