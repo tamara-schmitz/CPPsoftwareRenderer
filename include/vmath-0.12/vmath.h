@@ -1067,9 +1067,9 @@ public:
 	 * Conversion to Vector2. Takes x and y and copies them to a new Vector2.
      * @return Vector2 where x and y where copied from the original Vector3.
 	 */
-    Vector2<T> xy()
+    Vector2<T> xy() const
 	{
-        return Vector2<T>(this->x, this->y);
+        return Vector2<T>(x, y);
 	}
 
 	//-------------[ output operator ]------------------------
@@ -1592,7 +1592,7 @@ public:
 	 * Conversion to Vector2. Takes x and y and copies them to a new Vector2.
      * @return Vector2 where x and y where copied from the original Vector4.
 	 */
-    Vector2<T> xy()
+    Vector2<T> xy() const
 	{
         if (w == 0 || w == 1)
             return Vector2<T>(x, y);
@@ -1600,6 +1600,25 @@ public:
         const T invW = 1.0 / w;
 		return Vector2<T>(x * invW, y * invW);
 	}
+
+	/**
+	 * Conversion to a Vector3 that got translated to screenspace
+	 * @param halfwidth Half of the Width of your screenspace
+	 * @param halfheight Half of the Height of your screenspace
+	 * @return screenspace vector
+     */
+    Vector3<T> screenspaceVec3( T halfwidth, T halfheight ) const
+    {
+        Vector3<T> out = xyz();
+
+        // convert x
+        out.x = out.x * halfwidth + halfwidth;
+
+        // convert y
+        out.y = out.y * halfheight + halfheight;
+
+        return out;
+    }
 
 	//-------------[ output operator ]------------------------
 	/**
@@ -2468,23 +2487,27 @@ public:
 
 	/**
 	 * --Added by Zennoe 2017-03-07
-	 * Creates ScreenSpace Transform matrix
-	 * @param halfwidth Half of the screen width
-	 * @param halfheight Half of the screen height
-	 * @return An instance of the screenspace transform matrix
+	 * Creates perspective Transform matrix
+	 * @param fov Field of View
+	 * @param aspectRatio Aspect Ratio of render resolution
+	 * @param zNear Position of near clipping plane
+	 * @param zFar Position of far clipping plane
+	 * @return An instance of a perspective transform
 	 */
+	 static Matrix4<T> perspectiveTransform( T fov, T aspectRatio, T zNear, T zFar )
+	 {
+        Matrix4<T> ret;
+        const T tanHalfFOV = std::tan( fov / 2.0f );
+        const T zRange = zNear - zFar;
 
-	static Matrix4<T> screenspaceTransform( T halfwidth, T halfheight)
-	{
-		Matrix4<T> ret;
-        ret.at( 0, 0 ) = halfwidth;
-        ret.at( 0, 3 ) = halfwidth;
-        ret.at( 1, 1 ) = -halfheight;
-        ret.at( 1, 3 ) = halfheight;
+        ret.at( 0, 0 ) = 1.0f / (tanHalfFOV * aspectRatio);
+        ret.at( 1, 1 ) = 1.0f /  tanHalfFOV;
+        ret.at( 2, 2 ) = ( -zNear - zFar ) / zRange;
+        ret.at( 3, 2 ) = - ( 2.0f * zFar * zNear ) / zRange;
+        ret.at( 2, 3 ) = - 1.0f;
 
-		return ret;
-	}
-
+        return ret;
+	 }
 
 
 	//---------------------[ Equality operators ]------------------------------

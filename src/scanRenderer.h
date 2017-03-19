@@ -10,11 +10,12 @@ class ScanRenderer
 {
     public:
         // ctor & dtor
-        ScanRenderer( Window *window );
+        ScanRenderer( Window *window, bool useRenderDrawFuncs );
         virtual ~ScanRenderer();
 
         // render functions
         void ClearScanBuffer();
+        void UpdatePerspective( float fov, float zNear, float zFar );
         void DrawToScanBuffer( int yCoord, int xMin, int xMax );
         void FillShape( int yMin, int yMax, SDL_Color color );
         void DrawLine( Vector2f yMinVert, Vector2f yMaxVert, bool isMinX );
@@ -36,9 +37,15 @@ class ScanRenderer
     private:
         // render params
         Window *w_window;
+        bool w_useRenderDrawFuncs;
         int w_width;
         int w_height;
-        Matrix4f screenSpaceTransformMatrix;
+        float w_halfwidth;
+        float w_halfheight;
+        Matrix4f viewSpaceTransformMatrix; // world to view
+        Matrix4f perspectiveTransformMatrix; // view to projection
+        Matrix4f vpMatrix; // = perspectiveTransformMatrix * viewSpaceTransformMatrix
+
         // scan buffer
         std::vector< int > r_scanBuffer;
         std::vector< int > null_scanBuffer;

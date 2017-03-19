@@ -51,7 +51,7 @@ void demo_randomPixels( Window* window )
 
 void demo_starfield( Window *window )
 {
-    Starfield field = Starfield( 0.3f, 0.8f, 80, window, 50000, 0.1f);
+    Starfield field = Starfield( 0.3f, 0.8f, 80, window, 50000, 0.05f);
 
     bool running = true;
     while ( running )
@@ -70,32 +70,39 @@ void demo_starfield( Window *window )
 
 void demo_shapes( Window *window )
 {
-    ScanRenderer renderer = ScanRenderer( window );
+    ScanRenderer renderer = ScanRenderer( window, true );
+    renderer.UpdatePerspective( 70, 2, 2000 );
 
-    SDL_Color shapeColor;
-    shapeColor.r = 200;
-    shapeColor.g = 200;
-    shapeColor.b = 200;
-    shapeColor.a = SDL_ALPHA_OPAQUE;
-    SDL_Color triangleColor;
-    triangleColor.r = 255;
-    triangleColor.g = 50;
-    triangleColor.b = 50;
-    triangleColor.a = SDL_ALPHA_OPAQUE;
     SDL_Color color2D;
     color2D.r = 50;
     color2D.g = 200;
     color2D.b = 20;
     color2D.a = SDL_ALPHA_OPAQUE;
+    SDL_Color triangleColor;
+    triangleColor.r = 255;
+    triangleColor.g = 50;
+    triangleColor.b = 50;
+    triangleColor.a = SDL_ALPHA_OPAQUE;
+    SDL_Color triangleColor2;
+    triangleColor2.r = 60;
+    triangleColor2.g = 170;
+    triangleColor2.b = 150;
+    triangleColor2.a = SDL_ALPHA_OPAQUE;
 
     // triangle 2D
-    Vector2f v1_2d = Vector2f { 400, 53};
-    Vector2f v2_2d = Vector2f { -20, 299};
-    Vector2f v3_2d = Vector2f { 120, 364};
+    Vector2f v1_2d = Vector2f { 200, 53};
+    Vector2f v2_2d = Vector2f { -20, 10};
+    Vector2f v3_2d = Vector2f { 100, 364};
     // triangle 3D
-    Vector4f v1 = Vector4f {  50,  50, 0, 0 };
-    Vector4f v2 = Vector4f { 300, 200, 0, 0 };
-    Vector4f v3 = Vector4f { 100, 350, 0, 0 };
+    Vector4f v1 = Vector4f { -0.9f, -0.9f, 0, 1 };
+    Vector4f v2 = Vector4f {    0,  0.9f, 0, 1 };
+    Vector4f v3 = Vector4f {  0.9f, -0.9f, 0, 1 };
+    // triangle 3D no.2
+    Vector4f v1_no2 = Vector4f { -0.7f, -0.85f, 0, 1 };
+    Vector4f v2_no2 = Vector4f {    0.2f,  0.2f, 0, 1 };
+    Vector4f v3_no2 = Vector4f {  0.84f, -1.2f, 0.1f, 1 };
+
+    float rotationFactor = 0;
 
     bool running = true;
     while ( running )
@@ -104,16 +111,23 @@ void demo_shapes( Window *window )
 
         window->clearBuffers();
 
-        // draw a shape
-        for ( int i = 100; i < 150; i++ )
-        {
-            renderer.DrawToScanBuffer( i, 300 - i, 300 + i );
-        }
-        renderer.FillShape( 100, 150, shapeColor );
+        // get per frame rotation factor
+        rotationFactor = rotationFactor + 0.000000001f * (window->timer.GetFrametime() / 1000000000);
+
+        // rotate and then translate triangle
+        Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0);
+        Matrix4f rotationMatrix_no2 = Matrix4f::createRotationAroundAxis( rotationFactor * 0.5f, 0, rotationFactor * 0.1f );
+        v1 = rotationMatrix * v1;
+        v2 = rotationMatrix * v2;
+        v3 = rotationMatrix * v3;
+        v1_no2 = rotationMatrix_no2 * v1_no2;
+        v2_no2 = rotationMatrix_no2 * v2_no2;
+        v3_no2 = rotationMatrix_no2 * v3_no2;
 
         // draw triangles
         renderer.FillTriangle( v1_2d, v2_2d, v3_2d, color2D );
         renderer.FillTriangle( v1, v2, v3, triangleColor );
+        renderer.FillTriangle( v1_no2, v2_no2, v3_no2, triangleColor2 );
 
         window->updateWindow();
         #ifdef PRINT_DEBUG_STUFF

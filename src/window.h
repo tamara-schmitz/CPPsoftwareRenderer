@@ -20,14 +20,16 @@ class Window
         virtual ~Window();
 
         // Getters
-        SDL_Texture* GetRenderTexture() { return r_texture; }
+        SDL_Texture* GetRenderTexture() { return r_ptexture; }
         unsigned int Getwidth() { return r_width; }
         unsigned int Getheight() { return r_height; }
 
         Timer timer;
 
         // Render functions
+        void reserveAddLines( Uint64 amount ); // reserves specified amount of lines (in addition to current reservation)
         void drawPixel( int x, int y, SDL_Color color );
+        void drawLine( int x1, int y1, int x2, int y2, SDL_Color color );
         void updateWindow();
         void clearBuffers();
 
@@ -35,16 +37,30 @@ class Window
 
     private:
         // Window and render vars
-        SDL_Window*     w_window;
-        SDL_Renderer*   r_renderer;
-        SDL_Texture*    r_texture;
-        std::vector< Uint8 > pixels;
-        std::vector< Uint8 > null_pixels;
+        SDL_Window*      w_window;
+        SDL_Renderer*    r_renderer;
+        SDL_Texture*     r_ptexture; // texture for direct pixel drawing
+        SDL_Texture*     r_ltexture; // texture for line drawing
+        SDL_PixelFormat* r_format;
+
+        // Pixel access
+        Uint32 *pixels_direct = nullptr;
+        Uint32 *null_pixels;
+
+        int r_pitch = 0;
+        // Line vectors
+        std::vector< int > line_points;
+        std::vector< SDL_Color > line_colors;
+
         unsigned int w_width;
         unsigned int w_height;
         double r_scale;
         unsigned int r_width;
         unsigned int r_height;
+
+        // Internal functions
+        void LockRTexture();
+        void UnlockRTexture();
 };
 
 #endif // WINDOW_H

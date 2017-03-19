@@ -79,11 +79,12 @@ void Starfield::processStar( unsigned int id )
     // check if outside view bounds
     if ( current_star->z < z_near )
     {
+        // respawn because star is past z_near
         spawnStar( id );
     }
     else
     {
-        // transform z of star
+        // transform z of star ( frametime in secs * speed )
         current_star->z -= w_window->timer.GetFrametime()/ ( 1000.0f * 1000.0f * 1000.0f ) * speed;
     }
 
@@ -100,7 +101,7 @@ void Starfield::processStar( unsigned int id )
         int offset = pos.y * w_width + pos.x;
 
         // do depth test
-        if ( current_star->z < z_buffer[ offset ])
+        if ( current_star->z < z_buffer[ offset ] )
         {
             // set new z
             z_buffer[ offset ] = current_star->z;
