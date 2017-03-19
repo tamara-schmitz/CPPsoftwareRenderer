@@ -43,9 +43,7 @@ void demo_randomPixels( Window* window )
         }
 
         window->updateWindow();
-        #ifdef PRINT_DEBUG_STUFF
         window->timer.printTimes();
-        #endif // PRINT_DEBUG_STUFF
     }
 }
 
@@ -61,9 +59,7 @@ void demo_starfield( Window *window )
         window->clearBuffers();
         field.drawStarfield();
         window->updateWindow();
-        #ifdef PRINT_DEBUG_STUFF
         window->timer.printTimes();
-        #endif // PRINT_DEBUG_STUFF
 
     }
 }
@@ -116,7 +112,7 @@ void demo_shapes( Window *window )
 
         // rotate and then translate triangle
         Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0);
-        Matrix4f rotationMatrix_no2 = Matrix4f::createRotationAroundAxis( rotationFactor * 0.5f, 0, rotationFactor * 0.1f );
+        Matrix4f rotationMatrix_no2 = Matrix4f::createRotationAroundAxis( rotationFactor * 0.5f, - rotationFactor * 0.3f, rotationFactor * 0.1f );
         v1 = rotationMatrix * v1;
         v2 = rotationMatrix * v2;
         v3 = rotationMatrix * v3;
@@ -130,13 +126,11 @@ void demo_shapes( Window *window )
         renderer.FillTriangle( v1_no2, v2_no2, v3_no2, triangleColor2 );
 
         window->updateWindow();
-        #ifdef PRINT_DEBUG_STUFF
         window->timer.printTimes();
-        #endif // PRINT_DEBUG_STUFF
     }
 }
 
-int main( int argc, char** argv )
+int main( int argc, char* argv[] )
 {
     // --switch between demos
     // 0: random pixels
@@ -147,7 +141,7 @@ int main( int argc, char** argv )
     try
     {
         // create window and texture
-        Window *window = new Window(800, 600, 1, "Software Renderer", 60);
+        Window *window = new Window(1024, 768, 1, "Software Renderer", 60);
 
         switch( current_demo )
         {
@@ -161,7 +155,8 @@ int main( int argc, char** argv )
                 demo_shapes( window );
         }
 
-        //delete window;
+        // dtor
+        delete window;
     }
     catch ( std::exception& e )
     {

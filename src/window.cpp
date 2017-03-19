@@ -41,14 +41,14 @@ Window::Window( int width, int height, double scale, const std::string& title, i
     SDL_SetWindowMinimumSize( w_window, w_width, w_height );
 
     // Create Renderer
-    r_renderer = SDL_CreateRenderer( w_window, -1, NULL );
+    r_renderer = SDL_CreateRenderer( w_window, -1, 0 );
     if ( r_renderer == nullptr )
     {
         std::cout << "Couldn't init renderer!" << std::endl << SDL_GetError();
     }
     SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
     SDL_RenderSetLogicalSize( r_renderer, r_width, r_height );
-//    SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ); // hint better texture scaling
+    SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ); // hint better texture scaling
 
     // Create Texture for Pixelaccess
     r_ptexture = SDL_CreateTexture( r_renderer,
@@ -73,10 +73,11 @@ Window::Window( int width, int height, double scale, const std::string& title, i
 
     // allocate memory for null_pixels pointer (needs to be freed in dstor!)
     LockRTexture(); // we need r_pitch, so unlock texture
-    null_pixels = (Uint32*) malloc ( r_height * r_pitch );
+//    null_pixels = (Uint32*) malloc ( r_height * r_pitch );
+    null_pixels = new Uint32[r_height * (r_pitch / 4)];
     // fill with color black
-    Uint32 rgbamap = SDL_MapRGBA( r_format, 0, 0, 0, SDL_ALPHA_TRANSPARENT );
-    for ( int i=0; i < int( sizeof(Uint32) * r_height ); i++ )
+    Uint32 rgbamap = SDL_MapRGBA( r_format, 0, 0, 0, SDL_ALPHA_OPAQUE );
+    for ( int i=0; i < int( (r_pitch / 4) * r_height ); i++ )
     {
         null_pixels[ i ] = rgbamap;
     }
@@ -88,8 +89,8 @@ Window::Window( int width, int height, double scale, const std::string& title, i
 void Window::reserveAddLines( Uint64 amount )
 {
     // reserve requested amount lines in addition to already reserved ones
-    line_points.reserve( 4 * amount + line_points.capacity() );
-    line_colors.reserve( amount + line_colors.capacity() );
+    line_points.reserve( 4 * amount + line_points.size() );
+    line_colors.reserve( amount + line_colors.size() );
 }
 
 void Window::drawPixel( int x, int y, SDL_Color color)
@@ -127,13 +128,14 @@ void Window::drawLine( int x1, int y1, int x2, int y2, SDL_Color color )
 
 void Window::updateWindow()
 {
-    // Draw pixels to render texture
+    // Draw pixels to pixel texture
     UnlockRTexture();
 
-    // Draw lines to render texture
+    // Draw lines to line texture
     if ( line_points.size() > 0 )
     {
         SDL_SetRenderTarget( r_renderer, r_ltexture );
+        SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
         for ( int i=0; i < (int) line_colors.size(); i++ )
         {
             int offset = i * 4;
@@ -144,22 +146,14 @@ void Window::updateWindow()
                                             line_points[ offset + 1 ],
                                             line_points[ offset + 2 ],
                                             line_points[ offset + 3 ] );
-
-            #ifdef PRINT_DEBUG_STUFF
-            if ( i == 400 )
-            {
-                std::cout << "Current Line - x1: " << line_points[ offset ] << " y1: " << line_points[ offset + 1 ]
-                          << " x2: " << line_points[ offset + 2 ] << " y2: " << line_points[ offset + 3 ]
-                          << " Colour: " <<  cur_color.r <<  cur_color.g <<  cur_color.b <<  cur_color.a << std::endl;
-            }
-            #endif // PRINT_DEBUG_STUFF
         }
     }
 
     // Displays changes made to renderTexture
-    // ptexture + ltexture -> renderer -> window
+    // ptexture + ltexture (l over p) -> renderer -> window
 
     SDL_SetRenderTarget( r_renderer, NULL );
+    SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_BLEND );
     SDL_RenderCopy( r_renderer, r_ptexture, NULL, NULL );
     SDL_RenderCopy( r_renderer, r_ltexture, NULL, NULL );
     SDL_RenderPresent( r_renderer );
@@ -182,14 +176,17 @@ void Window::clearBuffers()
 
     // RenderTargets
     SDL_SetRenderTarget( r_renderer, r_ptexture );
-    SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
+    SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_BLEND );
     SDL_SetRenderDrawColor( r_renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT );
     SDL_RenderClear( r_renderer );
     SDL_SetRenderTarget( r_renderer, r_ltexture );
     SDL_RenderClear( r_renderer );
+    SDL_SetRenderTarget( r_renderer, NULL );
+    SDL_SetRenderDrawColor( r_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE );
+    SDL_RenderClear( r_renderer );
 
 
-    // clear texture to black
+    // clear textureS to black
     LockRTexture();
     memcpy ( pixels_direct, null_pixels, r_pitch * r_height );
 }
@@ -215,8 +212,8 @@ void Window::UnlockRTexture()
 Window::~Window()
 {
     //dtor
-    free ( null_pixels );
-//    delete[] null_pixels;
+//    free ( null_pixels );
+    delete[] null_pixels;
     line_points.clear();
     line_colors.clear();
 

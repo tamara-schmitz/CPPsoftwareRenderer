@@ -33,3 +33,9 @@
 
 # Executables folder
 bin/
+buildWin/
+*.zip
+
+# Profile dumps
+callgrind.out.*
+

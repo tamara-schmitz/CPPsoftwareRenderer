@@ -62,7 +62,7 @@
 	<iostream>
 	"window.h"
 
-1489928355 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1489934786 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"window.h"
 	"starfield.h"
 	"scanRenderer.h"
@@ -81,7 +81,7 @@
 	"typedefs.h"
 	"timer.h"
 
-1489927915 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
+1489934630 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
 	<unistd.h>
 	<chrono>
 	"window.h"
@@ -107,7 +107,7 @@
 	<SDL2/SDL.h>
 	"window.h"
 
-1489770789 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.h
+1489936973 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/starfield.h
 	<SDL2/SDL.h>
 	<cstdlib>
 	<cmath>
@@ -122,16 +122,17 @@
 	"window.h"
 	"vmath-0.12/vmath.h"
 
-1489875373 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/typedefs.h
+1489936969 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/typedefs.h
 	<math.h>
 
 1488825498 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/timer.cpp
 	"timer.h"
 	<iostream>
 
-1488825240 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/timer.h
+1489937221 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/timer.h
 	<SDL2/SDL_stdinc.h>
 	<chrono>
+	<thread>
 
 1489862815 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/vmath-0.12/vmath.h
 	<cmath>

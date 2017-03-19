@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL_stdinc.h>
 #include <chrono>
+#include <thread>
 
 class Timer
 {
