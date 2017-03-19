@@ -125,19 +125,22 @@ void ScanRenderer::DrawLine( Vector2f yMinVert, Vector2f yMaxVert, bool isMinX )
     // either at xMin or at xMax
     // the following must be true:
     // yMinVert < yMaxVert
+    //
+    // Fill Convention is Top-Left (we use a ceil function)
 
     // set internal vars
-    int yStart = yMinVert.y;
-    int yEnd   = yMaxVert.y;
-    int xStart = yMinVert.x;
-    int xEnd   = yMaxVert.x;
-    float curX = (float) xStart;
+    int yStart = std::ceil(yMinVert.y);
+    int yEnd   = std::ceil(yMaxVert.y);
+
     // calculate distances
-    int yDist = yEnd - yStart;
-    int xDist = xEnd - xStart;
+    float yDist = yMaxVert.y - yMinVert.y;
+    float xDist = yMaxVert.x - yMinVert.x;
     // line stepping
-    float xStep = (float) xDist / (float) yDist;
-    // discard if wrong y
+    float xStep =  xDist / yDist;
+    float yPrestep = yStart - yMinVert.y; // compensation for pixel y (vert y is most likely no int)
+    float curX = yMinVert.x + yPrestep * xStep;
+
+    // discard if wrong y orientation
     if ( yDist <= 0)
     {
         return;
@@ -146,7 +149,7 @@ void ScanRenderer::DrawLine( Vector2f yMinVert, Vector2f yMaxVert, bool isMinX )
     // finally add scanlines
     for ( int i = yStart; i < clipInt(yEnd, yStart, w_height); i++ )
     {
-        setScanValue( i, curX, isMinX);
+        setScanValue( i, std::ceil(curX), isMinX);
         curX += xStep;
     }
 }
@@ -185,7 +188,7 @@ void ScanRenderer::FillShape( int yMin, int yMax, SDL_Color color )
         {
             w_window->drawLine( xMin, i, xMax, i, color );
         }
-        // traditional per-pixel manipulation
+        // "traditional" per-pixel manipulation
         else
         {
             // iterate through every x
@@ -238,7 +241,9 @@ void ScanRenderer::FillTriangle( Vector2f v1, Vector2f v2, Vector2f v3, SDL_Colo
     bool handedness = area < 0;
 
     DrawTriangle( yMinVert, yMidVert, yMaxVert, handedness );
-    FillShape( yMinVert.y, yMaxVert.y, color );
+
+    // use of ceil for compliance with fill convention ( see drawLine() )
+    FillShape( std::ceil(yMinVert.y), std::ceil(yMaxVert.y), color );
 }
 
 void ScanRenderer::FillTriangle( Vector4f v1, Vector4f v2, Vector4f v3, SDL_Color color )
@@ -267,4 +272,8 @@ ScanRenderer::~ScanRenderer()
     //dtor
     null_scanBuffer.clear();
     r_scanBuffer.clear();
+
+    #ifdef PRINT_DEBUG_STUFF
+    std::cout << "Dtor of scanRenderer object was called!" << std::endl;
+    #endif // PRINT_DEBUG_STUFF
 }

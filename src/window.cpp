@@ -214,12 +214,16 @@ Window::~Window()
     //dtor
 //    free ( null_pixels );
     delete[] null_pixels;
-    line_points.clear();
-    line_colors.clear();
+    timer.~Timer();
 
     // Properly shutdown SDL
-    SDL_DestroyTexture(  r_ptexture  );
+    SDL_DestroyTexture(  r_ptexture );
+    SDL_DestroyTexture(  r_ltexture );
     SDL_DestroyRenderer( r_renderer );
     SDL_DestroyWindow(   w_window   );
     SDL_Quit();
+
+    #ifdef PRINT_DEBUG_STUFF
+    std::cout << "Dtor of Window object was called!" << std::endl;
+    #endif // PRINT_DEBUG_STUFF
 }

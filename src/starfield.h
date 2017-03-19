@@ -16,14 +16,6 @@ class Starfield
         unsigned int numStars;
         float speed;
 
-        // render settings
-        unsigned int w_width;
-        unsigned int w_height;
-        float z_near;
-        float z_far;
-        float fov;
-        Window *w_window;
-
         //cstor and dstor
         Starfield( float camera_near_z, float camera_far_z,
                    float camera_fov, Window *window,
@@ -46,6 +38,13 @@ class Starfield
     protected:
 
     private:
+        // window and render vars
+        unsigned int w_width;
+        unsigned int w_height;
+        float z_near;
+        float z_far;
+        float fov;
+        Window *w_window;
 
         // save xyz of all stars as a vector
         // coordinate system:

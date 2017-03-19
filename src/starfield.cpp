@@ -148,7 +148,11 @@ void Starfield::drawStarfield()
 Starfield::~Starfield()
 {
     //dtor
-    null_z_buffer.clear();
-    z_buffer.clear();
     stars_posi.clear();
+    z_buffer.clear();
+    null_z_buffer.clear();
+
+    #ifdef PRINT_DEBUG_STUFF
+    std::cout << "Dtor of Starfield object was called!" << std::endl;
+    #endif // PRINT_DEBUG_STUFF
 }
