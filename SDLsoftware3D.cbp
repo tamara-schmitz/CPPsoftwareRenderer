@@ -32,6 +32,7 @@
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
+					<Add option="-Wall" />
 					<Add option="-std=c++11" />
 					<Add directory="include" />
 				</Compiler>
@@ -49,7 +50,6 @@
 			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="cb.bmp" />
-		<Unit filename="include/timer.h" />
 		<Unit filename="include/typedefs.h" />
 		<Unit filename="include/vmath-0.12/vmath.h" />
 		<Unit filename="src/main.cpp" />
@@ -58,6 +58,7 @@
 		<Unit filename="src/starfield.cpp" />
 		<Unit filename="src/starfield.h" />
 		<Unit filename="src/timer.cpp" />
+		<Unit filename="src/timer.h" />
 		<Unit filename="src/window.cpp" />
 		<Unit filename="src/window.h" />
 		<Extensions>

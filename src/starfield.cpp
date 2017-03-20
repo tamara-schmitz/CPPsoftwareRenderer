@@ -108,7 +108,7 @@ void Starfield::processStar( unsigned int id )
             z_buffer[ offset ] = current_star->z;
 
             // z based color strength
-            Uint8 pixelColor = (1 - ( (current_star->z - z_near) / (z_far - z_near) ) ) * 255;
+            Uint8 pixelColor = (1.0 - ( (current_star->z - z_near) / (z_far - z_near) ) ) * 255.0;
             SDL_Color color;
             color.a = SDL_ALPHA_OPAQUE;
             color.b = pixelColor;

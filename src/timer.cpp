@@ -21,7 +21,7 @@ void Timer::SetFPSLimit( Uint32 fps )
     fpsLimit = fps;
     if ( fps > 0 )
     {
-        r_tickLimit = (1000.0 * 1000.0 * 1000.0) / (double) fps;
+        r_tickLimit = (1000.0 * 1000.0 * 1000.0) / fps;
     }
     else
     {
@@ -52,11 +52,18 @@ double Timer::GetCurrentFPS()
 // clock wrapper
 Uint64 Timer::GetHighResClockNs()
 {
-    return std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count();
+    #ifdef __unix__
+        struct timespec time;
+        clock_gettime( CLOCK_MONOTONIC, &time );
+        return time.tv_sec * 1000 * 1000 * 1000 + time.tv_nsec;
+    #else
+        return std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count();
+    #endif
 }
 void   Timer::nsSleep(Uint64 ns)
 {
     #ifdef __unix__
+        struct timespec framesleep,sleepremains;
         framesleep.tv_sec  = 0;
         framesleep.tv_nsec = ns;
         nanosleep( &framesleep, &sleepremains );
@@ -72,19 +79,24 @@ void Timer::TickCall()
     r_tickNow_main = GetHighResClockNs();
     // calculate maintime diff
     r_maintime_nano = r_tickNow_main - r_tickLast_main;
+    if ( r_sleepOverrun < 0 )
+    {
+        r_sleepOverrun = 0;
+    }
 
     // sleep if necessary
     if ( r_maintime_nano < r_tickLimit )
     {
-        nsSleep( r_tickLimit - r_maintime_nano );
+        nsSleep( r_tickLimit - r_maintime_nano - r_sleepOverrun );
     }
 
     // update counters and vars
     r_tickLast_main = GetHighResClockNs();
     r_tickLast = r_tickNow;
-    r_tickNow = GetHighResClockNs();
-    // calculate frametime diff
+    r_tickNow  = GetHighResClockNs();
+    // calculate frametime diff and sleep overrun
     r_frametime_nano = r_tickNow - r_tickLast;
+    r_sleepOverrun  = r_frametime_nano - ( r_tickLimit - r_sleepOverrun * 0.97 );
 }
 
 // pretty print
@@ -92,6 +104,7 @@ void Timer::printTimes()
 {
     std::cout << "Framerate: "  << GetCurrentFPS()
               << " Frametime: " << GetFrametime() / ( 1000.0f * 1000.0f ) << " ms"
-              << " Maintime: "  << GetMaintime() / ( 1000.0f * 1000.0f )  << " ms"
+              << " Maintime: "  << GetMaintime()  / ( 1000.0f * 1000.0f ) << " ms"
+              << " Sleepoverun: " << r_sleepOverrun / ( 1000.0f * 1000.0f ) << " ms"
               << std::endl;
 }

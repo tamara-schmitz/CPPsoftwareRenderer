@@ -5,12 +5,6 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <iostream>
-// import unix/windows library for tickCall()
-#ifdef __unix__
-    #include <unistd.h>
-#elif __cplusplus <= 199711L
-    #include <chrono>
-#endif
 #include <vector>
 
 #include "typedefs.h"

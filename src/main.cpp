@@ -27,7 +27,7 @@ bool checkSDLQuit()
                     {
                         pause = false;
                         std::cout << "CONTINUE EXECUTION!" << std::endl;
-                        break;
+                        return false;
                     }
                 }
             }
@@ -129,7 +129,7 @@ void demo_shapes( Window *window )
         window->clearBuffers();
 
         // get per frame rotation factor
-        rotationFactor = rotationFactor + 0.000000001f * (window->timer.GetFrametime() / 1000000000);
+        rotationFactor = rotationFactor + 0.0001f * (window->timer.GetFrametime() / 1000000000.0);
 
         // rotate and then translate triangle
         Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0);

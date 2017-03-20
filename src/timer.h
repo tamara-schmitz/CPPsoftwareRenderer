@@ -2,8 +2,14 @@
 #define TIMER_H
 
 #include <SDL2/SDL_stdinc.h>
-#include <chrono>
-#include <thread>
+
+// import unix/c++ library for highresclock and nanosleep
+#ifdef __unix__
+    #include <unistd.h>
+#elif __cplusplus <= 199711L
+    #include <chrono>
+    #include <thread>
+#endif
 
 class Timer
 {
@@ -36,9 +42,7 @@ class Timer
         Uint64 r_tickNow_main   = 0;
         Uint64 r_frametime_nano = 0; // time between last and previous frames were shown
         Uint64 r_maintime_nano  = 0; // time required to actually render a frame
-
-        // unix struct
-        struct timespec framesleep,sleepremains;
+        int64_t r_sleepOverrun   = 0; // difference between expected sleep time and actual sleep time
 
         // time function wrappers
         Uint64 GetHighResClockNs(); // returns clock time in ns
