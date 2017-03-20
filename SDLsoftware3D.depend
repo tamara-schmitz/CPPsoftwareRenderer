@@ -62,7 +62,7 @@
 	<iostream>
 	"window.h"
 
-1490037120 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1490040751 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"window.h"
 	"starfield.h"
 	"scanRenderer.h"
@@ -71,16 +71,17 @@
 	"vmath-0.12/vmath.h"
 	<exception>
 
-1490033401 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.h
+1490040761 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.h
 	<stdio.h>
 	<SDL2/SDL.h>
 	<string>
+	<sstream>
 	<iostream>
 	<vector>
 	"typedefs.h"
 	"timer.h"
 
-1490032056 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
+1490040767 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window.cpp
 	"window.h"
 
 1477934972 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/starfield.cpp
@@ -119,10 +120,10 @@
 	"window.h"
 	"vmath-0.12/vmath.h"
 
-1490032119 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/typedefs.h
+1490040854 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/typedefs.h
 	<math.h>
 
-1490037222 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/timer.cpp
+1490040440 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/timer.cpp
 	"timer.h"
 	<iostream>
 
@@ -131,7 +132,7 @@
 	<chrono>
 	<thread>
 
-1489862815 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/vmath-0.12/vmath.h
+1490043519 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/vmath-0.12/vmath.h
 	<cmath>
 	<cstring>
 	<iostream>
@@ -139,7 +140,7 @@
 	<string>
 	<cassert>
 
-1490034598 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/timer.h
+1490038147 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/timer.h
 	<SDL2/SDL_stdinc.h>
 	<unistd.h>
 	<chrono>

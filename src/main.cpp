@@ -65,6 +65,7 @@ void demo_randomPixels( Window* window )
 
         window->updateWindow();
         window->timer.printTimes();
+        window->updateTitleWithFPS();
     }
 }
 
@@ -78,9 +79,12 @@ void demo_starfield( Window *window )
         running = !checkSDLQuit();
 
         window->clearBuffers();
+
         field.drawStarfield();
+
         window->updateWindow();
         window->timer.printTimes();
+        window->updateTitleWithFPS();
 
     }
 }
@@ -148,6 +152,7 @@ void demo_shapes( Window *window )
 
         window->updateWindow();
         window->timer.printTimes();
+        window->updateTitleWithFPS();
     }
 }
 
@@ -162,7 +167,7 @@ int main( int argc, char* argv[] )
     try
     {
         // create window and texture
-        Window *window = new Window(1024, 768, 1, "Software Renderer", 60);
+        Window *window = new Window( 1024, 768, 1, "Software Renderer", 60 );
 
         switch( current_demo )
         {

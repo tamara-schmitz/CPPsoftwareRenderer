@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <vector>
 
@@ -14,7 +15,7 @@ class Window
 {
     public:
         // cstor
-        Window( int width, int height, double scale, const std::string& title, int fpsLock );
+        Window( int width, int height, double scale, std::string title, double fpsLock );
         // dstor
         virtual ~Window();
 
@@ -23,6 +24,10 @@ class Window
         unsigned int Getwidth() { return r_width; }
         unsigned int Getheight() { return r_height; }
 
+        // Window functions
+        void updateTitleWithFPS();
+
+        // Timer object
         Timer timer;
 
         // Render functions
@@ -42,20 +47,25 @@ class Window
         SDL_Texture*     r_ltexture; // texture for line drawing
         SDL_PixelFormat* r_format;
 
-        // Pixel access
+        // properties
+        unsigned int w_width;
+        unsigned int w_height;
+        std::string w_title;
+        double r_scale;
+        unsigned int r_width;
+        unsigned int r_height;
+
+        // Pixel access pointers
         Uint32 *pixels_direct = nullptr;
         Uint32 *null_pixels;
 
-        int r_pitch = 0;
         // Line vectors
         std::vector< SDL_Point > line_points;
         std::vector< SDL_Color > line_colors;
 
-        unsigned int w_width;
-        unsigned int w_height;
-        double r_scale;
-        unsigned int r_width;
-        unsigned int r_height;
+        // State vars
+        int r_pitch = 0;
+        Uint64 title_fps_last = 0; // shows how long since last title update
 
         // Internal functions
         void LockRTexture();

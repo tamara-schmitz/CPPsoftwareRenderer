@@ -2502,8 +2502,8 @@ public:
 
         ret.at( 0, 0 ) = 1.0f / (tanHalfFOV * aspectRatio);
         ret.at( 1, 1 ) = 1.0f /  tanHalfFOV;
-        ret.at( 2, 2 ) = ( -zNear - zFar ) / zRange;
-        ret.at( 3, 2 ) = - ( 2.0f * zFar * zNear ) / zRange;
+        ret.at( 2, 2 ) = ( zNear ) / zRange;
+        ret.at( 3, 2 ) = ( zFar * zNear ) / zRange;
         ret.at( 2, 3 ) = - 1.0f;
 
         return ret;

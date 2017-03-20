@@ -1,12 +1,13 @@
 #include "window.h"
 
-Window::Window( int width, int height, double scale, const std::string& title, int fpsLock )
+Window::Window( int width, int height, double scale, std::string title, double fpsLock )
 {
     //ctor
 
     // set window parameters
     w_width    = width;
     w_height   = height;
+    w_title    = title;
     r_scale    = scale;
     r_width    = width  * scale;
     r_height   = height * scale;
@@ -208,6 +209,21 @@ void Window::clearBuffers()
     // clear textureS to black
     LockRTexture();
     memcpy ( pixels_direct, null_pixels, r_pitch * r_height );
+}
+
+void Window::updateTitleWithFPS()
+{
+    if ( title_fps_last > 1000000000 )
+    {
+        title_fps_last = 0;
+        std::stringstream title;
+        title << w_title << " - " << timer.GetCurrentFPS() << " FPS";
+        SDL_SetWindowTitle( w_window, title.str().c_str() );
+    }
+    else
+    {
+        title_fps_last += timer.GetFrametime();
+    }
 }
 
 void Window::LockRTexture()

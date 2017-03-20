@@ -12,11 +12,11 @@ Timer::~Timer()
 }
 
 // getters and setters
-Uint32 Timer::GetFPSLimit()
+double Timer::GetFPSLimit()
 {
     return fpsLimit;
 }
-void Timer::SetFPSLimit( Uint32 fps )
+void Timer::SetFPSLimit( double fps )
 {
     fpsLimit = fps;
     if ( fps > 0 )
@@ -79,10 +79,6 @@ void Timer::TickCall()
     r_tickNow_main = GetHighResClockNs();
     // calculate maintime diff
     r_maintime_nano = r_tickNow_main - r_tickLast_main;
-    if ( r_sleepOverrun < 0 )
-    {
-        r_sleepOverrun = 0;
-    }
 
     // sleep if necessary
     if ( r_maintime_nano < r_tickLimit )
@@ -96,7 +92,11 @@ void Timer::TickCall()
     r_tickNow  = GetHighResClockNs();
     // calculate frametime diff and sleep overrun
     r_frametime_nano = r_tickNow - r_tickLast;
-    r_sleepOverrun  = r_frametime_nano - ( r_tickLimit - r_sleepOverrun * 0.97 );
+    r_sleepOverrun  = r_frametime_nano - ( r_tickLimit - r_sleepOverrun * 0.966 );
+    if ( r_sleepOverrun < 0 )
+    {
+        r_sleepOverrun = 0;
+    }
 }
 
 // pretty print

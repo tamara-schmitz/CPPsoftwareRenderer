@@ -21,7 +21,7 @@ ScanRenderer::ScanRenderer( Window *window, bool useRenderDrawFuncs )
     ClearScanBuffer();
 
     // create viewspace tranform matrix ( world -> view )
-    viewSpaceTransformMatrix = Matrix4f::createTranslation( 0, 0, 5 );
+    viewSpaceTransformMatrix = Matrix4f::createTranslation( 0, 0, 6 );
 
     // create perspective transform matrix with null settings ( view -> frustum )
     UpdatePerspective( 0, 0, 1000 );

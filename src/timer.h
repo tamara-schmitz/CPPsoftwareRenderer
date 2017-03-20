@@ -6,7 +6,7 @@
 // import unix/c++ library for highresclock and nanosleep
 #ifdef __unix__
     #include <unistd.h>
-#elif __cplusplus <= 199711L
+#else
     #include <chrono>
     #include <thread>
 #endif
@@ -18,8 +18,8 @@ class Timer
         virtual ~Timer();
 
         // getters and setters
-        Uint32 GetFPSLimit();
-        void   SetFPSLimit( Uint32 fps );
+        double GetFPSLimit();
+        void   SetFPSLimit( double fps );
         Uint64 GetFrametime();
         Uint64 GetMaintime();
         double GetCurrentFPS();
@@ -32,7 +32,7 @@ class Timer
 
     private:
         // usr vars
-        Uint32 fpsLimit = 0; // limit to specified fps
+        double fpsLimit = 0; // limit to specified fps
         Uint64 r_tickLimit = 0;  // fpsLimit converted into ns
 
         // intern vars
@@ -42,7 +42,7 @@ class Timer
         Uint64 r_tickNow_main   = 0;
         Uint64 r_frametime_nano = 0; // time between last and previous frames were shown
         Uint64 r_maintime_nano  = 0; // time required to actually render a frame
-        int64_t r_sleepOverrun   = 0; // difference between expected sleep time and actual sleep time
+        int64_t r_sleepOverrun  = 0; // difference between expected sleep time and actual sleep time
 
         // time function wrappers
         Uint64 GetHighResClockNs(); // returns clock time in ns
