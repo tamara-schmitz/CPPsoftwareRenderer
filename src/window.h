@@ -5,7 +5,12 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <iostream>
-#include <chrono>
+// import unix/windows library for tickCall()
+#ifdef __unix__
+    #include <unistd.h>
+#elif __cplusplus <= 199711L
+    #include <chrono>
+#endif
 #include <vector>
 
 #include "typedefs.h"
@@ -29,7 +34,7 @@ class Window
         // Render functions
         void reserveAddLines( Uint64 amount ); // reserves specified amount of lines (in addition to current reservation)
         void drawPixel( int x, int y, SDL_Color color );
-        void drawLine( int x1, int y1, int x2, int y2, SDL_Color color );
+        void drawLine( SDL_Point p1, SDL_Point p2, SDL_Color color );
         void updateWindow();
         void clearBuffers();
 
@@ -49,7 +54,7 @@ class Window
 
         int r_pitch = 0;
         // Line vectors
-        std::vector< int > line_points;
+        std::vector< SDL_Point > line_points;
         std::vector< SDL_Color > line_colors;
 
         unsigned int w_width;

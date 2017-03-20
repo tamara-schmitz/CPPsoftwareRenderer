@@ -20,13 +20,16 @@ COMPILER_FLAGS = -Wall -Wl,-subsystem,windows -march=core2 -O3 -fomit-frame-poin
 LINKER_FLAGS =  -Wl,-Bstatic -lmingw32 -lwinpthread -lpthread -lSDL2main -Wl,-Bdynamic -lSDL2
 
 #OBJ_NAME specifies the name of our exectuable
-OBJ_NAME = buildWin/32/SDLsoftwarerenderer32.exe
-OBJ_NAME64 = buildWin/64/SDLsoftwarerenderer.exe
+OBJ_NAME = build/win32/SDLsoftwarerenderer32.exe
+OBJ_NAME64 = build/win64/SDLsoftwarerenderer.exe
 
 #32bit
-all : $(OBJS)
+win32 : $(OBJS)
 	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
 
 #64bit
-all64 : $(OBJS)
+win64 : $(OBJS)
 	$(CC64) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME64)
+
+# default
+win64 := all

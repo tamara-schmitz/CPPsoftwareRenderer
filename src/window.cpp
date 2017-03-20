@@ -1,10 +1,3 @@
-// import unix/windows library for tickCall()
-#ifdef __unix__
-    #include <unistd.h>
-#elif __cplusplus <= 199711L
-    #include <chrono>
-#endif
-
 #include "window.h"
 
 Window::Window( int width, int height, double scale, const std::string& title, int fpsLock )
@@ -89,7 +82,7 @@ Window::Window( int width, int height, double scale, const std::string& title, i
 void Window::reserveAddLines( Uint64 amount )
 {
     // reserve requested amount lines in addition to already reserved ones
-    line_points.reserve( 4 * amount + line_points.size() );
+    line_points.reserve( 2 * amount + line_points.size() );
     line_colors.reserve( amount + line_colors.size() );
 }
 
@@ -102,60 +95,88 @@ void Window::drawPixel( int x, int y, SDL_Color color)
         return;
     }
 
-//    int offset = y * 4 * r_width + x * 4;
-//    pixels[ offset + 0] = color.b; // b
-//    pixels[ offset + 1] = color.g; // g
-//    pixels[ offset + 2] = color.r; // r
-//    pixels[ offset + 3] = color.a; // a
-
     int offset = y * (r_pitch / 4) + x;
 
+    // obtain fast write access to texture
     LockRTexture();
     pixels_direct[ offset ] = SDL_MapRGBA( r_format, color.r, color.g, color.b, color.a );
 
 }
 
-void Window::drawLine( int x1, int y1, int x2, int y2, SDL_Color color )
+void Window::drawLine( SDL_Point p1, SDL_Point p2, SDL_Color color )
 {
-    // adds line to vectors
-    line_points.push_back( x1 );
-    line_points.push_back( y1 );
-    line_points.push_back( x2 );
-    line_points.push_back( y2 );
+    if ( compSDL_Point( p1, p2 ) )
+    {
+        // draw pixel if points are the same
+        drawPixel(p1.x, p2.y, color );
+    }
+    else
+    {
+        // adds line to vectors
+        line_points.push_back( p1 );
+        line_points.push_back( p2 );
 
-    line_colors.push_back( color );
+        line_colors.push_back( color );
+    }
 }
 
 void Window::updateWindow()
 {
-    // Draw pixels to pixel texture
-    UnlockRTexture();
 
     // Draw lines to line texture
-    if ( line_points.size() > 0 )
+    if ( line_points.size() > 1 )
     {
         SDL_SetRenderTarget( r_renderer, r_ltexture );
         SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
+
+        // batch multiple lines with the same colour together
+        Uint64 batch_begin_count[ 2 ] = { 0, 2 };
+        SDL_Color cur_color = SDL_Color { 0, 0, 0, SDL_ALPHA_TRANSPARENT };
+
         for ( int i=0; i < (int) line_colors.size(); i++ )
         {
-            int offset = i * 4;
-            SDL_Color& cur_color = line_colors[ i ];
+            if ( compSDL_Color( cur_color, line_colors[ i ] ) )
+            {
+                batch_begin_count[ 1 ] = batch_begin_count[ 1 ] + 2; // add point to batch
+            }
+            else
+            {
+                // end of batch? flush lines from batch
+                SDL_SetRenderDrawColor( r_renderer, cur_color.r, cur_color.g, cur_color.b, cur_color.a );
+                SDL_RenderDrawLines( r_renderer,
+                                     &line_points[ batch_begin_count[ 0 ] ],
+                                     batch_begin_count[ 1 ] );
 
+                // reset counter and colour
+                batch_begin_count[ 0 ] = i * 2;
+                batch_begin_count[ 1 ] = 2;
+                cur_color = line_colors[ i ];
+            }
+        }
+
+        if ( line_points.size() > batch_begin_count[ 0 ] )
+        {
+            // draw last batch (missing because for-loop ended earlier)
             SDL_SetRenderDrawColor( r_renderer, cur_color.r, cur_color.g, cur_color.b, cur_color.a );
-            SDL_RenderDrawLine( r_renderer, line_points[ offset     ],
-                                            line_points[ offset + 1 ],
-                                            line_points[ offset + 2 ],
-                                            line_points[ offset + 3 ] );
+            SDL_RenderDrawLines( r_renderer,
+                                 &line_points[ batch_begin_count[ 0 ] ],
+                                 batch_begin_count[ 1 ] );
         }
     }
 
     // Displays changes made to renderTexture
     // ptexture + ltexture (l over p) -> renderer -> window
 
+    // Obtain read access to pixel texture
+    UnlockRTexture();
     SDL_SetRenderTarget( r_renderer, NULL );
-    SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_BLEND );
     SDL_RenderCopy( r_renderer, r_ptexture, NULL, NULL );
-    SDL_RenderCopy( r_renderer, r_ltexture, NULL, NULL );
+    if ( line_points.size() > 0 )
+    {
+        SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_BLEND );
+        SDL_RenderCopy( r_renderer, r_ltexture, NULL, NULL );
+        SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
+    }
     SDL_RenderPresent( r_renderer );
     SDL_UpdateWindowSurface( w_window );
 
@@ -174,12 +195,10 @@ void Window::clearBuffers()
     line_points.clear();
     line_colors.clear();
 
-    // RenderTargets
-    SDL_SetRenderTarget( r_renderer, r_ptexture );
-    SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_BLEND );
-    SDL_SetRenderDrawColor( r_renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT );
-    SDL_RenderClear( r_renderer );
+    // clear ltexture and window
     SDL_SetRenderTarget( r_renderer, r_ltexture );
+    SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
+    SDL_SetRenderDrawColor( r_renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT );
     SDL_RenderClear( r_renderer );
     SDL_SetRenderTarget( r_renderer, NULL );
     SDL_SetRenderDrawColor( r_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE );

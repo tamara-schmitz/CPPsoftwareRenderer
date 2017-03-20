@@ -39,15 +39,16 @@ void Starfield::clearZBuffer()
 void Starfield::spawnStar( unsigned int index )
 {
     // spawns a pixel at random location
+    float z_delta = z_far - z_near;
     stars_posi[ index ] = {
-        float( ( rand() % 4000 - 2000.0 ) / 4000.0 ), // x
-        float( ( rand() % 4000 - 2000.0 ) / 4000.0 ), // y
-        float( ((rand() % 4000 ) / 4000.0) + z_far )  // z
+        float( rand() % (int) 10001 ) * z_delta / 100000.0f - z_delta / 20, // x
+        float( rand() % (int) 10001 ) * z_delta / 100000.0f - z_delta / 20, // y
+        ( rand() % (int) z_delta * 0.1f + 1 + z_far * 0.1f )  // z
     };
 
 }
 
-pixel Starfield::toScreenSpace( star *posi )
+SDL_Point Starfield::toScreenSpace( star *posi )
 {
     float half_width  = w_width  / 2;
     float half_height = w_height / 2;
@@ -66,7 +67,7 @@ pixel Starfield::toScreenSpace( star *posi )
         y_pixel = half_height;
     }
 
-        return pixel {
+        return SDL_Point {
             x_pixel,
             y_pixel
         };
@@ -89,7 +90,7 @@ void Starfield::processStar( unsigned int id )
     }
 
     // to screen space
-    pixel pos = toScreenSpace( current_star );
+    SDL_Point pos = toScreenSpace( current_star );
 
     // finally draw pixel!
     // first check if pixel visible

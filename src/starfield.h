@@ -60,7 +60,7 @@ class Starfield
         // functions
         void clearZBuffer();
         void spawnStar( unsigned int index );
-        pixel toScreenSpace( star *posi );
+        SDL_Point toScreenSpace( star *posi );
         void processStar( unsigned int id );
 
 

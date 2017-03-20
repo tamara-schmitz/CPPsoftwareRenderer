@@ -186,7 +186,7 @@ void ScanRenderer::FillShape( int yMin, int yMax, SDL_Color color )
         // SDL method
         if ( w_useRenderDrawFuncs )
         {
-            w_window->drawLine( xMin, i, xMax, i, color );
+            w_window->drawLine( SDL_Point { xMin, i }, SDL_Point { xMax, i }, color );
         }
         // "traditional" per-pixel manipulation
         else

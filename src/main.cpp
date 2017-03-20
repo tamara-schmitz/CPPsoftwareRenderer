@@ -11,6 +11,27 @@ bool checkSDLQuit()
     SDL_Event e;
     while ( SDL_PollEvent( &e ) )
     {
+
+        if ( e.window.event == SDL_WINDOWEVENT_HIDDEN )
+        {
+            // loop if window is hidden
+            std::cout << "PAUSING EXECUTION!" << std::endl;
+
+            bool pause = true;
+            while ( pause )
+            {
+                SDL_Delay( 10 );
+                while ( SDL_WaitEvent( &e ) )
+                {
+                    if ( e.window.event == SDL_WINDOWEVENT_SHOWN )
+                    {
+                        pause = false;
+                        std::cout << "CONTINUE EXECUTION!" << std::endl;
+                        break;
+                    }
+                }
+            }
+        }
         if ( e.type == SDL_QUIT )
         {
             return true;
@@ -49,7 +70,7 @@ void demo_randomPixels( Window* window )
 
 void demo_starfield( Window *window )
 {
-    Starfield field = Starfield( 0.3f, 0.8f, 80, window, 50000, 0.05f);
+    Starfield field = Starfield( 2, 50, 90, window, 50000, 1);
 
     bool running = true;
     while ( running )
@@ -94,9 +115,9 @@ void demo_shapes( Window *window )
     Vector4f v2 = Vector4f {    0,  0.9f, 0, 1 };
     Vector4f v3 = Vector4f {  0.9f, -0.9f, 0, 1 };
     // triangle 3D no.2
-    Vector4f v1_no2 = Vector4f { -0.7f, -0.85f, 0, 1 };
-    Vector4f v2_no2 = Vector4f {    0.2f,  0.2f, 0, 1 };
-    Vector4f v3_no2 = Vector4f {  0.84f, -1.2f, 0.1f, 1 };
+    Vector4f v1_no2 = Vector4f { -0.7f, -2.85f, 1.2f, 1 };
+    Vector4f v2_no2 = Vector4f {    -0.2f,  0.2f, 0.2f, 1 };
+    Vector4f v3_no2 = Vector4f {  1.84f, -1.2f, 0.1f, 1 };
 
     float rotationFactor = 0;
 
@@ -112,7 +133,7 @@ void demo_shapes( Window *window )
 
         // rotate and then translate triangle
         Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0);
-        Matrix4f rotationMatrix_no2 = Matrix4f::createRotationAroundAxis( rotationFactor * 0.5f, - rotationFactor * 0.3f, rotationFactor * 0.1f );
+        Matrix4f rotationMatrix_no2 = Matrix4f::createRotationAroundAxis( rotationFactor * 0.2f, - rotationFactor * 0.3f, rotationFactor * 0.1f );
         v1 = rotationMatrix * v1;
         v2 = rotationMatrix * v2;
         v3 = rotationMatrix * v3;
