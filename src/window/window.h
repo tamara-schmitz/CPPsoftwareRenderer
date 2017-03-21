@@ -1,6 +1,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include "common.h"
+
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <string>
@@ -8,7 +10,6 @@
 #include <iostream>
 #include <vector>
 
-#include "typedefs.h"
 #include "timer.h"
 
 class Window
@@ -25,7 +26,7 @@ class Window
         unsigned int Getheight() { return r_height; }
 
         // Window functions
-        void updateTitleWithFPS();
+        void updateTitleWithFPS( Uint32 updateInterval );
 
         // Timer object
         Timer timer;
@@ -65,7 +66,7 @@ class Window
 
         // State vars
         int r_pitch = 0;
-        Uint64 title_fps_last = 0; // shows how long since last title update
+        Uint32 title_fps_count = 0; // shows how many ticks since last title update
 
         // Internal functions
         void LockRTexture();

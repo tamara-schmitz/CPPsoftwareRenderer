@@ -1,9 +1,10 @@
 #ifndef SCANRENDERER_H
 #define SCANRENDERER_H
 
+#include "common.h"
 #include <vector>
 #include <SDL2/SDL.h>
-#include "window.h"
+#include "window/window.h"
 #include "vmath-0.12/vmath.h"
 
 class ScanRenderer
@@ -53,7 +54,6 @@ class ScanRenderer
         // functions
         int getScanValue( int yCoord, bool isMin );
         void setScanValue( int yCoord, int value, bool isMin );
-        int clipInt( int i, int iMin, int iMax );
         float triangleArea( Vector2f v1, Vector2f v2, Vector2f v3 );
 };
 

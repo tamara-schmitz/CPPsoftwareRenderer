@@ -93,7 +93,7 @@ void Timer::TickCall()
     // calculate frametime diff and sleep overrun
     r_frametime_nano = r_tickNow - r_tickLast;
     r_sleepOverrun  = r_frametime_nano - ( r_tickLimit - r_sleepOverrun * 0.966 );
-    if ( r_sleepOverrun < 0 )
+    if ( r_sleepOverrun < 0 || r_frametime_nano < r_tickLimit )
     {
         r_sleepOverrun = 0;
     }

@@ -1,4 +1,4 @@
-#include "window.h"
+#include "window/window.h"
 
 Window::Window( int width, int height, double scale, std::string title, double fpsLock )
 {
@@ -193,36 +193,40 @@ void Window::clearBuffers()
     UnlockRTexture();
 
     // clear line array
-    line_points.clear();
-    line_colors.clear();
+    if ( line_points.size() > 0 || line_colors.size() > 0 )
+    {
+        line_points.clear();
+        line_colors.clear();
 
-    // clear ltexture and window
-    SDL_SetRenderTarget( r_renderer, r_ltexture );
-    SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
-    SDL_SetRenderDrawColor( r_renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT );
-    SDL_RenderClear( r_renderer );
+        // clear ltexture
+        SDL_SetRenderTarget( r_renderer, r_ltexture );
+        SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
+        SDL_SetRenderDrawColor( r_renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT );
+        SDL_RenderClear( r_renderer );
+    }
+    // clear window
     SDL_SetRenderTarget( r_renderer, NULL );
     SDL_SetRenderDrawColor( r_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE );
     SDL_RenderClear( r_renderer );
 
 
-    // clear textureS to black
+    // clear ptexture to black
     LockRTexture();
     memcpy ( pixels_direct, null_pixels, r_pitch * r_height );
 }
 
-void Window::updateTitleWithFPS()
+void Window::updateTitleWithFPS( Uint32 updateInterval )
 {
-    if ( title_fps_last > 1000000000 )
+    if ( title_fps_count > updateInterval )
     {
-        title_fps_last = 0;
+        title_fps_count = 0;
         std::stringstream title;
         title << w_title << " - " << timer.GetCurrentFPS() << " FPS";
         SDL_SetWindowTitle( w_window, title.str().c_str() );
     }
     else
     {
-        title_fps_last += timer.GetFrametime();
+        title_fps_count++;
     }
 }
 

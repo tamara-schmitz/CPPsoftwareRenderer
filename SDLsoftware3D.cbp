@@ -16,6 +16,7 @@
 					<Add option="-g" />
 					<Add option="-DPRINT_DEBUG_STUFF" />
 					<Add directory="include" />
+					<Add directory="src" />
 				</Compiler>
 				<Linker>
 					<Add option="-lprofiler" />
@@ -35,6 +36,7 @@
 					<Add option="-Wall" />
 					<Add option="-std=c++11" />
 					<Add directory="include" />
+					<Add directory="src" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -50,17 +52,22 @@
 			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="cb.bmp" />
-		<Unit filename="include/typedefs.h" />
 		<Unit filename="include/vmath-0.12/vmath.h" />
+		<Unit filename="src/Edge.cpp" />
+		<Unit filename="src/Edge.h" />
+		<Unit filename="src/common.cpp" />
+		<Unit filename="src/common.h" />
+		<Unit filename="src/early_demos/scanRenderer.cpp" />
+		<Unit filename="src/early_demos/scanRenderer.h" />
+		<Unit filename="src/early_demos/starfield.cpp" />
+		<Unit filename="src/early_demos/starfield.h" />
 		<Unit filename="src/main.cpp" />
-		<Unit filename="src/scanRenderer.cpp" />
-		<Unit filename="src/scanRenderer.h" />
-		<Unit filename="src/starfield.cpp" />
-		<Unit filename="src/starfield.h" />
-		<Unit filename="src/timer.cpp" />
-		<Unit filename="src/timer.h" />
-		<Unit filename="src/window.cpp" />
-		<Unit filename="src/window.h" />
+		<Unit filename="src/rasteriser.cpp" />
+		<Unit filename="src/rasteriser.h" />
+		<Unit filename="src/window/timer.cpp" />
+		<Unit filename="src/window/timer.h" />
+		<Unit filename="src/window/window.cpp" />
+		<Unit filename="src/window/window.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

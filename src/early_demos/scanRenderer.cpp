@@ -53,7 +53,7 @@ int ScanRenderer::getScanValue( int yCoord, bool isMin )
         offset = 1;
     }
 
-    yCoord = clipInt( yCoord, 0, w_height );
+    yCoord = clipNumber( yCoord, 0, w_height );
 
     return r_scanBuffer[ yCoord * 2 + offset ];
 }
@@ -74,23 +74,7 @@ void ScanRenderer::setScanValue( int yCoord, int value, bool isMin )
     // make sure that within range and clamp value
     if ( yCoord >= 0 && yCoord < w_height )
     {
-        r_scanBuffer[ yCoord * 2 + offset ] = clipInt(value, 0, w_width);
-    }
-}
-
-int ScanRenderer::clipInt( int i, int iMin, int iMax )
-{
-    if ( i < iMin )
-    {
-        return iMin;
-    }
-    else if ( i > iMax )
-    {
-        return iMax;
-    }
-    else
-    {
-        return i;
+        r_scanBuffer[ yCoord * 2 + offset ] = clipNumber(value, 0, w_width);
     }
 }
 
@@ -147,7 +131,7 @@ void ScanRenderer::DrawLine( Vector2f yMinVert, Vector2f yMaxVert, bool isMinX )
     }
 
     // finally add scanlines
-    for ( int i = yStart; i < clipInt(yEnd, yStart, w_height); i++ )
+    for ( int i = yStart; i < clipNumber(yEnd, yStart, w_height); i++ )
     {
         setScanValue( i, std::ceil(curX), isMinX);
         curX += xStep;
@@ -157,8 +141,8 @@ void ScanRenderer::DrawLine( Vector2f yMinVert, Vector2f yMaxVert, bool isMinX )
 
 void ScanRenderer::FillShape( int yMin, int yMax, SDL_Color color )
 {
-    yMin = clipInt( yMin, 0, w_height );
-    yMax = clipInt( yMax, 0, w_height );
+    yMin = clipNumber( yMin, 0, w_height );
+    yMax = clipNumber( yMax, 0, w_height );
 
     // swap yMin and yMax if wrong way around
     if ( yMin > yMax )

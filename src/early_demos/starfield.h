@@ -1,13 +1,14 @@
 #ifndef STARFIELD_H
 #define STARFIELD_H
 
+#include "common.h"
+
 #include <SDL2/SDL.h>
 #include <cstdlib>
 #include <cmath>
 #include <vector>
 #include <iostream>
-#include "window.h"
-#include "typedefs.h"
+#include "window/window.h"
 
 class Starfield
 {

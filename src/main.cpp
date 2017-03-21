@@ -1,8 +1,8 @@
-#include "window.h"
-#include "starfield.h"
-#include "scanRenderer.h"
+#include "window/window.h"
+#include "early_demos/starfield.h"
+#include "early_demos/scanRenderer.h"
 #include <vector>
-#include "typedefs.h"
+#include "common.h"
 #include "vmath-0.12/vmath.h"
 #include <exception>
 
@@ -40,11 +40,11 @@ bool checkSDLQuit()
     return false;
 }
 
-void demo_randomPixels( Window* window )
+void demo_randomPixels( Window* window, bool* continue_loop )
 {
     bool running = true;
 
-    while ( running )
+    while ( running && *continue_loop )
     {
         running = !checkSDLQuit();
 
@@ -64,35 +64,42 @@ void demo_randomPixels( Window* window )
         }
 
         window->updateWindow();
-        window->timer.printTimes();
-        window->updateTitleWithFPS();
+        #ifdef PRINT_DEBUG_STUFF
+            window->timer.printTimes();
+        #endif // PRINT_DEBUG_STUFF
+        window->updateTitleWithFPS( 60 );
     }
 }
 
-void demo_starfield( Window *window )
+void demo_starfield( Window *window, bool* continue_loop )
 {
-    Starfield field = Starfield( 2, 50, 90, window, 50000, 1);
+    Starfield *field = new Starfield( 1, 50, 30, window, 50000, 5 );
 
     bool running = true;
-    while ( running )
+    while ( running && *continue_loop )
     {
         running = !checkSDLQuit();
 
         window->clearBuffers();
 
-        field.drawStarfield();
+        field->drawStarfield();
 
         window->updateWindow();
-        window->timer.printTimes();
-        window->updateTitleWithFPS();
+        #ifdef PRINT_DEBUG_STUFF
+            window->timer.printTimes();
+        #endif // PRINT_DEBUG_STUFF
+        window->updateTitleWithFPS( 60 );
 
     }
+
+    // dtor
+    delete field;
 }
 
-void demo_shapes( Window *window )
+void demo_shapes( Window *window, bool* continue_loop )
 {
-    ScanRenderer renderer = ScanRenderer( window, true );
-    renderer.UpdatePerspective( 70, 2, 2000 );
+    ScanRenderer *renderer = new ScanRenderer( window, true );
+    renderer->UpdatePerspective( 70, 2, 2000 );
 
     SDL_Color color2D;
     color2D.r = 50;
@@ -126,14 +133,14 @@ void demo_shapes( Window *window )
     float rotationFactor = 0;
 
     bool running = true;
-    while ( running )
+    while ( running && *continue_loop )
     {
         running = !checkSDLQuit();
 
         window->clearBuffers();
 
         // get per frame rotation factor
-        rotationFactor = rotationFactor + 0.0001f * (window->timer.GetFrametime() / 1000000000.0);
+        rotationFactor = 100 * (window->timer.GetFrametime() / 1000000000.0);
 
         // rotate and then translate triangle
         Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0);
@@ -146,14 +153,19 @@ void demo_shapes( Window *window )
         v3_no2 = rotationMatrix_no2 * v3_no2;
 
         // draw triangles
-        renderer.FillTriangle( v1_2d, v2_2d, v3_2d, color2D );
-        renderer.FillTriangle( v1, v2, v3, triangleColor );
-        renderer.FillTriangle( v1_no2, v2_no2, v3_no2, triangleColor2 );
+        renderer->FillTriangle( v1_2d, v2_2d, v3_2d, color2D );
+        renderer->FillTriangle( v1, v2, v3, triangleColor );
+        renderer->FillTriangle( v1_no2, v2_no2, v3_no2, triangleColor2 );
 
         window->updateWindow();
-        window->timer.printTimes();
-        window->updateTitleWithFPS();
+        #ifdef PRINT_DEBUG_STUFF
+            window->timer.printTimes();
+        #endif // PRINT_DEBUG_STUFF
+        window->updateTitleWithFPS( 60 );
     }
+
+    // dtor
+    delete renderer;
 }
 
 int main( int argc, char* argv[] )
@@ -164,6 +176,9 @@ int main( int argc, char* argv[] )
     // 2: shapes
     const int current_demo = 2;
 
+    // set to false to halt demo
+    bool keep_running = true;
+
     try
     {
         // create window and texture
@@ -172,13 +187,13 @@ int main( int argc, char* argv[] )
         switch( current_demo )
         {
             case 0:
-                demo_randomPixels( window );
+                demo_randomPixels( window, &keep_running );
                 break;
             case 1:
-                demo_starfield( window );
+                demo_starfield( window, &keep_running );
                 break;
             case 2:
-                demo_shapes( window );
+                demo_shapes( window, &keep_running );
         }
 
         // dtor

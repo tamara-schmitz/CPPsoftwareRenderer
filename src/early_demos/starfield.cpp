@@ -41,9 +41,9 @@ void Starfield::spawnStar( unsigned int index )
     // spawns a pixel at random location
     float z_delta = z_far - z_near;
     stars_posi[ index ] = {
-        float( rand() % (int) 10001 ) * z_delta / 100000.0f - z_delta / 20, // x
-        float( rand() % (int) 10001 ) * z_delta / 100000.0f - z_delta / 20, // y
-        ( rand() % (int) z_delta * 0.1f + 1 + z_far * 0.1f )  // z
+        float( rand() % (int) 10001 ) * z_delta / 200000.0f - z_delta / 50, // x
+        float( rand() % (int) 10001 ) * z_delta / 200000.0f - z_delta / 50, // y
+        ( rand() % (int) (z_delta * 3000) / 100.0f + z_far )  // z
     };
 
 }
