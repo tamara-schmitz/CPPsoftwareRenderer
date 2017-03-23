@@ -1,10 +1,23 @@
+#include <exception>
+#include <vector>
+#include "vmath-0.12/vmath.h"
+#include "common.h"
 #include "window/window.h"
 #include "early_demos/starfield.h"
 #include "early_demos/scanRenderer.h"
-#include <vector>
-#include "common.h"
-#include "vmath-0.12/vmath.h"
-#include <exception>
+#include "rasteriser.h"
+
+// This project is based on BennyQBD's 3D software renderer project
+// Github: https://github.com/BennyQBD/3DSoftwareRenderer
+// Youtube-Playlist: https://www.youtube.com/playlist?list=PLEETnX-uPtBUbVOok816vTl1K9vV1GgH5
+
+
+// --switch between demos
+// 0: random pixels
+// 1: starfield
+// 2: shapes
+// 3: rasteriser
+const int current_demo = 3;
 
 bool checkSDLQuit()
 {
@@ -40,11 +53,11 @@ bool checkSDLQuit()
     return false;
 }
 
-void demo_randomPixels( Window* window, bool* continue_loop )
+void demo_randomPixels( Window* window, bool& continue_loop )
 {
     bool running = true;
 
-    while ( running && *continue_loop )
+    while ( running && continue_loop )
     {
         running = !checkSDLQuit();
 
@@ -71,12 +84,12 @@ void demo_randomPixels( Window* window, bool* continue_loop )
     }
 }
 
-void demo_starfield( Window *window, bool* continue_loop )
+void demo_starfield( Window *window, bool& continue_loop )
 {
     Starfield *field = new Starfield( 1, 50, 30, window, 50000, 5 );
 
     bool running = true;
-    while ( running && *continue_loop )
+    while ( running && continue_loop )
     {
         running = !checkSDLQuit();
 
@@ -96,26 +109,14 @@ void demo_starfield( Window *window, bool* continue_loop )
     delete field;
 }
 
-void demo_shapes( Window *window, bool* continue_loop )
+void demo_shapes( Window *window, bool& continue_loop )
 {
     ScanRenderer *renderer = new ScanRenderer( window, true );
     renderer->UpdatePerspective( 70, 2, 2000 );
 
-    SDL_Color color2D;
-    color2D.r = 50;
-    color2D.g = 200;
-    color2D.b = 20;
-    color2D.a = SDL_ALPHA_OPAQUE;
-    SDL_Color triangleColor;
-    triangleColor.r = 255;
-    triangleColor.g = 50;
-    triangleColor.b = 50;
-    triangleColor.a = SDL_ALPHA_OPAQUE;
-    SDL_Color triangleColor2;
-    triangleColor2.r = 60;
-    triangleColor2.g = 170;
-    triangleColor2.b = 150;
-    triangleColor2.a = SDL_ALPHA_OPAQUE;
+    SDL_Color color2D = { 50, 200, 20, SDL_ALPHA_OPAQUE };
+    SDL_Color triangleColor = { 255, 50, 50, SDL_ALPHA_OPAQUE };
+    SDL_Color triangleColor2 = { 60, 170, 150, SDL_ALPHA_OPAQUE };
 
     // triangle 2D
     Vector2f v1_2d = Vector2f { 200, 53};
@@ -133,7 +134,7 @@ void demo_shapes( Window *window, bool* continue_loop )
     float rotationFactor = 0;
 
     bool running = true;
-    while ( running && *continue_loop )
+    while ( running && continue_loop )
     {
         running = !checkSDLQuit();
 
@@ -168,14 +169,57 @@ void demo_shapes( Window *window, bool* continue_loop )
     delete renderer;
 }
 
+void demo_rasteriser( Window *window, bool& continue_loop )
+{
+    Rasteriser* raster = new Rasteriser( window );
+
+    SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, -0.4f, 3 );
+
+    raster->UpdateViewAndPerspectiveMatrix( viewMatrix, 80, 0.1f, 0.9f );
+    raster->SetRenderColour( triangleColor );
+
+    // triangle 3D
+    Vector4f v1 = Vector4f { -0.9f, -0.9f, 0, 1 };
+    Vector4f v2 = Vector4f {    0,  0.9f, 0, 1 };
+    Vector4f v3 = Vector4f {  0.9f, -0.9f, 0, 1 };
+
+    bool running = true;
+    while ( running && continue_loop )
+    {
+        running = !checkSDLQuit();
+
+        window->clearBuffers();
+
+        // get per frame rotation factor
+        float rotationFactor = 100 * (window->timer.GetFrametime() / 1000000000.0);
+        // rotate and then translate triangle
+        Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0);
+
+        // apply rotation
+        v1 = rotationMatrix * v1;
+        v2 = rotationMatrix * v2;
+        v3 = rotationMatrix * v3;
+        #ifdef PRINT_DEBUG_STUFF
+            std::cout << "v1 - x: " << v1.x << " y: " << v1.y << " z: " << v1.z << std::endl;
+        #endif // PRINT_DEBUG_STUFF
+
+        // draw triangle
+        raster->FillTriangle( v1, v2, v3 );
+
+        window->updateWindow();
+        #ifdef PRINT_DEBUG_STUFF
+            window->timer.printTimes();
+        #endif // PRINT_DEBUG_STUFF
+        window->updateTitleWithFPS( 60 );
+    }
+
+    // dtor
+    delete raster;
+}
+
 int main( int argc, char* argv[] )
 {
-    // --switch between demos
-    // 0: random pixels
-    // 1: starfield
-    // 2: shapes
-    const int current_demo = 2;
-
     // set to false to halt demo
     bool keep_running = true;
 
@@ -187,13 +231,17 @@ int main( int argc, char* argv[] )
         switch( current_demo )
         {
             case 0:
-                demo_randomPixels( window, &keep_running );
+                demo_randomPixels( window, keep_running );
                 break;
             case 1:
-                demo_starfield( window, &keep_running );
+                demo_starfield( window, keep_running );
                 break;
             case 2:
-                demo_shapes( window, &keep_running );
+                demo_shapes( window, keep_running );
+                break;
+            case 3:
+                demo_rasteriser( window, keep_running );
+                break;
         }
 
         // dtor
@@ -205,4 +253,3 @@ int main( int argc, char* argv[] )
     }
     return 0;
 }
-

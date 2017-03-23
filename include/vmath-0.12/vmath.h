@@ -2494,7 +2494,7 @@ public:
 	 * @param zFar Position of far clipping plane
 	 * @return An instance of a perspective transform
 	 */
-	 static Matrix4<T> perspectiveTransform( T fov, T aspectRatio, T zNear, T zFar )
+	 static Matrix4<T> perspectiveTransform( const T fov, const T aspectRatio, const T zNear, const T zFar )
 	 {
         Matrix4<T> ret;
         const T tanHalfFOV = std::tan( fov / 2.0f );
@@ -2505,6 +2505,20 @@ public:
         ret.at( 2, 2 ) = ( zNear ) / zRange;
         ret.at( 3, 2 ) = ( zFar * zNear ) / zRange;
         ret.at( 2, 3 ) = - 1.0f;
+
+        return ret;
+	 }
+
+	 // matrix that can be used for translating to screenspace
+	 static Matrix4<T> screenspaceTransform( const T halfWidth, const T halfHeight )
+	 {
+        Matrix4<T> ret;
+        ret.at( 0, 0 ) = halfWidth;
+        ret.at( 3, 0 ) = halfWidth;
+        ret.at( 1, 1 ) = -halfHeight;
+        ret.at( 3, 1 ) = halfHeight;
+        ret.at( 2, 2 ) = 1;
+        ret.at( 3, 3 ) = 1;
 
         return ret;
 	 }

@@ -13,6 +13,18 @@ bool compSDL_Point( SDL_Point p1, SDL_Point p2 );
 
 // Math functions
 template< typename I >
+const I& clipNumber( const I& i, const I& iMin )
+{
+    if ( i < iMin )
+    {
+        return iMin;
+    }
+    else
+    {
+        return i;
+    }
+}
+template< typename I >
 const I& clipNumber( const I& i, const I& iMin, const I& iMax )
 {
     if ( i < iMin )
@@ -29,6 +41,16 @@ const I& clipNumber( const I& i, const I& iMin, const I& iMax )
     }
 }
 
+template< typename I, typename T >
+const I triangleArea( const T& v1, const T& v2, const T& v3 )
+{
+    const I x1 = v2.x - v1.x;
+    const I y1 = v2.y - v1.y;
 
+    const I x2 = v3.x - v1.x;
+    const I y2 = v3.y - v1.y;
+
+    return (I) ( 0.5 * (x1 * y2 - x2 * y1) );
+}
 
 #endif // COMMON_H

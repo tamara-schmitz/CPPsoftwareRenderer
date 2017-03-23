@@ -1,6 +1,7 @@
 #ifndef EDGE_H
 #define EDGE_H
 
+#include "common.h"
 #include "SDL2/SDL_types.h"
 #include "vmath-0.12/vmath.h"
 
@@ -11,13 +12,14 @@ struct Edge
     //
     // call GetNextX() to get next X step value
     public:
-        Edge( const Vector4<T>& vecMin, const Vector4<T>& vecMax );
+        Edge( const Vector3<T>& vecMin, const Vector3<T>& vecMax );
         virtual ~Edge();
 
         // getters
-        T GetYStart() { return yStart; }
-        T GetYEnd()   { return yEnd;   }
-        T GetNextX(); // first call returns initial x!
+        T GetYStart()   const { return yStart;   }
+        T GetYEnd()     const { return yEnd;     }
+        T GetCurrentX() const { return currentX; } // first call returns initial x!
+        void DoStep();
 
     private:
         // constructor vars
@@ -30,15 +32,9 @@ struct Edge
 
 };
 
-typedef Edge< Vector2f > EdgeVec2f;
-typedef Edge< Vector2d > EdgeVec2d;
-typedef Edge< Vector2i > EdgeVec2i;
-typedef Edge< Vector3f > EdgeVec3f;
-typedef Edge< Vector3d > EdgeVec3d;
-typedef Edge< Vector3i > EdgeVec3i;
-typedef Edge< Vector4f > EdgeVec4f;
-typedef Edge< Vector4d > EdgeVec4d;
-typedef Edge< Vector4i > EdgeVec4i;
+typedef Edge< float > Edgef;
+typedef Edge< double > Edged;
+typedef Edge< int > Edgei;
 
 
 #endif // EDGE_H

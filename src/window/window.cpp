@@ -67,7 +67,6 @@ Window::Window( int width, int height, double scale, std::string title, double f
 
     // allocate memory for null_pixels pointer (needs to be freed in dstor!)
     LockRTexture(); // we need r_pitch, so unlock texture
-//    null_pixels = (Uint32*) malloc ( r_height * r_pitch );
     null_pixels = new Uint32[r_height * (r_pitch / 4)];
     // fill with color black
     Uint32 rgbamap = SDL_MapRGBA( r_format, 0, 0, 0, SDL_ALPHA_OPAQUE );
@@ -251,7 +250,6 @@ void Window::UnlockRTexture()
 Window::~Window()
 {
     //dtor
-//    free ( null_pixels );
     delete[] null_pixels;
     timer.~Timer();
 
