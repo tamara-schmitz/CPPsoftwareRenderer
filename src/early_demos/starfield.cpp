@@ -40,10 +40,11 @@ void Starfield::spawnStar( unsigned int index )
 {
     // spawns a pixel at random location
     float z_delta = z_far - z_near;
+
     stars_posi[ index ] = {
         float( rand() % (int) 10001 ) * z_delta / 200000.0f - z_delta / 50, // x
         float( rand() % (int) 10001 ) * z_delta / 200000.0f - z_delta / 50, // y
-        ( rand() % (int) (z_delta * 3000) / 100.0f + z_far )  // z
+        ( rand() % (int) (z_delta * 3000) / 500.0f + z_far )  // z
     };
 
 }
@@ -67,10 +68,17 @@ SDL_Point Starfield::toScreenSpace( star *posi )
         y_pixel = half_height;
     }
 
-        return SDL_Point {
-            x_pixel,
-            y_pixel
-        };
+    // check if pixel invisible
+    if ( x_pixel >= 0 && x_pixel < (int) w_width &&
+         y_pixel >= 0 && y_pixel < (int) w_height )
+    {
+        return SDL_Point { x_pixel, y_pixel };
+    }
+    else
+    {
+        // return this to prevent int issues
+        return SDL_Point { -1, -1 };
+    }
 }
 
 void Starfield::processStar( unsigned int id )
@@ -86,7 +94,7 @@ void Starfield::processStar( unsigned int id )
     else
     {
         // transform z of star ( frametime in secs * speed )
-        current_star->z -= w_window->timer.GetFrametime()/ ( 1000.0f * 1000.0f * 1000.0f ) * speed;
+        current_star->z -= w_window->timer.GetDeltaTime()/ ( 1000.0f * 1000.0f * 1000.0f ) * speed;
     }
 
     // to screen space

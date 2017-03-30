@@ -2,7 +2,7 @@
 #define RASTERISER_H
 
 #include "vmath-0.12/vmath.h"
-#include "Edge.h"
+#include "types/Edge.h"
 #include "window/window.h"
 
 class Rasteriser

@@ -25,7 +25,7 @@ bool checkSDLQuit()
     while ( SDL_PollEvent( &e ) )
     {
 
-        if ( e.window.event == SDL_WINDOWEVENT_HIDDEN )
+        if ( e.window.event == SDL_WINDOWEVENT_HIDDEN || e.window.event == SDL_WINDOWEVENT_MINIMIZED )
         {
             // loop if window is hidden
             std::cout << "PAUSING EXECUTION!" << std::endl;
@@ -36,7 +36,9 @@ bool checkSDLQuit()
                 SDL_Delay( 10 );
                 while ( SDL_WaitEvent( &e ) )
                 {
-                    if ( e.window.event == SDL_WINDOWEVENT_SHOWN )
+                    if ( e.window.event == SDL_WINDOWEVENT_SHOWN ||
+                         e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ||
+                         e.window.event == SDL_WINDOWEVENT_EXPOSED )
                     {
                         pause = false;
                         std::cout << "CONTINUE EXECUTION!" << std::endl;
@@ -86,7 +88,7 @@ void demo_randomPixels( Window* window, bool& continue_loop )
 
 void demo_starfield( Window *window, bool& continue_loop )
 {
-    Starfield *field = new Starfield( 1, 50, 30, window, 50000, 5 );
+    Starfield *field = new Starfield( 1, 100, 40, window, 100000, 10 );
 
     bool running = true;
     while ( running && continue_loop )
@@ -141,7 +143,7 @@ void demo_shapes( Window *window, bool& continue_loop )
         window->clearBuffers();
 
         // get per frame rotation factor
-        rotationFactor = 100 * (window->timer.GetFrametime() / 1000000000.0);
+        rotationFactor = 100 * (window->timer.GetDeltaTime() / 1000000000.0);
 
         // rotate and then translate triangle
         Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0);
@@ -181,7 +183,7 @@ void demo_rasteriser( Window *window, bool& continue_loop )
 
     // triangle 3D
     Vector4f v1 = Vector4f { -0.9f, -0.9f, 0, 1 };
-    Vector4f v2 = Vector4f {    0,  0.9f, 0, 1 };
+    Vector4f v2 = Vector4f {     0,  0.9f, 0, 1 };
     Vector4f v3 = Vector4f {  0.9f, -0.9f, 0, 1 };
 
     bool running = true;
@@ -192,7 +194,7 @@ void demo_rasteriser( Window *window, bool& continue_loop )
         window->clearBuffers();
 
         // get per frame rotation factor
-        float rotationFactor = 100 * (window->timer.GetFrametime() / 1000000000.0);
+        float rotationFactor = 100 * (window->timer.GetDeltaTime() / 1000000000.0);
         // rotate and then translate triangle
         Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0);
 
@@ -226,7 +228,8 @@ int main( int argc, char* argv[] )
     try
     {
         // create window and texture
-        Window *window = new Window( 1024, 768, 1, "Software Renderer", 60 );
+        Window *window = new Window( 1024, 768, 1, "Software Renderer", 0 );
+        window->timer.SetDeltaLimits( (1.0/20.0) * 1000 );
 
         switch( current_demo )
         {

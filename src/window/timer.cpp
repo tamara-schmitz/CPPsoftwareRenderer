@@ -12,9 +12,16 @@ Timer::~Timer()
 }
 
 // getters and setters
-double Timer::GetFPSLimit()
+double Timer::GetCurrentFPS()
 {
-    return fpsLimit;
+    if ( r_frametime_nano > 0 )
+    {
+        return (1000.0 * 1000.0 * 1000.0) / r_frametime_nano;
+    }
+    else
+    {
+        return 10000.0;
+    }
 }
 void Timer::SetFPSLimit( double fps )
 {
@@ -29,23 +36,21 @@ void Timer::SetFPSLimit( double fps )
     }
 
 }
-Uint64 Timer::GetFrametime()
+void Timer::SetDeltaLimits( Uint64 max_delta )
 {
-    return r_frametime_nano;
+    SetDeltaLimitsNs( (Uint64) max_delta * 1000000 );
 }
-Uint64 Timer::GetMaintime()
+void Timer::SetDeltaLimitsNs( Uint64 max_delta )
 {
-    return r_maintime_nano;
-}
-double Timer::GetCurrentFPS()
-{
-    if ( r_frametime_nano > 0 )
+    // limits must be bigger than 0
+
+    if ( max_delta > 0 )
     {
-        return (1000.0 * 1000.0 * 1000.0) / r_frametime_nano;
+        r_deltatimeLimit_max = max_delta;
     }
     else
     {
-        return 10000.0;
+        r_deltatimeLimit_max = -1;
     }
 }
 
@@ -83,17 +88,25 @@ void Timer::TickCall()
     // sleep if necessary
     if ( r_maintime_nano < r_tickLimit )
     {
-        nsSleep( r_tickLimit - r_maintime_nano - r_sleepOverrun );
+        nsSleep( r_tickLimit - r_maintime_nano - r_sleepOverrun * 0.5 );
     }
 
     // update counters and vars
     r_tickLast_main = GetHighResClockNs();
     r_tickLast = r_tickNow;
     r_tickNow  = GetHighResClockNs();
-    // calculate frametime diff and sleep overrun
+    // calculate frametime diff
     r_frametime_nano = r_tickNow - r_tickLast;
-    r_sleepOverrun  = r_frametime_nano - ( r_tickLimit - r_sleepOverrun * 0.966 );
-    if ( r_sleepOverrun < 0 || r_frametime_nano < r_tickLimit )
+
+    // update deltatime
+    if ( r_deltatimeLimit_max >= 0 ) // delta same as frametime if no valid limit
+    {
+        r_deltatime_nano = clipNumber( r_frametime_nano, (Uint64) 0, r_deltatimeLimit_max );
+    }
+
+    // calculate sleep overrun ( ^= differnence between expected vs real sleep time )
+    r_sleepOverrun  = r_frametime_nano - ( r_tickLimit - r_sleepOverrun );
+    if ( r_frametime_nano < r_tickLimit )
     {
         r_sleepOverrun = 0;
     }
