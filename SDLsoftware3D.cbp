@@ -17,6 +17,7 @@
 					<Add option="-DPRINT_DEBUG_STUFF" />
 					<Add directory="include" />
 					<Add directory="src" />
+					<Add directory="src/types" />
 				</Compiler>
 				<Linker>
 					<Add option="-lprofiler" />
@@ -37,6 +38,7 @@
 					<Add option="-std=c++11" />
 					<Add directory="include" />
 					<Add directory="src" />
+					<Add directory="src/types" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -64,6 +66,9 @@
 		<Unit filename="src/rasteriser.h" />
 		<Unit filename="src/types/Edge.cpp" />
 		<Unit filename="src/types/Edge.h" />
+		<Unit filename="src/types/TexCoordsForEdge.cpp" />
+		<Unit filename="src/types/TexCoordsForEdge.h" />
+		<Unit filename="src/types/Vertex.h" />
 		<Unit filename="src/window/timer.cpp" />
 		<Unit filename="src/window/timer.h" />
 		<Unit filename="src/window/window.cpp" />

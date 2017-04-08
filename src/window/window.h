@@ -24,6 +24,7 @@ class Window
         SDL_Texture* GetRenderTexture() { return r_ptexture; }
         unsigned int Getwidth() { return r_width; }
         unsigned int Getheight() { return r_height; }
+        SDL_PixelFormat* GetPixelFormat() { return r_format; }
 
         // Window functions
         void updateTitleWithFPS( Uint32 updateInterval );

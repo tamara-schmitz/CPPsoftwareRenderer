@@ -62,7 +62,7 @@
 	<iostream>
 	"window.h"
 
-1490704289 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1491688071 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	<exception>
 	<vector>
 	"vmath-0.12/vmath.h"
@@ -133,7 +133,7 @@
 	<chrono>
 	<thread>
 
-1490198684 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/vmath-0.12/vmath.h
+1491687067 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/vmath-0.12/vmath.h
 	<cmath>
 	<cstring>
 	<iostream>
@@ -153,12 +153,14 @@
 1490110994 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/common.h
 	<SDL2/SDL.h>
 
-1490198721 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
+1491687820 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
 	"rasteriser.h"
 
-1490270218 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
+1491684344 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
 	"vmath-0.12/vmath.h"
 	"types/Edge.h"
+	"types/TexCoordsForEdge.h"
+	"types/Texture.h"
 	"window/window.h"
 
 1490131214 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/early_demos/scanRenderer.cpp
@@ -171,7 +173,7 @@
 	"window/window.h"
 	"vmath-0.12/vmath.h"
 
-1490109624 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.h
+1491681426 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.h
 	"common.h"
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -206,7 +208,7 @@
 	"timer.h"
 	<iostream>
 
-1490127998 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.cpp
+1491689496 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.cpp
 	"window/window.h"
 
 1490188193 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.h
@@ -220,11 +222,38 @@
 	"SDL2/SDL_types.h"
 	"vmath-0.12/vmath.h"
 
-1490186691 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Edge.h
+1491687672 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Edge.h
+	"common.h"
+	"SDL2/SDL_types.h"
+	"vmath-0.12/vmath.h"
+	"Vertex.h"
+	"TexCoordsForEdge.h"
+
+1491687695 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Edge.cpp
+	"Edge.h"
+
+1491686508 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/TexCoordsForEdge.cpp
+	"TexCoordsForEdge.h"
+
+1491678165 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/TexCoordsForEdge.h
+	"Vertex.h"
+
+1491564490 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Vertex.cpp
+	"Vertex.h"
+
+1491677839 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Vertex.h
 	"common.h"
 	"SDL2/SDL_types.h"
 	"vmath-0.12/vmath.h"
 
-1490186677 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Edge.cpp
-	"Edge.h"
+1491683900 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/Texture.cpp
+	"Texture.h"
+
+1491684465 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.h
+	<vector>
+	<SDL2/SDL_stdinc.h>
+	<SDL2/SDL_pixels.h>
+
+1491684408 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
+	"Texture.h"
 

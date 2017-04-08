@@ -1552,6 +1552,20 @@ public:
 		return (*this) + (r - (*this)) * fact;
 	}
 
+	/**
+     * divides vector by w but does not reset w.
+	 */
+    void divideByWOnly()
+    {
+        // only divide if necessary and possible
+        if (w != 0 && w != 1)
+        {
+            x /= w;
+            y /= w;
+            z /= w;
+        }
+    }
+
 	//-------------[ conversion ]-----------------------------
 
 	/**
@@ -1575,7 +1589,7 @@ public:
 	}
 
 	/**
-	 * Gets 3D vector. Note that the output is divided by w coordinate to apply projection
+	 * Creates a 3D vector. Note that the output is divided by w coordinate to apply projection
 	 * transform. If the w coordinate is equal to zero, the result is not divided.
 	 * @return (x/w, y/w, z/w) iff w != 0 otherwise (x,y,z)
 	 */
@@ -1586,19 +1600,6 @@ public:
 
 		const T invW = 1.0 / w;
 		return Vector3<T>(x * invW, y * invW, z * invW);
-	}
-
-	/**
-	 * Conversion to Vector2. Takes x and y and copies them to a new Vector2.
-     * @return Vector2 where x and y where copied from the original Vector4.
-	 */
-    Vector2<T> xy() const
-	{
-        if (w == 0 || w == 1)
-            return Vector2<T>(x, y);
-
-        const T invW = 1.0 / w;
-		return Vector2<T>(x * invW, y * invW);
 	}
 
 	/**

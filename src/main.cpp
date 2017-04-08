@@ -176,15 +176,25 @@ void demo_rasteriser( Window *window, bool& continue_loop )
     Rasteriser* raster = new Rasteriser( window );
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, -0.4f, 3 );
+    Texture *triangleTexture = new Texture( (Uint16) 100, (Uint16) 100 ); // needs to be destroyed!
+    triangleTexture->FillWithRandomPixels();
+
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 2.5f );
 
     raster->UpdateViewAndPerspectiveMatrix( viewMatrix, 80, 0.1f, 0.9f );
-    raster->SetRenderColour( triangleColor );
+    raster->SetDrawColour( triangleColor );
+    raster->SetDrawTexture( triangleTexture );
 
     // triangle 3D
-    Vector4f v1 = Vector4f { -0.9f, -0.9f, 0, 1 };
-    Vector4f v2 = Vector4f {     0,  0.9f, 0, 1 };
-    Vector4f v3 = Vector4f {  0.9f, -0.9f, 0, 1 };
+    Vertexf v1;
+    Vertexf v2;
+    Vertexf v3;
+    v1.posVec = Vector4f {   -1, -1, 0, 1 };
+    v2.posVec = Vector4f {    0,  1, 0, 1 };
+    v3.posVec = Vector4f {    1, -1, 0, 1 };
+    v1.texVec = Vector4f {    0,  0, 0, 0 };
+    v2.texVec = Vector4f { 0.5f,  1, 0, 0 };
+    v3.texVec = Vector4f {     1, 0, 0, 0 };
 
     bool running = true;
     while ( running && continue_loop )
@@ -195,15 +205,15 @@ void demo_rasteriser( Window *window, bool& continue_loop )
 
         // get per frame rotation factor
         float rotationFactor = 100 * (window->timer.GetDeltaTime() / 1000000000.0);
-        // rotate and then translate triangle
-        Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0);
+        // create rotation matrix
+        Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0 );
 
         // apply rotation
-        v1 = rotationMatrix * v1;
-        v2 = rotationMatrix * v2;
-        v3 = rotationMatrix * v3;
+        v1.posVec = rotationMatrix * v1.posVec;
+        v2.posVec = rotationMatrix * v2.posVec;
+        v3.posVec = rotationMatrix * v3.posVec;
         #ifdef PRINT_DEBUG_STUFF
-            std::cout << "v1 - x: " << v1.x << " y: " << v1.y << " z: " << v1.z << std::endl;
+            std::cout << "v1 - x: " << v1.posVec.x << " y: " << v1.posVec.y << " z: " << v1.posVec.z << std::endl;
         #endif // PRINT_DEBUG_STUFF
 
         // draw triangle
@@ -217,6 +227,7 @@ void demo_rasteriser( Window *window, bool& continue_loop )
     }
 
     // dtor
+    delete triangleTexture;
     delete raster;
 }
 
