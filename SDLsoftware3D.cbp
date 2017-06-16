@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-std=c++11" />
+					<Add option="-m64" />
 					<Add option="-g" />
 					<Add option="-DPRINT_DEBUG_STUFF" />
 					<Add directory="include" />
@@ -20,8 +21,10 @@
 					<Add directory="src/types" />
 				</Compiler>
 				<Linker>
+					<Add option="-m64" />
 					<Add option="-lprofiler" />
 					<Add option="-ltcmalloc" />
+					<Add library="SDL2" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -30,18 +33,20 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-march=corei7" />
+					<Add option="-march=corei7-avx" />
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
 					<Add option="-Wall" />
 					<Add option="-std=c++11" />
+					<Add option="-m64" />
 					<Add directory="include" />
 					<Add directory="src" />
 					<Add directory="src/types" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-m64" />
 				</Linker>
 			</Target>
 		</Build>
@@ -68,6 +73,8 @@
 		<Unit filename="src/types/Edge.h" />
 		<Unit filename="src/types/TexCoordsForEdge.cpp" />
 		<Unit filename="src/types/TexCoordsForEdge.h" />
+		<Unit filename="src/types/Texture.cpp" />
+		<Unit filename="src/types/Texture.h" />
 		<Unit filename="src/types/Vertex.h" />
 		<Unit filename="src/window/timer.cpp" />
 		<Unit filename="src/window/timer.h" />

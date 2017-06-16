@@ -2,14 +2,17 @@
 #define TEXTURE_H
 
 #include <vector>
-#include <SDL2/SDL_stdinc.h>
-#include <SDL2/SDL_pixels.h>
+#include <exception>
+#include <stdexcept>
+#include <SDL2/SDL.h>
+#include "common.h"
 
 class Texture
 {
     public:
         Texture( Uint16 width, Uint16 height ); // default constructor
         Texture( Uint16& width, Uint16& height ); // reference constructor
+        explicit Texture( const char* pathtofile ); // texture from bmp constructor
 
         // getters
         Uint16 GetWidth() const { return pixels.size() / height; }
@@ -25,6 +28,9 @@ class Texture
         // pixels are saved as SDL_Color vector
         std::vector< SDL_Color > pixels;
         Uint16 height;
+
+        // imports pixels from an sdl_surface
+        void ImportFromSurface( SDL_Surface* surface );
 
 };
 

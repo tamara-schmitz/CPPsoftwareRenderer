@@ -7,9 +7,12 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-// SDL compare functions
+// SDL specific functions
 bool compSDL_Color( SDL_Color c1, SDL_Color c2 );
 bool compSDL_Point( SDL_Point p1, SDL_Point p2 );
+Uint32 getPixelFor_SDLColor( const SDL_Color* colour );
+Uint32 getPixelOn_SDLSurface( SDL_Surface *surface, Uint32 i );
+Uint32 getPixelOn_SDLSurface( SDL_Surface *surface, Uint16 x, Uint16 y );
 
 // Math functions
 template< typename I >

@@ -13,7 +13,7 @@ class Rasteriser
     //
     // Our fill convention is top-left (so make sure to use ceil!)
     public:
-        Rasteriser( Window* window );
+        explicit Rasteriser( Window* window );
         virtual ~Rasteriser();
 
         // set render colour / texture (setting one type deletes the other

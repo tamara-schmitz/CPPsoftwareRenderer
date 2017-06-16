@@ -12,9 +12,6 @@ Window::Window( int width, int height, double scale, std::string title, double f
     r_width    = width  * scale;
     r_height   = height * scale;
 
-    // create pixelformat
-    r_format = SDL_AllocFormat(SDL_PIXELFORMAT_ARGB8888);
-
     // set FPS limit in Timer class
     timer.SetFPSLimit( fpsLock );
 
@@ -50,7 +47,7 @@ Window::Window( int width, int height, double scale, std::string title, double f
                                         r_width, r_height );
     if ( r_ptexture == NULL )
     {
-        std::cout << "Couldn't init texture!" << std::endl << SDL_GetError();
+        std::cout << "Couldn't init ptexture!" << std::endl << SDL_GetError();
     }
     SDL_SetTextureBlendMode( r_ptexture, SDL_BLENDMODE_NONE );
 
@@ -60,18 +57,18 @@ Window::Window( int width, int height, double scale, std::string title, double f
                                         r_width, r_height );
     if ( r_ltexture == NULL )
     {
-        std::cout << "Couldn't init texture!" << std::endl << SDL_GetError();
+        std::cout << "Couldn't init ltexture!" << std::endl << SDL_GetError();
     }
     SDL_SetTextureBlendMode( r_ltexture, SDL_BLENDMODE_BLEND );
 
 
     // allocate memory for null_pixels pointer (needs to be freed in dstor!)
-    LockRTexture(); // we need r_pitch, so lock texture
-    null_pixels = new Uint32[r_height * (r_pitch / 4)];
+    null_pixels = new Uint32[r_height * r_width];
     // fill with color black
-    Uint32 rgbamap = SDL_MapRGBA( r_format, 0, 0, 0, SDL_ALPHA_OPAQUE );
+    SDL_Color colour_black = { 0, 0, 0, SDL_ALPHA_OPAQUE };
+    Uint32 rgbamap = getPixelFor_SDLColor( &colour_black );
 
-    for ( int i=0; i < int( (r_pitch / 4) * r_height ); i++ )
+    for ( Uint32 i=0; i <  r_width * r_height ; i++ )
     {
         null_pixels[ i ] = rgbamap;
     }
@@ -100,7 +97,8 @@ void Window::drawPixel( int x, int y, SDL_Color color)
 
     // obtain fast write access to texture
     LockRTexture();
-    pixels_direct[ offset ] = SDL_MapRGBA( r_format, color.r, color.g, color.b, color.a );
+    pixels_direct[ offset ] = getPixelFor_SDLColor( &color );
+    std::cout << SDL_GetError();
 
 }
 
@@ -125,28 +123,34 @@ void Window::updateWindow()
 {
 
     // Draw lines to line texture
-    if ( line_points.size() > 1 )
+    if ( line_points.size() > 1 && line_points.size() % 2 == 0 &&
+         line_colors.size() == line_points.size() / 2 ) // we need 2 points per line and 1 colour per line
     {
         SDL_SetRenderTarget( r_renderer, r_ltexture );
         SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
 
         // batch multiple lines with the same colour together
-        Uint64 batch_begin_count[ 2 ] = { 0, 2 };
+        Uint64 batch_begin_count[ 2 ] = { 0, 0 }; // [0] ^= first point [1] ^= count points
         SDL_Color cur_color = SDL_Color { 0, 0, 0, SDL_ALPHA_TRANSPARENT };
 
         for ( int i=0; i < (int) line_colors.size(); i++ )
         {
             if ( compSDL_Color( cur_color, line_colors[ i ] ) )
             {
-                batch_begin_count[ 1 ] = batch_begin_count[ 1 ] + 2; // add point to batch
+                // current colour and next colour are equal?
+                // --> add line to batch
+                batch_begin_count[ 1 ] = batch_begin_count[ 1 ] + 2;
             }
             else
             {
                 // end of batch? flush lines from batch
-                SDL_SetRenderDrawColor( r_renderer, cur_color.r, cur_color.g, cur_color.b, cur_color.a );
-                SDL_RenderDrawLines( r_renderer,
-                                     &line_points[ batch_begin_count[ 0 ] ],
-                                     batch_begin_count[ 1 ] );
+                if ( batch_begin_count[ 1 ] >= 2 ) // ensure that there are lines to draw
+                {
+                    SDL_SetRenderDrawColor( r_renderer, cur_color.r, cur_color.g, cur_color.b, cur_color.a );
+                    SDL_RenderDrawLines( r_renderer,
+                                         &line_points[ batch_begin_count[ 0 ] ],
+                                         batch_begin_count[ 1 ] );
+                }
 
                 // reset counter and colour
                 batch_begin_count[ 0 ] = i * 2;
@@ -166,7 +170,7 @@ void Window::updateWindow()
     }
 
     // Displays changes made to renderTexture
-    // ptexture + ltexture (l over p) -> renderer -> window
+    // ptexture + ltexture (l drawn over p) -> renderer -> window
 
     // Obtain read access to pixel texture
     UnlockRTexture();
@@ -212,11 +216,12 @@ void Window::clearBuffers()
 
     // clear ptexture to black
     LockRTexture();
-    memcpy ( pixels_direct, null_pixels, r_pitch * r_height );
+    memcpy ( pixels_direct, null_pixels, r_pitch * r_height ); // WARNING! DIRECT MEMORY ACCESS
 }
 
 void Window::updateTitleWithFPS( Uint32 updateInterval )
 {
+    // updates windows title every updateInterval (in frames)
     if ( title_fps_count > updateInterval )
     {
         title_fps_count = 0;
@@ -255,7 +260,6 @@ Window::~Window()
     timer.~Timer();
 
     // Properly shutdown SDL
-    SDL_FreeFormat( r_format );
     SDL_DestroyTexture(  r_ptexture );
     SDL_DestroyTexture(  r_ltexture );
     SDL_DestroyRenderer( r_renderer );

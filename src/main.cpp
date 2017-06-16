@@ -24,6 +24,10 @@ bool checkSDLQuit()
     SDL_Event e;
     while ( SDL_PollEvent( &e ) )
     {
+        if ( e.type == SDL_QUIT )
+        {
+            return true;
+        }
 
         if ( e.window.event == SDL_WINDOWEVENT_HIDDEN || e.window.event == SDL_WINDOWEVENT_MINIMIZED )
         {
@@ -46,10 +50,6 @@ bool checkSDLQuit()
                     }
                 }
             }
-        }
-        if ( e.type == SDL_QUIT )
-        {
-            return true;
         }
     }
     return false;
@@ -177,12 +177,13 @@ void demo_rasteriser( Window *window, bool& continue_loop )
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     Texture *triangleTexture = new Texture( (Uint16) 100, (Uint16) 100 ); // needs to be destroyed!
-    triangleTexture->FillWithRandomPixels();
+    Texture *bmpTexture = new Texture( "cb.bmp" ); // needs to be destroyed!
+    triangleTexture->FillWithColour( triangleColor );
 
     Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 2.5f );
 
     raster->UpdateViewAndPerspectiveMatrix( viewMatrix, 80, 0.1f, 0.9f );
-    raster->SetDrawColour( triangleColor );
+//    raster->SetDrawColour( triangleColor );
     raster->SetDrawTexture( triangleTexture );
 
     // triangle 3D
@@ -228,6 +229,7 @@ void demo_rasteriser( Window *window, bool& continue_loop )
 
     // dtor
     delete triangleTexture;
+    delete bmpTexture;
     delete raster;
 }
 
@@ -265,5 +267,6 @@ int main( int argc, char* argv[] )
     {
         std::cout << "Standard exception: " << e.what() << std::endl;
     }
+
     return 0;
 }
