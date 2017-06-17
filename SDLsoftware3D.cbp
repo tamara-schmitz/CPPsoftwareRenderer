@@ -23,7 +23,6 @@
 				<Linker>
 					<Add option="-m64" />
 					<Add option="-lprofiler" />
-					<Add option="-ltcmalloc" />
 					<Add library="SDL2" />
 				</Linker>
 			</Target>

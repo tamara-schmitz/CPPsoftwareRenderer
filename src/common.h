@@ -1,6 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <iostream>
 #include <SDL2/SDL.h>
 
 #ifndef M_PI

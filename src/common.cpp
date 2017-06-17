@@ -43,7 +43,7 @@ Uint32 getPixelOn_SDLSurface(SDL_Surface* surface, Uint16 x, Uint16 y)
 
 Uint32 getPixelOn_SDLSurface(SDL_Surface* surface, Uint32 i)
 {
-    int bpp = surface->format->BytesPerPixel; // bpp = bytes per pixel
+    Uint8 bpp = surface->format->BytesPerPixel; // bpp = bytes per pixel
 
     // p = pixel we want to get
     Uint8 *p = &( (Uint8 *)surface->pixels )[i * bpp];

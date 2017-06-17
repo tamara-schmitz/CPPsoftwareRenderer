@@ -17,6 +17,7 @@
 // 1: starfield
 // 2: shapes
 // 3: rasteriser
+// 4: load BMP and draw it using the texture class (slow!)
 const int current_demo = 3;
 
 bool checkSDLQuit()
@@ -24,8 +25,9 @@ bool checkSDLQuit()
     SDL_Event e;
     while ( SDL_PollEvent( &e ) )
     {
-        if ( e.type == SDL_QUIT )
+        if ( e.type == SDL_QUIT || e.window.event == SDL_WINDOWEVENT_CLOSE )
         {
+            std::cout << "QUIT EVENT! BREAKING LOOP!" << std::endl;
             return true;
         }
 
@@ -55,11 +57,11 @@ bool checkSDLQuit()
     return false;
 }
 
-void demo_randomPixels( Window* window, bool& continue_loop )
+void demo_randomPixels( Window* window )
 {
     bool running = true;
 
-    while ( running && continue_loop )
+    while ( running )
     {
         running = !checkSDLQuit();
 
@@ -86,12 +88,12 @@ void demo_randomPixels( Window* window, bool& continue_loop )
     }
 }
 
-void demo_starfield( Window *window, bool& continue_loop )
+void demo_starfield( Window *window )
 {
     Starfield *field = new Starfield( 1, 100, 40, window, 100000, 10 );
 
     bool running = true;
-    while ( running && continue_loop )
+    while ( running )
     {
         running = !checkSDLQuit();
 
@@ -111,7 +113,7 @@ void demo_starfield( Window *window, bool& continue_loop )
     delete field;
 }
 
-void demo_shapes( Window *window, bool& continue_loop )
+void demo_shapes( Window *window )
 {
     ScanRenderer *renderer = new ScanRenderer( window, true );
     renderer->UpdatePerspective( 70, 2, 2000 );
@@ -136,7 +138,7 @@ void demo_shapes( Window *window, bool& continue_loop )
     float rotationFactor = 0;
 
     bool running = true;
-    while ( running && continue_loop )
+    while ( running )
     {
         running = !checkSDLQuit();
 
@@ -171,20 +173,21 @@ void demo_shapes( Window *window, bool& continue_loop )
     delete renderer;
 }
 
-void demo_rasteriser( Window *window, bool& continue_loop )
+void demo_rasteriser( Window *window )
 {
     Rasteriser* raster = new Rasteriser( window );
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
-    Texture *triangleTexture = new Texture( (Uint16) 100, (Uint16) 100 ); // needs to be destroyed!
-    Texture *bmpTexture = new Texture( "cb.bmp" ); // needs to be destroyed!
-    triangleTexture->FillWithColour( triangleColor );
+    Texture* triangleTexture = new Texture( (Uint16) 150, (Uint16) 150 ); // needs to be destroyed!
+    Texture* bmpTexture = new Texture( "tree.bmp", window->GetSurface()->format ); // needs to be destroyed!
+    triangleTexture->FillWithRandomPixels();
 
     Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 2.5f );
 
     raster->UpdateViewAndPerspectiveMatrix( viewMatrix, 80, 0.1f, 0.9f );
-//    raster->SetDrawColour( triangleColor );
+    raster->SetDrawColour( triangleColor );
     raster->SetDrawTexture( triangleTexture );
+    raster->SetDrawTexture( bmpTexture );
 
     // triangle 3D
     Vertexf v1;
@@ -198,7 +201,7 @@ void demo_rasteriser( Window *window, bool& continue_loop )
     v3.texVec = Vector4f {     1, 0, 0, 0 };
 
     bool running = true;
-    while ( running && continue_loop )
+    while ( running )
     {
         running = !checkSDLQuit();
 
@@ -233,30 +236,68 @@ void demo_rasteriser( Window *window, bool& continue_loop )
     delete raster;
 }
 
+void demo_DisplayTexture( Window* window )
+{
+    // create a texture
+    Texture* texture1 = new Texture( "tree.bmp", window->GetSurface()->format ); // must be deleted after use!
+
+    // draw loop
+    bool running = true;
+    while ( running )
+    {
+        running = !checkSDLQuit();
+
+        window->clearBuffers();
+
+        //draw texture
+        for ( Uint16 y = 0; y < texture1->GetHeight(); y++ ) // iterate over ys
+        {
+            for ( Uint16 x = 0; x < texture1->GetWidth(); x++ ) // iterate over xs
+            {
+                // draw pixel
+                window->drawPixel( x, y, texture1->GetPixel( x, y ) );
+            }
+        }
+
+        // update window
+        window->updateWindow();
+        #ifdef PRINT_DEBUG_STUFF
+            window->timer.printTimes();
+        #endif // PRINT_DEBUG_STUFF
+        window->updateTitleWithFPS( 60 );
+
+
+    }
+
+    // dtor
+    delete texture1;
+}
+
 int main( int argc, char* argv[] )
 {
-    // set to false to halt demo
-    bool keep_running = true;
 
     try
     {
-        // create window and texture
+        // create window and run demos
         Window *window = new Window( 1024, 768, 1, "Software Renderer", 0 );
-        window->timer.SetDeltaLimits( (1.0/20.0) * 1000 );
+        window->timer.SetDeltaLimits( (1.0/20.0) * 1000 ); // delta time >= 20 FPS
 
         switch( current_demo )
         {
             case 0:
-                demo_randomPixels( window, keep_running );
+                demo_randomPixels( window );
                 break;
             case 1:
-                demo_starfield( window, keep_running );
+                demo_starfield( window );
                 break;
             case 2:
-                demo_shapes( window, keep_running );
+                demo_shapes( window );
                 break;
             case 3:
-                demo_rasteriser( window, keep_running );
+                demo_rasteriser( window );
+                break;
+            case 4:
+                demo_DisplayTexture( window );
                 break;
         }
 

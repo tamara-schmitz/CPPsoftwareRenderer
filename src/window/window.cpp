@@ -98,7 +98,6 @@ void Window::drawPixel( int x, int y, SDL_Color color)
     // obtain fast write access to texture
     LockRTexture();
     pixels_direct[ offset ] = getPixelFor_SDLColor( &color );
-    std::cout << SDL_GetError();
 
 }
 

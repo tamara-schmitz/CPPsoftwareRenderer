@@ -62,7 +62,7 @@
 	<iostream>
 	"window.h"
 
-1497632073 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1497729220 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	<exception>
 	<vector>
 	"vmath-0.12/vmath.h"
@@ -147,13 +147,13 @@
 	<chrono>
 	<thread>
 
-1497631743 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.cpp
+1497712971 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.cpp
 	"common.h"
 
 1490110994 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/common.h
 	<SDL2/SDL.h>
 
-1491690180 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
+1497706225 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
 	"rasteriser.h"
 
 1492248957 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
@@ -173,7 +173,7 @@
 	"window/window.h"
 	"vmath-0.12/vmath.h"
 
-1497632015 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.h
+1497715490 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.h
 	"common.h"
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -208,10 +208,11 @@
 	"timer.h"
 	<iostream>
 
-1497632137 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.cpp
+1497638281 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.cpp
 	"window/window.h"
 
-1497631805 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.h
+1497708841 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.h
+	<iostream>
 	<SDL2/SDL.h>
 
 1490186677 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/Edge.cpp
@@ -249,13 +250,14 @@
 1491683900 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/Texture.cpp
 	"Texture.h"
 
-1492248947 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.h
+1497729193 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.h
+	<iostream>
 	<vector>
 	<exception>
 	<stdexcept>
 	<SDL2/SDL.h>
 	"common.h"
 
-1491751912 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
+1497729201 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
 	"Texture.h"
 

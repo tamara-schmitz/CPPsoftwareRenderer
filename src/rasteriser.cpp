@@ -15,6 +15,9 @@ void Rasteriser::SetDrawColour( const SDL_Color& color )
     drawWithTexture = false;
 
     current_colour = color;
+
+    current_texture_width = 0;
+    current_texture_height = 0;
 }
 
 void Rasteriser::SetDrawTexture( const Texture* texture )
@@ -216,6 +219,6 @@ Rasteriser::~Rasteriser()
     //dtor
 
     #ifdef PRINT_DEBUG_STUFF
-    std::cout << "Dtor of Rasteriser object was called!" << std::endl;
+        std::cout << "Dtor of Rasteriser object was called!" << std::endl;
     #endif // PRINT_DEBUG_STUFF
 }
