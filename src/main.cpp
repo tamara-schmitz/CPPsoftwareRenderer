@@ -27,7 +27,7 @@ bool checkSDLQuit()
     {
         if ( e.type == SDL_QUIT || e.window.event == SDL_WINDOWEVENT_CLOSE )
         {
-            std::cout << "QUIT EVENT! BREAKING LOOP!" << std::endl;
+            std::cout << "SDL QUIT EVENT!" << std::endl;
             return true;
         }
 
@@ -179,7 +179,7 @@ void demo_rasteriser( Window *window )
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     Texture* triangleTexture = new Texture( (Uint16) 150, (Uint16) 150 ); // needs to be destroyed!
-    Texture* bmpTexture = new Texture( "tree.bmp", window->GetSurface()->format ); // needs to be destroyed!
+    Texture* bmpTexture = new Texture( "cb.bmp", window->GetSurface()->format ); // needs to be destroyed!
     triangleTexture->FillWithRandomPixels();
 
     Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 2.5f );
@@ -196,9 +196,9 @@ void demo_rasteriser( Window *window )
     v1.posVec = Vector4f {   -1, -1, 0, 1 };
     v2.posVec = Vector4f {    0,  1, 0, 1 };
     v3.posVec = Vector4f {    1, -1, 0, 1 };
-    v1.texVec = Vector4f {    0,  0, 0, 0 };
-    v2.texVec = Vector4f { 0.5f,  1, 0, 0 };
-    v3.texVec = Vector4f {     1, 0, 0, 0 };
+    v1.texVec = Vector4f {    0,  1, 0, 0 };
+    v2.texVec = Vector4f { 0.5f,  0, 0, 0 };
+    v3.texVec = Vector4f {    1,  1, 0, 0 };
 
     bool running = true;
     while ( running )
