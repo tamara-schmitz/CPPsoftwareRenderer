@@ -1,14 +1,11 @@
-#include <exception>
-#include <vector>
-#include <memory>
-#include "vmath-0.12/vmath.h"
 #include "common.h"
+#include <exception>
+#include "vmath-0.12/vmath.h"
 #include "window/window.h"
 #include "early_demos/starfield.h"
 #include "early_demos/scanRenderer.h"
 #include "rasteriser.h"
 
-using std::shared_ptr;
 
 // This project is based on BennyQBD's 3D software renderer project
 // Github: https://github.com/BennyQBD/3DSoftwareRenderer
@@ -181,9 +178,9 @@ void demo_rasteriser( Window *window )
     auto raster = shared_ptr<Rasteriser>( new Rasteriser( window ) );
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
-    auto triangleTexture = shared_ptr<Texture>( new Texture( (Uint16) 150, (Uint16) 150 ) ); // needs to be destroyed!
-    auto bmpTexture = shared_ptr<Texture>( new Texture( "cb.bmp", window->GetSurface()->format ) ); // needs to be destroyed!
+    auto triangleTexture = shared_ptr<Texture>( new Texture( (Uint16) 150, (Uint16) 150 ) );
     triangleTexture->FillWithRandomPixels();
+    auto bmpTexture = shared_ptr<Texture>( new Texture( "tree.bmp" ) );
 
     Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 2.5f );
 
@@ -237,7 +234,7 @@ void demo_rasteriser( Window *window )
 void demo_DisplayTexture( Window* window )
 {
     // create a texture
-    auto texture1 = shared_ptr<Texture>( new Texture( "tree.bmp", window->GetSurface()->format ) );
+    auto texture1 = shared_ptr<Texture>( new Texture( "tree.bmp" ) );
 
     // draw loop
     bool running = true;
@@ -262,7 +259,7 @@ void demo_DisplayTexture( Window* window )
         #ifdef PRINT_DEBUG_STUFF
             window->timer.printTimes();
         #endif // PRINT_DEBUG_STUFF
-        window->updateTitleWithFPS( 60 );
+        window->updateTitleWithFPS( 120 );
     }
 }
 
@@ -272,7 +269,7 @@ int main( int argc, char* argv[] )
     try
     {
         // create window and run demos
-        Window *window = new Window( 1024, 768, 1, "Software Renderer", 05 );
+        Window *window = new Window( 1024, 768, 1, "Software Renderer", 0 );
         window->timer.SetDeltaLimits( (1.0/20.0) * 1000 ); // delta time >= 20 FPS
 
         switch( current_demo )

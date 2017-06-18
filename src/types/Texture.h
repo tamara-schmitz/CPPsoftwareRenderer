@@ -10,7 +10,7 @@ class Texture
     public:
         Texture( Uint16 width, Uint16 height ); // default constructor
         Texture( Uint16& width, Uint16& height ); // reference constructor
-        explicit Texture( const char* pathtofile, SDL_PixelFormat* surface_format ); // texture from bmp constructor
+        explicit Texture( const char* pathtofile ); // texture from bmp constructor
 
         ~Texture(); // default deconstructor
 
@@ -32,7 +32,7 @@ class Texture
         bool t_transparent;
 
         // imports pixels from an sdl_surface
-        void ImportFromSurface( SDL_Surface* surface, SDL_PixelFormat* surface_format );
+        void ImportFromSurface( SDL_Surface* surface );
 
 };
 

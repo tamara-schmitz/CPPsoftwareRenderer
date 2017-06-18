@@ -16,7 +16,7 @@ Texture::Texture( Uint16& width, Uint16& height )
     t_pixels.resize( width * height );
 }
 
-Texture::Texture( const char* pathtofile, SDL_PixelFormat* surface_format )
+Texture::Texture( const char* pathtofile )
 {
     //ctor
 
@@ -24,9 +24,9 @@ Texture::Texture( const char* pathtofile, SDL_PixelFormat* surface_format )
     SDL_Surface* textureSurface = SDL_LoadBMP( pathtofile );
 
     // convert surface to texture
-    if ( textureSurface != NULL )
+    if ( textureSurface != nullptr )
     {
-        ImportFromSurface( textureSurface, surface_format );
+        ImportFromSurface( textureSurface );
         // free surface
         SDL_FreeSurface( textureSurface );
     }
@@ -36,7 +36,7 @@ Texture::Texture( const char* pathtofile, SDL_PixelFormat* surface_format )
     }
 }
 
-void Texture::ImportFromSurface( SDL_Surface* surface, SDL_PixelFormat* surface_format )
+void Texture::ImportFromSurface( SDL_Surface* surface )
 {
     // get dimensions of surface
     t_width = surface->w;

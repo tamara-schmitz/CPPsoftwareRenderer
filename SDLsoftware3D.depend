@@ -62,12 +62,10 @@
 	<iostream>
 	"window.h"
 
-1497782520 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
-	<exception>
-	<vector>
-	<memory>
-	"vmath-0.12/vmath.h"
+1497788699 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"common.h"
+	<exception>
+	"vmath-0.12/vmath.h"
 	"window/window.h"
 	"early_demos/starfield.h"
 	"early_demos/scanRenderer.h"
@@ -154,7 +152,7 @@
 1490110994 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/common.h
 	<SDL2/SDL.h>
 
-1497781887 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
+1497783165 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
 	"rasteriser.h"
 
 1497781880 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
@@ -251,11 +249,11 @@
 1491683900 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/Texture.cpp
 	"Texture.h"
 
-1497779954 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.h
+1497788306 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.h
 	"common.h"
 	<exception>
 	<stdexcept>
 
-1497780039 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
+1497788314 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
 	"Texture.h"
 
