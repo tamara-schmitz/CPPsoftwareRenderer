@@ -18,7 +18,7 @@ Window::Window( int width, int height, double scale, std::string title, double f
     // Initialise SDL context
     if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS ) < 0 )
     {
-        std::cout << "Couldn't init SDL!" << std::endl << SDL_GetError();
+        cout << "Couldn't init SDL!" << endl << SDL_GetError();
     }
 
     // Create Window
@@ -27,7 +27,7 @@ Window::Window( int width, int height, double scale, std::string title, double f
                                       w_width, w_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
     if ( w_window == nullptr )
     {
-        std::cout << "Couldn't init window!" << std::endl << SDL_GetError();
+        cout << "Couldn't init window!" << endl << SDL_GetError();
     }
     SDL_SetWindowMinimumSize( w_window, w_width, w_height );
 
@@ -35,7 +35,7 @@ Window::Window( int width, int height, double scale, std::string title, double f
     r_renderer = SDL_CreateRenderer( w_window, -1, 0 );
     if ( r_renderer == nullptr )
     {
-        std::cout << "Couldn't init renderer!" << std::endl << SDL_GetError();
+        cout << "Couldn't init renderer!" << endl << SDL_GetError();
     }
     SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
     SDL_RenderSetLogicalSize( r_renderer, r_width, r_height );
@@ -47,7 +47,7 @@ Window::Window( int width, int height, double scale, std::string title, double f
                                         r_width, r_height );
     if ( r_ptexture == NULL )
     {
-        std::cout << "Couldn't init ptexture!" << std::endl << SDL_GetError();
+        cout << "Couldn't init ptexture!" << endl << SDL_GetError();
     }
     SDL_SetTextureBlendMode( r_ptexture, SDL_BLENDMODE_NONE );
 
@@ -57,7 +57,7 @@ Window::Window( int width, int height, double scale, std::string title, double f
                                         r_width, r_height );
     if ( r_ltexture == NULL )
     {
-        std::cout << "Couldn't init ltexture!" << std::endl << SDL_GetError();
+        cout << "Couldn't init ltexture!" << endl << SDL_GetError();
     }
     SDL_SetTextureBlendMode( r_ltexture, SDL_BLENDMODE_BLEND );
 
@@ -74,7 +74,7 @@ Window::Window( int width, int height, double scale, std::string title, double f
     }
 
     // Done
-    std::cout << "Init complete!" << std::endl;
+    cout << "Init complete!" << endl;
 }
 
 void Window::reserveAddLines( Uint64 amount )
@@ -266,6 +266,6 @@ Window::~Window()
     SDL_Quit();
 
     #ifdef PRINT_DEBUG_STUFF
-    std::cout << "Dtor of Window object was called!" << std::endl;
+    cout << "Dtor of Window object was called!" << endl;
     #endif // PRINT_DEBUG_STUFF
 }

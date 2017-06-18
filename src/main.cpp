@@ -227,7 +227,7 @@ void demo_rasteriser( Window *window )
         #ifdef PRINT_DEBUG_STUFF
             window->timer.printTimes();
         #endif // PRINT_DEBUG_STUFF
-        window->updateTitleWithFPS( 60 );
+        window->updateTitleWithFPS( 120 );
     }
 }
 

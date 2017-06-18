@@ -80,6 +80,7 @@ void   Timer::nsSleep(Uint64 ns)
 // tick function
 void Timer::TickCall()
 {
+    //-- END OF FRAME
     // update maintime counter
     r_tickNow_main = GetHighResClockNs();
     // calculate maintime diff
@@ -95,18 +96,18 @@ void Timer::TickCall()
     r_tickLast_main = GetHighResClockNs();
     r_tickLast = r_tickNow;
     r_tickNow  = GetHighResClockNs();
+
+    //-- BEGINNING OF FRAME
     // calculate frametime diff
     r_frametime_nano = r_tickNow - r_tickLast;
-
     // update deltatime
     if ( r_deltatimeLimit_max >= 0 ) // delta same as frametime if no valid limit
     {
         r_deltatime_nano = clipNumber( r_frametime_nano, (Uint64) 0, r_deltatimeLimit_max );
     }
-
     // calculate sleep overrun ( ^= differnence between expected vs real sleep time )
     r_sleepOverrun  = r_frametime_nano - ( r_tickLimit - r_sleepOverrun );
-    if ( r_frametime_nano < r_tickLimit )
+    if ( r_frametime_nano < r_tickLimit || r_tickLimit == 0 )
     {
         r_sleepOverrun = 0;
     }
@@ -115,9 +116,9 @@ void Timer::TickCall()
 // pretty print
 void Timer::printTimes()
 {
-    std::cout << "Framerate: "  << GetCurrentFPS()
+    cout << "Framerate: "  << GetCurrentFPS()
               << " Frametime: " << GetFrametime() / ( 1000.0f * 1000.0f ) << " ms"
               << " Maintime: "  << GetMaintime()  / ( 1000.0f * 1000.0f ) << " ms"
               << " Sleepoverun: " << r_sleepOverrun / ( 1000.0f * 1000.0f ) << " ms"
-              << std::endl;
+              << endl;
 }
