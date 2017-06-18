@@ -148,6 +148,6 @@ Texture::~Texture()
 {
     //dtor
     #ifdef PRINT_DEBUG_STUFF
-        std::cout << "Dtor of Texture object was called!" << std::endl;
+        cout << "Dtor of Texture object was called!" << endl;
     #endif // PRINT_DEBUG_STUFF
 }

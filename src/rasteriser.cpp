@@ -20,7 +20,7 @@ void Rasteriser::SetDrawColour( const SDL_Color& color )
     current_texture_height = 0;
 }
 
-void Rasteriser::SetDrawTexture( const Texture* texture )
+void Rasteriser::SetDrawTexture( shared_ptr<Texture> texture )
 {
     drawWithTexture = true;
 
@@ -91,7 +91,7 @@ void Rasteriser::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Verte
     yMaxPos.divideByWOnly();
 
     #ifdef PRINT_DEBUG_STUFF
-            std::cout << "yMinVert - x: " << yMinPos.x << " y: " << yMidPos.y << " z: " << yMaxPos.z << std::endl;
+            cout << "yMinVert - x: " << yMinPos.x << " y: " << yMidPos.y << " z: " << yMaxPos.z << endl;
     #endif // PRINT_DEBUG_STUFF
 
     // sort verts
@@ -219,6 +219,6 @@ Rasteriser::~Rasteriser()
     //dtor
 
     #ifdef PRINT_DEBUG_STUFF
-        std::cout << "Dtor of Rasteriser object was called!" << std::endl;
+        cout << "Dtor of Rasteriser object was called!" << endl;
     #endif // PRINT_DEBUG_STUFF
 }

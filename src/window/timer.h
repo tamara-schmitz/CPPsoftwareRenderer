@@ -1,8 +1,8 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <SDL2/SDL_stdinc.h>
 #include "common.h"
+#include <SDL2/SDL_stdinc.h>
 
 // import unix/c++ library for highresclock and nanosleep
 #ifdef __unix__

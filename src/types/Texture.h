@@ -1,12 +1,9 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include <iostream>
-#include <vector>
+#include "common.h"
 #include <exception>
 #include <stdexcept>
-#include <SDL2/SDL.h>
-#include "common.h"
 
 class Texture
 {

@@ -1,6 +1,7 @@
 #ifndef RASTERISER_H
 #define RASTERISER_H
 
+#include "common.h"
 #include "vmath-0.12/vmath.h"
 #include "types/Edge.h"
 #include "types/TexCoordsForEdge.h"
@@ -18,7 +19,7 @@ class Rasteriser
 
         // set render colour / texture (setting one type deletes the other
         void SetDrawColour( const SDL_Color& color );
-        void SetDrawTexture( const Texture* texture ); // pass by pointer
+        void SetDrawTexture( shared_ptr<Texture> texture ); // passed by shared pointer
 
         //-- update matrices
         void UpdateViewMatrix( const Matrix4f& viewMatrix );
@@ -36,9 +37,9 @@ class Rasteriser
         //-- render vars
 
         // determines whether a texture or a colour should be drawn
-        bool drawWithTexture;
-        SDL_Color current_colour; // contains current render color
-        const Texture* current_texture = nullptr; // contains pointer to current render texture
+        bool drawWithTexture = false;
+        SDL_Color current_colour = { 0, 0, 0, SDL_ALPHA_TRANSPARENT }; // contains current render color
+        shared_ptr<Texture> current_texture = NULL; // contains shared pointer to current render texture
         Uint16 current_texture_width = 0, current_texture_height = 0;
 
         // matrices

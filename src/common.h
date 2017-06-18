@@ -2,7 +2,16 @@
 #define COMMON_H
 
 #include <iostream>
+#include <memory>
+#include <vector>
+#include <string>
+
 #include <SDL2/SDL.h>
+
+using std::cout;
+using std::endl;
+using std::shared_ptr;
+using std::weak_ptr;
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846

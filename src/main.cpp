@@ -1,11 +1,14 @@
 #include <exception>
 #include <vector>
+#include <memory>
 #include "vmath-0.12/vmath.h"
 #include "common.h"
 #include "window/window.h"
 #include "early_demos/starfield.h"
 #include "early_demos/scanRenderer.h"
 #include "rasteriser.h"
+
+using std::shared_ptr;
 
 // This project is based on BennyQBD's 3D software renderer project
 // Github: https://github.com/BennyQBD/3DSoftwareRenderer
@@ -175,11 +178,11 @@ void demo_shapes( Window *window )
 
 void demo_rasteriser( Window *window )
 {
-    Rasteriser* raster = new Rasteriser( window );
+    auto raster = shared_ptr<Rasteriser>( new Rasteriser( window ) );
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
-    Texture* triangleTexture = new Texture( (Uint16) 150, (Uint16) 150 ); // needs to be destroyed!
-    Texture* bmpTexture = new Texture( "cb.bmp", window->GetSurface()->format ); // needs to be destroyed!
+    auto triangleTexture = shared_ptr<Texture>( new Texture( (Uint16) 150, (Uint16) 150 ) ); // needs to be destroyed!
+    auto bmpTexture = shared_ptr<Texture>( new Texture( "cb.bmp", window->GetSurface()->format ) ); // needs to be destroyed!
     triangleTexture->FillWithRandomPixels();
 
     Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 2.5f );
@@ -196,8 +199,8 @@ void demo_rasteriser( Window *window )
     v1.posVec = Vector4f {   -1, -1, 0, 1 };
     v2.posVec = Vector4f {    0,  1, 0, 1 };
     v3.posVec = Vector4f {    1, -1, 0, 1 };
-    v1.texVec = Vector4f {    0,  1, 0, 0 };
-    v2.texVec = Vector4f { 0.5f,  0, 0, 0 };
+    v1.texVec = Vector4f {    0,  1, 0, 0 }; // texels starts at bottom,left. texture at top,left.
+    v2.texVec = Vector4f { 0.5f,  0, 0, 0 }; // texels coords compensate for that.
     v3.texVec = Vector4f {    1,  1, 0, 0 };
 
     bool running = true;
@@ -229,17 +232,12 @@ void demo_rasteriser( Window *window )
         #endif // PRINT_DEBUG_STUFF
         window->updateTitleWithFPS( 60 );
     }
-
-    // dtor
-    delete triangleTexture;
-    delete bmpTexture;
-    delete raster;
 }
 
 void demo_DisplayTexture( Window* window )
 {
     // create a texture
-    Texture* texture1 = new Texture( "tree.bmp", window->GetSurface()->format ); // must be deleted after use!
+    auto texture1 = shared_ptr<Texture>( new Texture( "tree.bmp", window->GetSurface()->format ) );
 
     // draw loop
     bool running = true;
@@ -265,12 +263,7 @@ void demo_DisplayTexture( Window* window )
             window->timer.printTimes();
         #endif // PRINT_DEBUG_STUFF
         window->updateTitleWithFPS( 60 );
-
-
     }
-
-    // dtor
-    delete texture1;
 }
 
 int main( int argc, char* argv[] )
@@ -279,7 +272,7 @@ int main( int argc, char* argv[] )
     try
     {
         // create window and run demos
-        Window *window = new Window( 1024, 768, 1, "Software Renderer", 0 );
+        Window *window = new Window( 1024, 768, 1, "Software Renderer", 05 );
         window->timer.SetDeltaLimits( (1.0/20.0) * 1000 ); // delta time >= 20 FPS
 
         switch( current_demo )

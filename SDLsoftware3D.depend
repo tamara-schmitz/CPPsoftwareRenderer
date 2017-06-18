@@ -62,9 +62,10 @@
 	<iostream>
 	"window.h"
 
-1497730129 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1497782520 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	<exception>
 	<vector>
+	<memory>
 	"vmath-0.12/vmath.h"
 	"common.h"
 	"window/window.h"
@@ -153,10 +154,11 @@
 1490110994 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/common.h
 	<SDL2/SDL.h>
 
-1497706225 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
+1497781887 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
 	"rasteriser.h"
 
-1492248957 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
+1497781880 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
+	"common.h"
 	"vmath-0.12/vmath.h"
 	"types/Edge.h"
 	"types/TexCoordsForEdge.h"
@@ -173,19 +175,15 @@
 	"window/window.h"
 	"vmath-0.12/vmath.h"
 
-1497715490 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.h
+1497780011 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.h
 	"common.h"
 	<stdio.h>
-	<SDL2/SDL.h>
-	<string>
 	<sstream>
-	<iostream>
-	<vector>
 	"timer.h"
 
-1490362256 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/timer.h
-	<SDL2/SDL_stdinc.h>
+1497779975 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/timer.h
 	"common.h"
+	<SDL2/SDL_stdinc.h>
 	<unistd.h>
 	<chrono>
 	<thread>
@@ -211,8 +209,11 @@
 1497638281 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.cpp
 	"window/window.h"
 
-1497708841 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.h
+1497780285 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.h
 	<iostream>
+	<memory>
+	<vector>
+	<string>
 	<SDL2/SDL.h>
 
 1490186677 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/Edge.cpp
@@ -250,14 +251,11 @@
 1491683900 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/Texture.cpp
 	"Texture.h"
 
-1497729193 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.h
-	<iostream>
-	<vector>
+1497779954 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.h
+	"common.h"
 	<exception>
 	<stdexcept>
-	<SDL2/SDL.h>
-	"common.h"
 
-1497730763 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
+1497780039 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
 	"Texture.h"
 
