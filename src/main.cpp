@@ -180,11 +180,15 @@ void demo_rasteriser( Window *window )
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     auto triangleTexture = shared_ptr<Texture>( new Texture( (Uint16) 150, (Uint16) 150 ) );
     triangleTexture->FillWithRandomPixels();
-    auto bmpTexture = shared_ptr<Texture>( new Texture( "tree.bmp" ) );
+    auto bmpTexture = shared_ptr<Texture>( new Texture( "/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/examples/tree.bmp" ) );
+    auto sphereModel = shared_ptr<Mesh>( new Mesh( "/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/examples/sphere.obj" ) );
+    auto chaletTexture = shared_ptr<Texture>( new Texture( "/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/examples/chalet.bmp" ) );
+    auto chaletModel = shared_ptr<Mesh>( new Mesh( "/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/examples/chalet.obj" ) );
 
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 2.5f );
+    Matrix4f objMatrix = Matrix4f::createTranslation( 0, 0, 0 );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 100.0f );
 
-    raster->UpdateViewAndPerspectiveMatrix( viewMatrix, 80, 0.1f, 0.9f );
+    raster->UpdateViewAndPerspectiveMatrix( viewMatrix, 80, 0.1f, 1000.0f );
     raster->SetDrawColour( triangleColor );
     raster->SetDrawTexture( triangleTexture );
     raster->SetDrawTexture( bmpTexture );
@@ -196,9 +200,9 @@ void demo_rasteriser( Window *window )
     v1.posVec = Vector4f {   -1, -1, 0, 1 };
     v2.posVec = Vector4f {    0,  1, 0, 1 };
     v3.posVec = Vector4f {    1, -1, 0, 1 };
-    v1.texVec = Vector4f {    0,  1, 0, 0 }; // texels starts at bottom,left. texture at top,left.
-    v2.texVec = Vector4f { 0.5f,  0, 0, 0 }; // texels coords compensate for that.
-    v3.texVec = Vector4f {    1,  1, 0, 0 };
+    v1.texVec = Vector2f {    0,  1, }; // texels starts at bottom,left. texture at top,left.
+    v2.texVec = Vector2f { 0.5f,  0, }; // texels coords compensate for that.
+    v3.texVec = Vector2f {    1,  1, };
 
     bool running = true;
     while ( running )
@@ -221,20 +225,26 @@ void demo_rasteriser( Window *window )
         #endif // PRINT_DEBUG_STUFF
 
         // draw triangle
+        raster->SetDrawTexture( bmpTexture );
         raster->FillTriangle( v1, v2, v3 );
+
+        // draw mesh
+        raster->DrawMesh( sphereModel, objMatrix );
+//        raster->SetDrawTexture( chaletTexture );
+//        raster->DrawMesh( chaletModel, objMatrix );
 
         window->updateWindow();
         #ifdef PRINT_DEBUG_STUFF
             window->timer.printTimes();
         #endif // PRINT_DEBUG_STUFF
-        window->updateTitleWithFPS( 120 );
+        window->updateTitleWithFPS( 60 );
     }
 }
 
 void demo_DisplayTexture( Window* window )
 {
     // create a texture
-    auto texture1 = shared_ptr<Texture>( new Texture( "tree.bmp" ) );
+    auto texture1 = shared_ptr<Texture>( new Texture( "examples/tree.bmp" ) );
 
     // draw loop
     bool running = true;
@@ -259,7 +269,7 @@ void demo_DisplayTexture( Window* window )
         #ifdef PRINT_DEBUG_STUFF
             window->timer.printTimes();
         #endif // PRINT_DEBUG_STUFF
-        window->updateTitleWithFPS( 120 );
+        window->updateTitleWithFPS( 240 );
     }
 }
 

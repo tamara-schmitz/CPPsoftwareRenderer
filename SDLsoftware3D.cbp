@@ -12,7 +12,10 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-march=corei7-avx" />
+					<Add option="-march=corei7" />
+					<Add option="-Wredundant-decls" />
+					<Add option="-Winline" />
+					<Add option="-Wmain" />
 					<Add option="-Wall" />
 					<Add option="-std=c++11" />
 					<Add option="-m64" />
@@ -25,7 +28,7 @@
 				<Linker>
 					<Add option="-m64" />
 					<Add option="-lprofiler" />
-					<Add library="SDL2" />
+					<Add option="-lSDL2" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -34,7 +37,7 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-march=corei7-avx" />
+					<Add option="-march=corei7" />
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
@@ -48,6 +51,7 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-m64" />
+					<Add option="-lSDL2" />
 				</Linker>
 			</Target>
 		</Build>
@@ -60,6 +64,7 @@
 			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="cb.bmp" />
+		<Unit filename="include/tiny_obj_loader.h" />
 		<Unit filename="include/vmath-0.12/vmath.h" />
 		<Unit filename="src/common.cpp" />
 		<Unit filename="src/common.h" />
@@ -72,6 +77,9 @@
 		<Unit filename="src/rasteriser.h" />
 		<Unit filename="src/types/Edge.cpp" />
 		<Unit filename="src/types/Edge.h" />
+		<Unit filename="src/types/Exceptions.h" />
+		<Unit filename="src/types/Mesh.cpp" />
+		<Unit filename="src/types/Mesh.h" />
 		<Unit filename="src/types/TexCoordsForEdge.cpp" />
 		<Unit filename="src/types/TexCoordsForEdge.h" />
 		<Unit filename="src/types/Texture.cpp" />

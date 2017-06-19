@@ -63,6 +63,24 @@ void Rasteriser::UpdateViewAndPerspectiveMatrix( const Matrix4f& viewMatrix, con
     UpdateVpsMatrix();
 }
 
+void Rasteriser::DrawMesh( shared_ptr<Mesh> mesh, const Matrix4f& objToWorld )
+{
+    // iterate over each triangle
+    for ( Uint32 i = 0; i < mesh->GetIndicesCount(); i += 3 )
+    {
+        // get vertices
+        Vertexf v1 = mesh->GetVertex( mesh->GetIndex( i ) );
+        Vertexf v2 = mesh->GetVertex( mesh->GetIndex( i + 1 ) );
+        Vertexf v3 = mesh->GetVertex( mesh->GetIndex( i + 2 ) );
+        // apply objToWorld transform
+        v1.posVec = objToWorld * v1.posVec;
+        v2.posVec = objToWorld * v2.posVec;
+        v3.posVec = objToWorld * v3.posVec;
+        // fill triangle
+        FillTriangle( v1, v2, v3 );
+    }
+}
+
 void Rasteriser::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 )
 {
     // set up alias for input vectors
@@ -75,42 +93,46 @@ void Rasteriser::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Verte
     Vertexf yMidVert = v2;
     Vertexf yMaxVert = v3;
 
-    // create reference to posVec
-    Vector4f& yMinPos = yMinVert.posVec;
-    Vector4f& yMidPos = yMidVert.posVec;
-    Vector4f& yMaxPos = yMaxVert.posVec;
-
     // apply transformation matrix
-    yMinPos = ( vpsMatrix * yMinPos );
-    yMidPos = ( vpsMatrix * yMidPos );
-    yMaxPos = ( vpsMatrix * yMaxPos );
+    yMinVert.posVec = ( vpsMatrix * yMinVert.posVec );
+    yMidVert.posVec = ( vpsMatrix * yMidVert.posVec );
+    yMaxVert.posVec = ( vpsMatrix * yMaxVert.posVec );
 
     // divide posVec by W (this is the perspective divison)
-    yMinPos.divideByWOnly();
-    yMidPos.divideByWOnly();
-    yMaxPos.divideByWOnly();
+    yMinVert.posVec.divideByWOnly();
+    yMidVert.posVec.divideByWOnly();
+    yMaxVert.posVec.divideByWOnly();
+
+    // calculate handedness
+    float area = triangleArea< float >( yMinVert.posVec, yMaxVert.posVec, yMidVert.posVec );
+    // true if right handed (and hence area smaller than 0)
+    bool handedness = area >= 0;
+
+    // cull triangle if right-handed (we use left-handed cartesian coordinates)
+    if ( handedness )
+    {
+        return;
+    }
 
     #ifdef PRINT_DEBUG_STUFF
-            cout << "yMinVert - x: " << yMinPos.x << " y: " << yMidPos.y << " z: " << yMaxPos.z << endl;
+            cout << "yMinVert - x: " << yMinVert.posVec.x << " y: " << yMidVert.posVec.y << " z: " << yMaxVert.posVec.z << endl;
     #endif // PRINT_DEBUG_STUFF
 
     // sort verts
-    if ( yMaxPos.y < yMidPos.y )
+    if ( yMaxVert.posVec.y < yMidVert.posVec.y )
     {
         std::swap( yMidVert, yMaxVert );
     }
-    if ( yMidPos.y < yMinPos.y )
+    if ( yMidVert.posVec.y < yMinVert.posVec.y )
     {
         std::swap( yMinVert, yMidVert );
     }
-    if ( yMaxPos.y < yMidPos.y )
+    if ( yMaxVert.posVec.y < yMidVert.posVec.y )
     {
         std::swap( yMidVert, yMaxVert );
     }
 
-    float area = triangleArea< float >( yMinPos, yMaxPos, yMidPos );
-    // true if right handed (and hence area smaller than 0)
-    bool handedness = area >= 0;
+
 
     ScanTriangle( yMinVert, yMidVert, yMaxVert, handedness );
 }

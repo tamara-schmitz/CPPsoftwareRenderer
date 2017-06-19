@@ -11,7 +11,7 @@ template< typename T >
 struct Vertex
 {
     Vector4<T> posVec;
-    Vector4<T> texVec;
+    Vector2<T> texVec;
 };
 
 typedef Vertex< int > Vertexi;

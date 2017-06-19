@@ -6,6 +6,7 @@
 #include "types/Edge.h"
 #include "types/TexCoordsForEdge.h"
 #include "types/Texture.h"
+#include "types/Mesh.h"
 #include "window/window.h"
 
 class Rasteriser
@@ -29,15 +30,15 @@ class Rasteriser
         void UpdateViewAndPerspectiveMatrix( const Matrix4f& viewMatrix, const Matrix4f& perspectiveMatrix );
         void UpdateViewAndPerspectiveMatrix( const Matrix4f& viewMatrix, const float& fov, const float& zNear, const float& zFar );
 
-        void FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 );
+        void DrawMesh( shared_ptr<Mesh> mesh, const Matrix4f& objToWorld ); // draws a mesh. objToWorld converts from object space to world space
+        void FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 ); // draws a triangle
 
     private:
         Window* w_window;
 
         //-- render vars
 
-        // determines whether a texture or a colour should be drawn
-        bool drawWithTexture = false;
+        bool drawWithTexture = false; // determines whether a texture or a colour should be drawn
         SDL_Color current_colour = { 0, 0, 0, SDL_ALPHA_TRANSPARENT }; // contains current render color
         shared_ptr<Texture> current_texture = NULL; // contains shared pointer to current render texture
         Uint16 current_texture_width = 0, current_texture_height = 0;

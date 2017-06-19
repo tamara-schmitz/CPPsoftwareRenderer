@@ -62,7 +62,7 @@
 	<iostream>
 	"window.h"
 
-1497788954 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1497887623 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"common.h"
 	<exception>
 	"vmath-0.12/vmath.h"
@@ -152,15 +152,16 @@
 1490110994 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/common.h
 	<SDL2/SDL.h>
 
-1497783165 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
+1497886921 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
 	"rasteriser.h"
 
-1497781880 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
+1497870146 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
 	"common.h"
 	"vmath-0.12/vmath.h"
 	"types/Edge.h"
 	"types/TexCoordsForEdge.h"
 	"types/Texture.h"
+	"types/Mesh.h"
 	"window/window.h"
 
 1490131214 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/early_demos/scanRenderer.cpp
@@ -204,14 +205,17 @@
 	"timer.h"
 	<iostream>
 
-1497638281 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.cpp
+1497789642 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.cpp
 	"window/window.h"
 
-1497780285 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.h
+1497881047 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.h
 	<iostream>
 	<memory>
 	<vector>
 	<string>
+	<unordered_map>
+	<cmath>
+	<limits>
 	<SDL2/SDL.h>
 
 1490186677 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/Edge.cpp
@@ -241,7 +245,7 @@
 1491564490 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Vertex.cpp
 	"Vertex.h"
 
-1491677839 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Vertex.h
+1497797597 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Vertex.h
 	"common.h"
 	"SDL2/SDL_types.h"
 	"vmath-0.12/vmath.h"
@@ -254,6 +258,29 @@
 	<exception>
 	<stdexcept>
 
-1497788765 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
+1497879696 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
 	"Texture.h"
+
+1497888102 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Mesh.cpp
+	"Mesh.h"
+	"tiny_obj_loader.h"
+
+1497881306 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Mesh.h
+	"common.h"
+	"Vertex.h"
+	"tiny_obj_loader.h"
+
+1497798306 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/tiny_obj_loader.h
+	<map>
+	<string>
+	<vector>
+	<cassert>
+	<cctype>
+	<cmath>
+	<cstddef>
+	<cstdlib>
+	<cstring>
+	<utility>
+	<fstream>
+	<sstream>
 

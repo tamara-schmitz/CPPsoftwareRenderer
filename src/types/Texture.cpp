@@ -6,6 +6,9 @@ Texture::Texture( Uint16 width, Uint16 height )
     t_width = width;
     t_height = height;
     t_pixels.resize( width * height );
+
+    // shrink capacity to accommodate for new size
+    t_pixels.shrink_to_fit();
 }
 
 Texture::Texture( Uint16& width, Uint16& height )
@@ -14,6 +17,9 @@ Texture::Texture( Uint16& width, Uint16& height )
     t_width = width;
     t_height = height;
     t_pixels.resize( width * height );
+
+    // shrink capacity to accommodate for new size
+    t_pixels.shrink_to_fit();
 }
 
 Texture::Texture( const char* pathtofile )
@@ -33,6 +39,7 @@ Texture::Texture( const char* pathtofile )
     else
     {
         std::cout << "Load BMP " << pathtofile << " failed!" << std::endl << SDL_GetError();
+        throw std::runtime_error( SDL_GetError() );
     }
 }
 
@@ -43,6 +50,8 @@ void Texture::ImportFromSurface( SDL_Surface* surface )
     t_height = surface->h;
     // allocate texture memory
     t_pixels.resize( t_width * t_height );
+    // shrink capacity to accommodate for new size
+    t_pixels.shrink_to_fit();
     // check if surface has transparency
     t_transparent = surface->format->Amask != 0; // alphaMask==0 if no alpha according to docs
 
@@ -86,6 +95,10 @@ void Texture::ImportFromSurface( SDL_Surface* surface )
 
 SDL_Color Texture::GetPixel( const Uint16& x, const Uint16& y ) const
 {
+    if ( x < 0 || x >= t_width || y < 0 || y >= t_height )
+    {
+        throw ( std::runtime_error("Invalid coordinates for texture access!") );
+    }
     return t_pixels.at( y * t_width + x );
 }
 

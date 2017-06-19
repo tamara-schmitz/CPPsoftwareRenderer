@@ -5,6 +5,9 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <unordered_map>
+#include <cmath>
+#include <limits>
 
 #include <SDL2/SDL.h>
 
@@ -52,6 +55,28 @@ const I& clipNumber( const I& i, const I& iMin, const I& iMax )
     {
         return i;
     }
+}
+template< typename I >
+const bool AlmostEqual( const I& a, const I& b )
+{
+    double epsilon = 4.88e-04;
+    I diff = fabs( fabs(a) - fabs(b) );
+
+    if ( a == b ) // in case that's actually true
+    {
+        return true;
+    }
+    else if ( a == 0 || b == 0 || diff < std::numeric_limits<float>::lowest() )
+    {
+        // a or b close to zero, hence relative error is less relevant
+        return diff < ( epsilon * std::numeric_limits<float>::lowest() );
+    }
+    else
+    {
+        // use relative error
+        return diff / std::min( ( fabs(a) + fabs(b) ), std::numeric_limits<float>::max() );
+    }
+
 }
 
 template< typename I, typename T >
