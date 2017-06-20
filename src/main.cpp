@@ -185,10 +185,15 @@ void demo_rasteriser( Window *window )
     auto chaletTexture = shared_ptr<Texture>( new Texture( "/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/examples/chalet.bmp" ) );
     auto chaletModel = shared_ptr<Mesh>( new Mesh( "/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/examples/chalet.obj" ) );
 
-    Matrix4f objMatrix = Matrix4f::createTranslation( 0, 0, 0 );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 100.0f );
+//    Matrix4f objMatrix = Matrix4f::createTranslation( 0, 0, 0 );
+//    Matrix4f objMatrix = Matrix4f::createScale( 0.2f, 0.2f, 0.2f );
+    float absoluteRotation = 0.0f;
+    Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 90, 0 ) * Matrix4f::createScale( 0.8f, 0.8f, 0.8f );
+    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0.0f );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, -3.0f );
+    raster->UpdateViewMatrix( viewMatrix );
+    raster->UpdatePerspectiveMatrix( 3000, 0.1f, 1000.0f );
 
-    raster->UpdateViewAndPerspectiveMatrix( viewMatrix, 80, 0.1f, 1000.0f );
     raster->SetDrawColour( triangleColor );
     raster->SetDrawTexture( triangleTexture );
     raster->SetDrawTexture( bmpTexture );
@@ -200,9 +205,9 @@ void demo_rasteriser( Window *window )
     v1.posVec = Vector4f {   -1, -1, 0, 1 };
     v2.posVec = Vector4f {    0,  1, 0, 1 };
     v3.posVec = Vector4f {    1, -1, 0, 1 };
-    v1.texVec = Vector2f {    0,  1, }; // texels starts at bottom,left. texture at top,left.
-    v2.texVec = Vector2f { 0.5f,  0, }; // texels coords compensate for that.
-    v3.texVec = Vector2f {    1,  1, };
+    v1.texVec = Vector2f {    0,  1 }; // texels starts at bottom,left. texture at top,left.
+    v2.texVec = Vector2f { 0.5f,  0 }; // texels coords compensate for that.
+    v3.texVec = Vector2f {    1,  1 };
 
     bool running = true;
     while ( running )
@@ -213,6 +218,7 @@ void demo_rasteriser( Window *window )
 
         // get per frame rotation factor
         float rotationFactor = 100 * (window->timer.GetDeltaTime() / 1000000000.0);
+        absoluteRotation += rotationFactor;
         // create rotation matrix
         Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0 );
 
@@ -226,12 +232,15 @@ void demo_rasteriser( Window *window )
 
         // draw triangle
         raster->SetDrawTexture( bmpTexture );
+        raster->UpdateObjectToWorldMatrix( objMatrix_triangle );
         raster->FillTriangle( v1, v2, v3 );
 
         // draw mesh
-        raster->DrawMesh( sphereModel, objMatrix );
+        objMatrix_mesh = Matrix4f::createScale( 0.01f, 0.01f, 0.01f ) * Matrix4f::createRotationAroundAxis( 0, absoluteRotation, 0 );
+        raster->UpdateObjectToWorldMatrix( objMatrix_mesh );
+        raster->DrawMesh( sphereModel );
 //        raster->SetDrawTexture( chaletTexture );
-//        raster->DrawMesh( chaletModel, objMatrix );
+//        raster->DrawMesh( chaletModel );
 
         window->updateWindow();
         #ifdef PRINT_DEBUG_STUFF

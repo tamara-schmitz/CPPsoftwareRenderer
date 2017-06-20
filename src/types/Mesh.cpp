@@ -39,11 +39,12 @@ Mesh::Mesh( std::string pathToOBJ )
             const tinyobj::index_t& current_index = shape.mesh.indices.at( i );
 
             // get obj index
-            int objindex = OBJindexToNewIndex( attrib, current_index, OBJtoNewposindex_transl );
+            int64_t objindex = OBJindexToNewIndex( attrib, current_index, OBJtoNewposindex_transl );
+//            objindex = -1;
             if ( objindex >= 0 )
             {
                 // vertex already exists. hence refer to it in indices.
-                m_indices.push_back( objindex );
+                m_indices.push_back( (Uint32) objindex );
             }
             else
             {
@@ -72,7 +73,7 @@ Mesh::Mesh( std::string pathToOBJ )
     m_indices.shrink_to_fit();
 }
 
-int Mesh::OBJindexToNewIndex( const tinyobj::attrib_t& attrib, const tinyobj::index_t& obj_index, shared_ptr< std::unordered_map<int, Uint32> > OBJtoNew_List )
+int64_t Mesh::OBJindexToNewIndex( const tinyobj::attrib_t& attrib, const tinyobj::index_t& obj_index, shared_ptr< std::unordered_map<int, Uint32> > OBJtoNew_List )
 {
     // checks if obj_index is already part of OBJtoNew_List
     // @return index of vertex in m_vertices. or -1 if no duplicate

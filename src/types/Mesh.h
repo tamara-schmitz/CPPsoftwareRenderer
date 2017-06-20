@@ -26,7 +26,7 @@ class Mesh
         std::vector< Uint32 > m_indices;
 
         // internal functions
-        int OBJindexToNewIndex( const tinyobj::attrib_t& attrib, const tinyobj::index_t& obj_index, shared_ptr< std::unordered_map<int, Uint32> > OBJtoNew_List );
+        int64_t OBJindexToNewIndex( const tinyobj::attrib_t& attrib, const tinyobj::index_t& obj_index, shared_ptr< std::unordered_map<int, Uint32> > OBJtoNew_List );
 
 };
 

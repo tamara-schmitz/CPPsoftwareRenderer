@@ -5,6 +5,7 @@
 		<Option title="SDLsoftware3D" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<Option virtualFolders="src/types/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/SDLsoftware3D" prefix_auto="1" extension_auto="1" />
@@ -27,7 +28,6 @@
 				</Compiler>
 				<Linker>
 					<Add option="-m64" />
-					<Add option="-lprofiler" />
 					<Add option="-lSDL2" />
 				</Linker>
 			</Target>
@@ -67,7 +67,9 @@
 		<Unit filename="include/tiny_obj_loader.h" />
 		<Unit filename="include/vmath-0.12/vmath.h" />
 		<Unit filename="src/common.cpp" />
-		<Unit filename="src/common.h" />
+		<Unit filename="src/common.h">
+			<Option virtualFolder="src/types/" />
+		</Unit>
 		<Unit filename="src/early_demos/scanRenderer.cpp" />
 		<Unit filename="src/early_demos/scanRenderer.h" />
 		<Unit filename="src/early_demos/starfield.cpp" />

@@ -59,7 +59,7 @@ const I& clipNumber( const I& i, const I& iMin, const I& iMax )
 template< typename I >
 const bool AlmostEqual( const I& a, const I& b )
 {
-    double epsilon = 4.88e-04;
+    I epsilon = 4.88e-04;
     I diff = fabs( fabs(a) - fabs(b) );
 
     if ( a == b ) // in case that's actually true

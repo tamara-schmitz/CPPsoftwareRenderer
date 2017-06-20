@@ -30,52 +30,57 @@ void Rasteriser::SetDrawTexture( shared_ptr<Texture> texture )
     current_texture_height = current_texture->GetHeight();
 }
 
+void Rasteriser::UpdateObjectToWorldMatrix( const Matrix4f& objMatrix )
+{
+    objectToWorldTransformMatrix = objMatrix;
+    UpdateMvpsMatrix();
+}
+
 void Rasteriser::UpdateViewMatrix( const Matrix4f& viewMatrix )
 {
     viewSpaceTransformMatrix = viewMatrix;
-    UpdateVpsMatrix();
+    UpdateMvpsMatrix();
 }
-void Rasteriser::UpdatePerspectiveMatrix( const Matrix4f& perspectiveMatrix )
-{
-    perspectiveTransformMatrix = perspectiveMatrix;
-    UpdateVpsMatrix();
-}
+//void Rasteriser::UpdatePerspectiveMatrix( const Matrix4f& perspectiveMatrix )
+//{
+//    perspectiveTransformMatrix = perspectiveMatrix;
+//    UpdateMvpsMatrix();
+//}
 void Rasteriser::UpdatePerspectiveMatrix( const float& fov, const float& zNear, const float& zFar )
 {
-    perspectiveTransformMatrix = Matrix4f::perspectiveTransform( fov, w_window->Getwidth() / w_window->Getheight(), zNear, zFar );
-    UpdateVpsMatrix();
+    perspectiveTransformMatrix = Matrix4f::createFrustum( fov, w_window->Getwidth(), w_window->Getheight(), zNear, zFar );
+    UpdateMvpsMatrix();
+    near_z = zNear;
+    far_z = zFar;
 }
 void Rasteriser::UpdateScreenspaceTransformMatrix()
 {
     screenspaceTransformMatrix = Matrix4f::screenspaceTransform( w_window->Getwidth() / 2.0f, w_window->Getheight() / 2.0f );
-    UpdateVpsMatrix();
-}
-void Rasteriser::UpdateViewAndPerspectiveMatrix( const Matrix4f& viewMatrix, const Matrix4f& perspectiveMatrix )
-{
-    viewSpaceTransformMatrix = viewMatrix;
-    perspectiveTransformMatrix = perspectiveMatrix;
-    UpdateVpsMatrix();
-}
-void Rasteriser::UpdateViewAndPerspectiveMatrix( const Matrix4f& viewMatrix, const float& fov, const float& zNear, const float& zFar )
-{
-    viewSpaceTransformMatrix = viewMatrix;
-    perspectiveTransformMatrix = Matrix4f::perspectiveTransform( fov, w_window->Getwidth() / w_window->Getheight(), zNear, zFar );
-    UpdateVpsMatrix();
+    UpdateMvpsMatrix();
 }
 
-void Rasteriser::DrawMesh( shared_ptr<Mesh> mesh, const Matrix4f& objToWorld )
+void Rasteriser::DrawMesh( shared_ptr<Mesh> mesh )
 {
     // iterate over each triangle
     for ( Uint32 i = 0; i < mesh->GetIndicesCount(); i += 3 )
+//    for ( Uint32 i = 0; i < 8; i += 3 )
     {
         // get vertices
         Vertexf v1 = mesh->GetVertex( mesh->GetIndex( i ) );
         Vertexf v2 = mesh->GetVertex( mesh->GetIndex( i + 1 ) );
         Vertexf v3 = mesh->GetVertex( mesh->GetIndex( i + 2 ) );
         // apply objToWorld transform
-        v1.posVec = objToWorld * v1.posVec;
-        v2.posVec = objToWorld * v2.posVec;
-        v3.posVec = objToWorld * v3.posVec;
+//        v1.posVec = objToWorld * v1.posVec;
+//        v2.posVec = objToWorld * v2.posVec;
+//        v3.posVec = objToWorld * v3.posVec;
+
+        #ifdef PRINT_DEBUG_STUFF
+            cout << "v1.posVec x: " << v1.posVec.x << " y: " << v1.posVec.y << " z: " << v1.posVec.z << endl;
+
+            Vector4f temp_posvec = viewSpaceTransformMatrix * objectToWorldTransformMatrix * v1.posVec;
+            cout << "v1.posVec times obj and view matrix x:" << temp_posvec.x << " y: " << temp_posvec.y << " z: " << temp_posvec.z << endl;
+        #endif // PRINT_DEBUG_STUFF
+
         // fill triangle
         FillTriangle( v1, v2, v3 );
     }
@@ -94,14 +99,26 @@ void Rasteriser::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Verte
     Vertexf yMaxVert = v3;
 
     // apply transformation matrix
-    yMinVert.posVec = ( vpsMatrix * yMinVert.posVec );
-    yMidVert.posVec = ( vpsMatrix * yMidVert.posVec );
-    yMaxVert.posVec = ( vpsMatrix * yMaxVert.posVec );
+    yMinVert.posVec = mvpsMatrix * yMinVert.posVec;
+    yMidVert.posVec = mvpsMatrix * yMidVert.posVec;
+    yMaxVert.posVec = mvpsMatrix * yMaxVert.posVec;
 
     // divide posVec by W (this is the perspective divison)
     yMinVert.posVec.divideByWOnly();
     yMidVert.posVec.divideByWOnly();
     yMaxVert.posVec.divideByWOnly();
+
+    // cull triangle if z of every posvec is smaller than near plane or bigger than far plane
+    if ( ( yMinVert.posVec.z < GetNearZ() && yMidVert.posVec.z < GetNearZ() && yMaxVert.posVec.z < GetNearZ() ) ||
+         ( yMinVert.posVec.z > GetFarZ() && yMidVert.posVec.z > GetFarZ() && yMaxVert.posVec.z > GetFarZ()) )
+    {
+        #ifdef PRINT_DEBUG_STUFF
+            cout << "Culled because yMinVert.posVec.z: " << yMinVert.posVec.z << endl;
+            cout << "Culled because yMidVert.posVec.z: " << yMidVert.posVec.z << endl;
+            cout << "Culled because yMaxVert.posVec.z: " << yMaxVert.posVec.z << endl;
+        #endif // PRINT_DEBUG_STUFF
+        return;
+    }
 
     // calculate handedness
     float area = triangleArea< float >( yMinVert.posVec, yMaxVert.posVec, yMidVert.posVec );
@@ -113,6 +130,7 @@ void Rasteriser::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Verte
     {
         return;
     }
+
 
     #ifdef PRINT_DEBUG_STUFF
             cout << "yMinVert - x: " << yMinVert.posVec.x << " y: " << yMidVert.posVec.y << " z: " << yMaxVert.posVec.z << endl;

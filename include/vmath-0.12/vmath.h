@@ -2336,6 +2336,26 @@ public:
 	}
 
 
+	// added by Zennoe
+	/** Create OpenGL Frustum but use FOV and aspect ratio instead
+	 *
+	 * @param fov Specify in degrees
+	 * @param width the width of the screen in camera space
+	 * @param height the height of the screen in camera space
+	 * @param zNear Specify the distance to the near clipping plane.  Distance must be positive.
+	 * @param zFar Specify the distance to the far depth clipping plane.  Distance must be positive.
+	 *
+	 * @return Projection matrix for specified frustum.
+	 */
+	static Matrix4<T> createFrustum( T fov, T width, T height, T zNear, T zFar )
+	{
+	    const T fov_radians = ( fov * M_PI / (T) 180 );
+        T halfHeight = std::tan( fov_radians / 2) * zNear;
+        T halfScaledAspect = halfHeight * ( width / height );
+
+        return Matrix4<T>::createFrustum( -halfScaledAspect, halfScaledAspect, -halfHeight, halfHeight, zNear, zFar );
+	}
+
 	/**
 	 * Creates OpenGL compatible perspective projection according specified frustum parameters.
 	 *
@@ -2488,7 +2508,7 @@ public:
 
 	/**
 	 * --Added by Zennoe 2017-03-07
-	 * Creates perspective Transform matrix
+	 * Creates perspective Transform matrix where zFar should be 0
 	 * @param fov Field of View
 	 * @param aspectRatio Aspect Ratio of render resolution
 	 * @param zNear Position of near clipping plane
@@ -2497,6 +2517,28 @@ public:
 	 */
 	 static Matrix4<T> perspectiveTransform( const T fov, const T aspectRatio, const T zNear, const T zFar )
 	 {
+		/*
+		 *
+      	     1
+        ------------       0              A              0
+        tanHalf * aspect
+
+                           1
+            0         ------------        B              0
+                        tanHalf
+
+            0              0              C              D
+
+            0              0              -1             0
+
+                                                     A = (right + left) / (right - left)
+
+                                                     B = (top + bottom) / (top - bottom)
+
+                                                     C = (zNear) / (zNear - zFar)
+
+                                                     D = (2 zFar zNear) / (zNear - zFar)
+        */
         Matrix4<T> ret;
         const T tanHalfFOV = std::tan( fov / 2.0f );
         const T zRange = zNear - zFar;
@@ -2504,8 +2546,9 @@ public:
         ret.at( 0, 0 ) = 1.0f / (tanHalfFOV * aspectRatio);
         ret.at( 1, 1 ) = 1.0f /  tanHalfFOV;
         ret.at( 2, 2 ) = ( zNear ) / zRange;
-        ret.at( 3, 2 ) = ( zFar * zNear ) / zRange;
-        ret.at( 2, 3 ) = - 1.0f;
+        ret.at( 3, 2 ) = ( 2 * zFar * zNear ) / zRange;
+        ret.at( 2, 3 ) = -1;
+        ret.at( 3, 3 ) = 0;
 
         return ret;
 	 }

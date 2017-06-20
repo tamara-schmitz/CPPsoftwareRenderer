@@ -62,7 +62,7 @@
 	<iostream>
 	"window.h"
 
-1497887623 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1497966279 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"common.h"
 	<exception>
 	"vmath-0.12/vmath.h"
@@ -132,7 +132,7 @@
 	<chrono>
 	<thread>
 
-1491687067 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/vmath-0.12/vmath.h
+1497961305 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/vmath-0.12/vmath.h
 	<cmath>
 	<cstring>
 	<iostream>
@@ -152,10 +152,10 @@
 1490110994 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/common.h
 	<SDL2/SDL.h>
 
-1497886921 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
+1497965851 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
 	"rasteriser.h"
 
-1497870146 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
+1497964374 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
 	"common.h"
 	"vmath-0.12/vmath.h"
 	"types/Edge.h"
@@ -208,7 +208,7 @@
 1497789642 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/window/window.cpp
 	"window/window.h"
 
-1497881047 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.h
+1497950561 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/common.h
 	<iostream>
 	<memory>
 	<vector>
@@ -261,11 +261,11 @@
 1497879696 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
 	"Texture.h"
 
-1497888102 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Mesh.cpp
+1497954780 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Mesh.cpp
 	"Mesh.h"
 	"tiny_obj_loader.h"
 
-1497881306 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Mesh.h
+1497965589 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Mesh.h
 	"common.h"
 	"Vertex.h"
 	"tiny_obj_loader.h"
