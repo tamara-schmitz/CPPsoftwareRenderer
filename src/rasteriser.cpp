@@ -49,6 +49,7 @@ void Rasteriser::UpdateViewMatrix( const Matrix4f& viewMatrix )
 void Rasteriser::UpdatePerspectiveMatrix( const float& fov, const float& zNear, const float& zFar )
 {
     perspectiveTransformMatrix = Matrix4f::createFrustum( fov, w_window->Getwidth(), w_window->Getheight(), zNear, zFar );
+//    perspectiveTransformMatrix = Matrix4f::perspectiveTransform( fov, w_window->Getwidth() / w_window->Getheight(), zNear, zFar );
     UpdateMvpsMatrix();
     near_z = zNear;
     far_z = zFar;
@@ -88,40 +89,42 @@ void Rasteriser::DrawMesh( shared_ptr<Mesh> mesh )
 
 void Rasteriser::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 )
 {
+    Triangle triangle = Triangle( v1, v2, v3 );
+    FillTriangle( triangle );
+}
+
+void Rasteriser::FillTriangle( const Triangle& triangle )
+{
     // set up alias for input vectors
 //    Vector3f yMinVert = ( vpMatrix * v1 ).screenspaceVec3( w_window->Getwidth(), w_window->Getheight() );
 //    Vector3f yMidVert = ( vpMatrix * v2 ).screenspaceVec3( w_window->Getwidth(), w_window->Getheight() );
 //    Vector3f yMaxVert = ( vpMatrix * v3 ).screenspaceVec3( w_window->Getwidth(), w_window->Getheight() );
 
-    // copy vertexes
-    Vertexf yMinVert = v1;
-    Vertexf yMidVert = v2;
-    Vertexf yMaxVert = v3;
+    // copy triangle
+    Triangle tris = triangle;
 
     // apply transformation matrix
-    yMinVert.posVec = mvpsMatrix * yMinVert.posVec;
-    yMidVert.posVec = mvpsMatrix * yMidVert.posVec;
-    yMaxVert.posVec = mvpsMatrix * yMaxVert.posVec;
+    tris *= mvpsMatrix;
 
     // divide posVec by W (this is the perspective divison)
-    yMinVert.posVec.divideByWOnly();
-    yMidVert.posVec.divideByWOnly();
-    yMaxVert.posVec.divideByWOnly();
+    tris.verts[0].posVec.divideByWOnly();
+    tris.verts[1].posVec.divideByWOnly();
+    tris.verts[2].posVec.divideByWOnly();
 
     // cull triangle if z of every posvec is smaller than near plane or bigger than far plane
-    if ( ( yMinVert.posVec.z < GetNearZ() && yMidVert.posVec.z < GetNearZ() && yMaxVert.posVec.z < GetNearZ() ) ||
-         ( yMinVert.posVec.z > GetFarZ() && yMidVert.posVec.z > GetFarZ() && yMaxVert.posVec.z > GetFarZ()) )
+    if ( ( tris.verts[0].posVec.z < GetNearZ() && tris.verts[1].posVec.z < GetNearZ() && tris.verts[2].posVec.z < GetNearZ() ) ||
+         ( tris.verts[0].posVec.z > GetFarZ() && tris.verts[1].posVec.z > GetFarZ() && tris.verts[2].posVec.z > GetFarZ()) )
     {
         #ifdef PRINT_DEBUG_STUFF
-            cout << "Culled because yMinVert.posVec.z: " << yMinVert.posVec.z << endl;
-            cout << "Culled because yMidVert.posVec.z: " << yMidVert.posVec.z << endl;
-            cout << "Culled because yMaxVert.posVec.z: " << yMaxVert.posVec.z << endl;
+            cout << "Culled because v1.posVec.z: " << tris.verts[0].posVec.z << endl;
+            cout << "Culled because v2.posVec.z: " << tris.verts[1].posVec.z << endl;
+            cout << "Culled because v3.posVec.z: " << tris.verts[2].posVec.z << endl;
         #endif // PRINT_DEBUG_STUFF
         return;
     }
 
     // calculate handedness
-    float area = triangleArea< float >( yMinVert.posVec, yMaxVert.posVec, yMidVert.posVec );
+    float area = triangleArea< float >( tris.verts[0].posVec, tris.verts[1].posVec, tris.verts[2].posVec );
     // true if right handed (and hence area smaller than 0)
     bool handedness = area >= 0;
 
@@ -131,28 +134,14 @@ void Rasteriser::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Verte
         return;
     }
 
-
     #ifdef PRINT_DEBUG_STUFF
-            cout << "yMinVert - x: " << yMinVert.posVec.x << " y: " << yMidVert.posVec.y << " z: " << yMaxVert.posVec.z << endl;
+            cout << "yMinVert - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
     #endif // PRINT_DEBUG_STUFF
 
     // sort verts
-    if ( yMaxVert.posVec.y < yMidVert.posVec.y )
-    {
-        std::swap( yMidVert, yMaxVert );
-    }
-    if ( yMidVert.posVec.y < yMinVert.posVec.y )
-    {
-        std::swap( yMinVert, yMidVert );
-    }
-    if ( yMaxVert.posVec.y < yMidVert.posVec.y )
-    {
-        std::swap( yMidVert, yMaxVert );
-    }
+    tris.sortVertsByY();
 
-
-
-    ScanTriangle( yMinVert, yMidVert, yMaxVert, handedness );
+    ScanTriangle( tris.verts[0], tris.verts[1], tris.verts[2], handedness );
 }
 
 void Rasteriser::ScanTriangle( const Vertexf& vertMin, const Vertexf& vertMid, const Vertexf& vertMax, bool isRightHanded )

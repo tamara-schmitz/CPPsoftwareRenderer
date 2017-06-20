@@ -62,7 +62,7 @@
 	<iostream>
 	"window.h"
 
-1497966279 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1497990150 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"common.h"
 	<exception>
 	"vmath-0.12/vmath.h"
@@ -152,16 +152,17 @@
 1490110994 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/common.h
 	<SDL2/SDL.h>
 
-1497965851 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
+1497990018 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
 	"rasteriser.h"
 
-1497964374 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
+1497988704 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
 	"common.h"
 	"vmath-0.12/vmath.h"
 	"types/Edge.h"
 	"types/TexCoordsForEdge.h"
 	"types/Texture.h"
 	"types/Mesh.h"
+	"types/Triangle.h"
 	"window/window.h"
 
 1490131214 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/early_demos/scanRenderer.cpp
@@ -283,4 +284,11 @@
 	<utility>
 	<fstream>
 	<sstream>
+
+1497990105 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Triangle.cpp
+	"Triangle.h"
+
+1497990119 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Triangle.h
+	"common.h"
+	"types/Vertex.h"
 

@@ -7,6 +7,7 @@
 #include "types/TexCoordsForEdge.h"
 #include "types/Texture.h"
 #include "types/Mesh.h"
+#include "types/Triangle.h"
 #include "window/window.h"
 
 class Rasteriser
@@ -35,6 +36,7 @@ class Rasteriser
 
         void DrawMesh( shared_ptr<Mesh> mesh ); // draws a mesh
         void FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 ); // draws a triangle
+        void FillTriangle( const Triangle& triangle ); // draws a triangle
 
     private:
         Window* w_window;
