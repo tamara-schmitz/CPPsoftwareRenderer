@@ -63,27 +63,11 @@ void Rasteriser::UpdateScreenspaceTransformMatrix()
 void Rasteriser::DrawMesh( shared_ptr<Mesh> mesh )
 {
     // iterate over each triangle
-    for ( Uint32 i = 0; i < mesh->GetIndicesCount(); i += 3 )
+    for ( Uint32 i = 0; i < mesh->GetTriangleCount(); i++ )
 //    for ( Uint32 i = 0; i < 8; i += 3 )
     {
-        // get vertices
-        Vertexf v1 = mesh->GetVertex( mesh->GetIndex( i ) );
-        Vertexf v2 = mesh->GetVertex( mesh->GetIndex( i + 1 ) );
-        Vertexf v3 = mesh->GetVertex( mesh->GetIndex( i + 2 ) );
-        // apply objToWorld transform
-//        v1.posVec = objToWorld * v1.posVec;
-//        v2.posVec = objToWorld * v2.posVec;
-//        v3.posVec = objToWorld * v3.posVec;
-
-        #ifdef PRINT_DEBUG_STUFF
-            cout << "v1.posVec x: " << v1.posVec.x << " y: " << v1.posVec.y << " z: " << v1.posVec.z << endl;
-
-            Vector4f temp_posvec = viewSpaceTransformMatrix * objectToWorldTransformMatrix * v1.posVec;
-            cout << "v1.posVec times obj and view matrix x:" << temp_posvec.x << " y: " << temp_posvec.y << " z: " << temp_posvec.z << endl;
-        #endif // PRINT_DEBUG_STUFF
-
         // fill triangle
-        FillTriangle( v1, v2, v3 );
+        FillTriangle( mesh->GetTriangle( i ) );
     }
 }
 

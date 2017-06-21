@@ -62,7 +62,7 @@
 	<iostream>
 	"window.h"
 
-1497990150 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
+1498045245 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/main.cpp
 	"common.h"
 	<exception>
 	"vmath-0.12/vmath.h"
@@ -152,7 +152,7 @@
 1490110994 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/common.h
 	<SDL2/SDL.h>
 
-1497990018 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
+1498043503 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.cpp
 	"rasteriser.h"
 
 1497988704 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/rasteriser.h
@@ -246,7 +246,7 @@
 1491564490 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Vertex.cpp
 	"Vertex.h"
 
-1497797597 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Vertex.h
+1498046112 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Vertex.h
 	"common.h"
 	"SDL2/SDL_types.h"
 	"vmath-0.12/vmath.h"
@@ -262,13 +262,14 @@
 1497879696 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Texture.cpp
 	"Texture.h"
 
-1497954780 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Mesh.cpp
+1498045711 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Mesh.cpp
 	"Mesh.h"
 	"tiny_obj_loader.h"
 
-1497965589 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Mesh.h
+1498046276 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Mesh.h
 	"common.h"
-	"Vertex.h"
+	"types/Vertex.h"
+	"types/Triangle.h"
 	"tiny_obj_loader.h"
 
 1497798306 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/include/tiny_obj_loader.h
@@ -285,7 +286,7 @@
 	<fstream>
 	<sstream>
 
-1497990105 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Triangle.cpp
+1497990403 source:/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Triangle.cpp
 	"Triangle.h"
 
 1497990119 /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/src/types/Triangle.h

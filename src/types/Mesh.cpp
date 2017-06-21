@@ -26,6 +26,10 @@ Mesh::Mesh( std::string pathToOBJ )
         throw std::runtime_error( error_msg );
     }
 
+    // check if OBJ contains normals and texcoords
+    bool hasNormals = attrib.normals.size() > 0;
+    bool hasTexCoords = attrib.texcoords.size() > 0;
+
     // iterate over each shape (aka. meshes. multiple will be batched together)
     for ( const auto& shape : shapes )
     {
@@ -49,12 +53,15 @@ Mesh::Mesh( std::string pathToOBJ )
             else
             {
                 // create new vertex
-                Vertexf new_vertex;
+                Vertexf new_vertex = Vertexf();
                 new_vertex.posVec.x = attrib.vertices.at( 3 * current_index.vertex_index + 0 );
                 new_vertex.posVec.y = attrib.vertices.at( 3 * current_index.vertex_index + 1 );
                 new_vertex.posVec.z = attrib.vertices.at( 3 * current_index.vertex_index + 2 );
-                new_vertex.texVec.x = attrib.texcoords.at( 2 * current_index.texcoord_index + 0 );
-                new_vertex.texVec.y = 1.0f - attrib.texcoords.at( 2 * current_index.texcoord_index + 1 );
+                if ( hasTexCoords )
+                {
+                    new_vertex.texVec.x = attrib.texcoords.at( 2 * current_index.texcoord_index + 0 );
+                    new_vertex.texVec.y = 1.0f - attrib.texcoords.at( 2 * current_index.texcoord_index + 1 );
+                }
                 // add vertex to m_vertices
                 m_vertices.push_back( new_vertex );
 
@@ -65,13 +72,43 @@ Mesh::Mesh( std::string pathToOBJ )
                 // add vertex_id to m_indices
                 m_indices.push_back( new_vertex_index );
             }
+
+            if ( hasNormals )
+            {
+                // create normal vector
+                Vector4f normal = Vector4f();
+                normal.x = attrib.normals.at( current_index.normal_index + 0 );
+                normal.y = attrib.normals.at( current_index.normal_index + 1 );
+                normal.z = attrib.normals.at( current_index.normal_index + 2 );
+                // add normal vector to m_normals
+                m_normals.push_back( normal );
+            }
         }
     }
+
+    // indices count should be a multiple of 3
+    assert( (m_indices.size() % 3) == 0 );
 
     // reduce capacity of vectors
     m_vertices.shrink_to_fit();
     m_indices.shrink_to_fit();
+    m_normals.shrink_to_fit();
 }
+
+Triangle Mesh::GetTriangle( Uint32 index ) const
+{
+    if ( m_indices.size() / 3 == m_normals.size() )
+    {
+        return Triangle( GetVertex( GetIndex(3 * index) ), GetVertex( GetIndex(3 * index + 1) ),
+                         GetVertex( GetIndex(3 * index + 2) ), GetNormal( index ) );
+    }
+    else
+    {
+        return Triangle( GetVertex( GetIndex(3 * index) ), GetVertex( GetIndex(3 * index + 1) ),
+                         GetVertex( GetIndex(3 * index + 2) ) );
+    }
+
+                                                                      }
 
 int64_t Mesh::OBJindexToNewIndex( const tinyobj::attrib_t& attrib, const tinyobj::index_t& obj_index, shared_ptr< std::unordered_map<int, Uint32> > OBJtoNew_List )
 {
