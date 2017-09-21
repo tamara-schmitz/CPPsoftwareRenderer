@@ -2520,20 +2520,18 @@ public:
 		/*
 		 *
       	     1
-        ------------       0              A              0
+        ------------       0              0              0
         tanHalf * aspect
 
                            1
-            0         ------------        B              0
+            0         ------------        0              0
                         tanHalf
 
             0              0              C              D
 
             0              0              -1             0
 
-                                                     A = (right + left) / (right - left)
 
-                                                     B = (top + bottom) / (top - bottom)
 
                                                      C = (zNear) / (zNear - zFar)
 

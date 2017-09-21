@@ -11,6 +11,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "vmath-0.12/vmath.h"
+
 using std::cout;
 using std::endl;
 using std::shared_ptr;
@@ -66,15 +68,15 @@ const bool AlmostEqual( const I& a, const I& b )
     {
         return true;
     }
-    else if ( a == 0 || b == 0 || diff < std::numeric_limits<float>::lowest() )
+    else if ( a == 0 || b == 0 || diff < std::numeric_limits<I>::lowest() )
     {
         // a or b close to zero, hence relative error is less relevant
-        return diff < ( epsilon * std::numeric_limits<float>::lowest() );
+        return diff < ( epsilon * std::numeric_limits<I>::lowest() );
     }
     else
     {
         // use relative error
-        return diff / std::min( ( fabs(a) + fabs(b) ), std::numeric_limits<float>::max() );
+        return diff / std::min( ( fabs(a) + fabs(b) ), std::numeric_limits<I>::max() );
     }
 
 }
@@ -88,7 +90,21 @@ const I triangleArea( const T& v1, const T& v2, const T& v3 )
     const I x2 = v3.x - v1.x;
     const I y2 = v3.y - v1.y;
 
-    return (I) ( 0.5 * (x1 * y2 - x2 * y1) );
+    return (I) ( (x1 * y2 - x2 * y1) / 2 );
+}
+
+template< typename I >
+const Vector3< I > calculateNormal( const Vector4< I >& v1, const Vector4< I >& v2 )
+{
+    Vector3< I > normal_vec = Vector3< I >();
+    // calculate cross product of 2 vector edges
+    normal_vec.x = v1.y * v2.z - v1.z * v2.y;
+    normal_vec.y = v1.z * v2.x - v1.x * v2.z;
+    normal_vec.z = v1.x * v2.y - v1.y * v2.x;
+    // normalise vector
+    normal_vec.normalize();
+
+    return normal_vec;
 }
 
 #endif // COMMON_H

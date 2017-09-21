@@ -39,10 +39,9 @@ Mesh::Mesh( std::string pathToOBJ )
         // iterate over each index
         for ( Uint32 i = 0; i < shape.mesh.indices.size(); i++ )
         {
-            // current index
             const tinyobj::index_t& current_index = shape.mesh.indices.at( i );
 
-            // get obj index
+            // check if index already exists as a vertex
             int64_t objindex = OBJindexToNewIndex( attrib, current_index, OBJtoNewposindex_transl );
 //            objindex = -1;
             if ( objindex >= 0 )
@@ -52,7 +51,7 @@ Mesh::Mesh( std::string pathToOBJ )
             }
             else
             {
-                // create new vertex
+                // create new vertex from OBJ data
                 Vertexf new_vertex = Vertexf();
                 new_vertex.posVec.x = attrib.vertices.at( 3 * current_index.vertex_index + 0 );
                 new_vertex.posVec.y = attrib.vertices.at( 3 * current_index.vertex_index + 1 );
@@ -73,13 +72,24 @@ Mesh::Mesh( std::string pathToOBJ )
                 m_indices.push_back( new_vertex_index );
             }
 
-            if ( hasNormals )
+            // copy / generate normals
+            // this have to be done for every triangle not every vertex
+            if ( i % 3 == 0 && i >= 3 )
             {
-                // create normal vector
-                Vector4f normal = Vector4f();
-                normal.x = attrib.normals.at( current_index.normal_index + 0 );
-                normal.y = attrib.normals.at( current_index.normal_index + 1 );
-                normal.z = attrib.normals.at( current_index.normal_index + 2 );
+                Vector3f normal;
+                if ( hasNormals )
+                {
+                    // create normal vector based on OBJ data
+                    normal = Vector3f();
+                    normal.x = attrib.normals.at( 3 * current_index.normal_index + 0 );
+                    normal.y = attrib.normals.at( 3 * current_index.normal_index + 1 );
+                    normal.z = attrib.normals.at( 3 * current_index.normal_index + 2 );
+                }
+                else
+                {
+                    normal = calculateNormal( GetVertex( GetIndex( i - 2 ) ).posVec,
+                                              GetVertex( GetIndex( i - 1 ) ).posVec );
+                }
                 // add normal vector to m_normals
                 m_normals.push_back( normal );
             }
@@ -97,6 +107,7 @@ Mesh::Mesh( std::string pathToOBJ )
 
 Triangle Mesh::GetTriangle( Uint32 index ) const
 {
+    // TODO remove if-else. normals should always be present
     if ( m_indices.size() / 3 == m_normals.size() )
     {
         return Triangle( GetVertex( GetIndex(3 * index) ), GetVertex( GetIndex(3 * index + 1) ),
@@ -108,7 +119,7 @@ Triangle Mesh::GetTriangle( Uint32 index ) const
                          GetVertex( GetIndex(3 * index + 2) ) );
     }
 
-                                                                      }
+}
 
 int64_t Mesh::OBJindexToNewIndex( const tinyobj::attrib_t& attrib, const tinyobj::index_t& obj_index, shared_ptr< std::unordered_map<int, Uint32> > OBJtoNew_List )
 {

@@ -5,7 +5,7 @@ Triangle::Triangle()
     //ctor
 
     // initialise normal
-    normal_vec = Vector4f();
+    normal_vec = Vector3f();
 
     // create 3 vertices
     verts[0] = Vertexf();
@@ -31,10 +31,10 @@ Triangle::Triangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 )
     verts[1] = v2;
     verts[2] = v3;
     // calculate normal vector
-    calculateTriangeNormal();
+    calculateTriangleNormal();
 }
 
-Triangle::Triangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3, const Vector4f& normal )
+Triangle::Triangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3, const Vector3f& normal )
 {
     // ctor
 
@@ -63,14 +63,9 @@ void Triangle::sortVertsByY()
     }
 }
 
-void Triangle::calculateTriangeNormal()
+void Triangle::calculateTriangleNormal()
 {
-    // calculate cross product of 2 vector edges
-    normal_vec.x = verts[0].posVec.y * verts[1].posVec.z - verts[0].posVec.z * verts[1].posVec.y;
-    normal_vec.y = verts[0].posVec.z * verts[1].posVec.x - verts[0].posVec.x * verts[1].posVec.z;
-    normal_vec.z = verts[0].posVec.x * verts[1].posVec.y - verts[0].posVec.y * verts[1].posVec.x;
-    // normalise vector
-    normal_vec.normalize();
+   normal_vec = calculateNormal< float >( verts[0].posVec, verts[1].posVec );
 }
 Triangle& Triangle::operator*=( const Matrix4f& matrix )
 {
@@ -80,7 +75,7 @@ Triangle& Triangle::operator*=( const Matrix4f& matrix )
     verts[2].posVec = matrix * verts[2].posVec;
 
     // recalculate normal vector
-    calculateTriangeNormal();
+    calculateTriangleNormal();
 
     return *this;
 }
@@ -89,8 +84,6 @@ Triangle Triangle::operator*( const Matrix4f& matrix )
 {
     Triangle result = *this;
     result *= matrix;
-    // recalculate normal vector
-    result.calculateTriangeNormal();
 
     return result;
 }

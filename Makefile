@@ -13,8 +13,8 @@ LIBRARY_PATHS = -Linclude/i686-w64-mingw32/lib
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -Wl,-subsystem,windows gets rid of the console window
-COMPILER_FLAGS_WIN = -Wall -Wl,-subsystem,windows -march=core2 -O3 -fomit-frame-pointer -fexpensive-optimizations -std=c++11 -static-libgcc -static-libstdc++
-COMPILER_FLAGS_LINUX = -Wall -march=core2 -O3 -fexpensive-optimizations -std=c++11
+COMPILER_FLAGS_WIN = -Wall -Werror -pedantic-errors -Wl,-subsystem,windows -march=core2 -O3 -fomit-frame-pointer -fexpensive-optimizations -std=c++11 -static-libgcc -static-libstdc++
+COMPILER_FLAGS_LINUX = -Wall -Werror -pedantic-errors -march=core2 -O3 -fexpensive-optimizations -std=c++11
 
 # DEBUG_FLAGS added in addition to COMPILER_FLAGS
 DEBUG_FLAGS = -DPRINT_DEBUG_STUFF -g

@@ -2,8 +2,6 @@
 #define EDGE_H
 
 #include "common.h"
-#include "SDL2/SDL_types.h"
-#include "vmath-0.12/vmath.h"
 #include "Vertex.h"
 #include "TexCoordsForEdge.h"
 

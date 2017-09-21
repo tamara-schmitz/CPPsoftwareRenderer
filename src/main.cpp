@@ -190,7 +190,7 @@ void demo_rasteriser( Window *window )
     float absoluteRotation = 0.0f;
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 90, 0 ) * Matrix4f::createScale( 0.8f, 0.8f, 0.8f );
     Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0.0f );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, -3.0f );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 1.5f );
     raster->UpdateViewMatrix( viewMatrix );
     raster->UpdatePerspectiveMatrix( 3000, 0.1f, 1000.0f );
 
@@ -288,7 +288,7 @@ int main( int argc, char* argv[] )
     try
     {
         // create window and run demos
-        Window *window = new Window( 1024, 768, 1, "Software Renderer", 0 );
+        Window *window = new Window( 1024, 768, 1, "Software Renderer", 30 );
         window->timer.SetDeltaLimits( (1.0/20.0) * 1000 ); // delta time >= 20 FPS
 
         switch( current_demo )

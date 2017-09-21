@@ -48,8 +48,8 @@ void Rasteriser::UpdateViewMatrix( const Matrix4f& viewMatrix )
 //}
 void Rasteriser::UpdatePerspectiveMatrix( const float& fov, const float& zNear, const float& zFar )
 {
-    perspectiveTransformMatrix = Matrix4f::createFrustum( fov, w_window->Getwidth(), w_window->Getheight(), zNear, zFar );
-//    perspectiveTransformMatrix = Matrix4f::perspectiveTransform( fov, w_window->Getwidth() / w_window->Getheight(), zNear, zFar );
+//    perspectiveTransformMatrix = Matrix4f::createFrustum( fov, w_window->Getwidth(), w_window->Getheight(), zNear, zFar );
+    perspectiveTransformMatrix = Matrix4f::perspectiveTransform( fov, w_window->Getwidth() / w_window->Getheight(), zNear, zFar );
     UpdateMvpsMatrix();
     near_z = zNear;
     far_z = zFar;
@@ -100,9 +100,7 @@ void Rasteriser::FillTriangle( const Triangle& triangle )
          ( tris.verts[0].posVec.z > GetFarZ() && tris.verts[1].posVec.z > GetFarZ() && tris.verts[2].posVec.z > GetFarZ()) )
     {
         #ifdef PRINT_DEBUG_STUFF
-            cout << "Culled because v1.posVec.z: " << tris.verts[0].posVec.z << endl;
-            cout << "Culled because v2.posVec.z: " << tris.verts[1].posVec.z << endl;
-            cout << "Culled because v3.posVec.z: " << tris.verts[2].posVec.z << endl;
+            cout << "Culled because v1.posVec.z: " << tris.verts[0].posVec.z << " v2.posVec.z: " << tris.verts[1].posVec.z << " v3.posVec.z: " << tris.verts[2].posVec.z << endl;
         #endif // PRINT_DEBUG_STUFF
         return;
     }
@@ -113,17 +111,19 @@ void Rasteriser::FillTriangle( const Triangle& triangle )
     bool handedness = area >= 0;
 
     // cull triangle if right-handed (we use left-handed cartesian coordinates)
-    if ( handedness )
+    if ( !handedness)
     {
         return;
     }
 
-    #ifdef PRINT_DEBUG_STUFF
-            cout << "yMinVert - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
-    #endif // PRINT_DEBUG_STUFF
-
     // sort verts
     tris.sortVertsByY();
+
+    #ifdef PRINT_DEBUG_STUFF
+            cout << "yMinVert - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
+            cout << "yMinVert_normal - x: " << tris.normal_vec.x << " y: " << tris.normal_vec.y << " z: " << tris.normal_vec    .z << endl;
+    #endif // PRINT_DEBUG_STUFF
+
 
     ScanTriangle( tris.verts[0], tris.verts[1], tris.verts[2], handedness );
 }
