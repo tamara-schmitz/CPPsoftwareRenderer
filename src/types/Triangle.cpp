@@ -67,6 +67,7 @@ void Triangle::calculateTriangleNormal()
 {
    normal_vec = calculateNormal< float >( verts[0].posVec, verts[1].posVec );
 }
+
 Triangle& Triangle::operator*=( const Matrix4f& matrix )
 {
     // multiple vertices by matrix

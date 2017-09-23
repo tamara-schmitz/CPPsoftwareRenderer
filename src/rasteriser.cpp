@@ -77,20 +77,16 @@ void Rasteriser::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Verte
     FillTriangle( triangle );
 }
 
-void Rasteriser::FillTriangle( const Triangle& triangle )
+void Rasteriser::FillTriangle( Triangle tris )
 {
     // set up alias for input vectors
 //    Vector3f yMinVert = ( vpMatrix * v1 ).screenspaceVec3( w_window->Getwidth(), w_window->Getheight() );
 //    Vector3f yMidVert = ( vpMatrix * v2 ).screenspaceVec3( w_window->Getwidth(), w_window->Getheight() );
 //    Vector3f yMaxVert = ( vpMatrix * v3 ).screenspaceVec3( w_window->Getwidth(), w_window->Getheight() );
 
-    // copy triangle
-    Triangle tris = triangle;
-
-    // apply transformation matrix
     tris *= mvpsMatrix;
 
-    // divide posVec by W (this is the perspective divison)
+    // perspective divison
     tris.verts[0].posVec.divideByWOnly();
     tris.verts[1].posVec.divideByWOnly();
     tris.verts[2].posVec.divideByWOnly();
@@ -102,21 +98,20 @@ void Rasteriser::FillTriangle( const Triangle& triangle )
         #ifdef PRINT_DEBUG_STUFF
             cout << "Culled because v1.posVec.z: " << tris.verts[0].posVec.z << " v2.posVec.z: " << tris.verts[1].posVec.z << " v3.posVec.z: " << tris.verts[2].posVec.z << endl;
         #endif // PRINT_DEBUG_STUFF
-        return;
+        // return;
     }
 
     // calculate handedness
     float area = triangleArea< float >( tris.verts[0].posVec, tris.verts[1].posVec, tris.verts[2].posVec );
     // true if right handed (and hence area smaller than 0)
-    bool handedness = area >= 0;
+    bool handedness = area < 0;
 
     // cull triangle if right-handed (we use left-handed cartesian coordinates)
-    if ( !handedness)
+    if ( handedness)
     {
         return;
     }
 
-    // sort verts
     tris.sortVertsByY();
 
     #ifdef PRINT_DEBUG_STUFF
@@ -142,7 +137,9 @@ void Rasteriser::ScanTriangle( const Vertexf& vertMin, const Vertexf& vertMid, c
 
 void Rasteriser::ScanEdges( Edgef& a, Edgef& b, bool isRightHanded )
 {
-    // assign left and right based on $isRightHanded
+    // Scans triangle edges by iterating over each line.
+    // Edges keep track of texcoords and slope
+
     Edgef& left  = isRightHanded ? b : a;
     Edgef& right = isRightHanded ? a : b;
 
@@ -164,7 +161,7 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     int xMax = std::ceil( right.GetCurrentX() );
 
     // are we supposed to draw with one solid colour or with a texture?
-    if ( drawWithTexture == false || current_texture == nullptr )
+    if ( !drawWithTexture )
     {
         // draw line with solid colour
 

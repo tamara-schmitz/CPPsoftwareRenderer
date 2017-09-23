@@ -76,7 +76,7 @@ const bool AlmostEqual( const I& a, const I& b )
     else
     {
         // use relative error
-        return diff / std::min( ( fabs(a) + fabs(b) ), std::numeric_limits<I>::max() );
+        return diff / std::min<I>( ( fabs(a) + fabs(b) ), std::numeric_limits<I>::max() );
     }
 
 }

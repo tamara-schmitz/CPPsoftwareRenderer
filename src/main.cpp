@@ -180,34 +180,32 @@ void demo_rasteriser( Window *window )
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     auto triangleTexture = shared_ptr<Texture>( new Texture( (Uint16) 150, (Uint16) 150 ) );
     triangleTexture->FillWithRandomPixels();
-    auto bmpTexture = shared_ptr<Texture>( new Texture( "/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/examples/tree.bmp" ) );
-    auto sphereModel = shared_ptr<Mesh>( new Mesh( "/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/examples/sphere.obj" ) );
-    auto chaletTexture = shared_ptr<Texture>( new Texture( "/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/examples/chalet.bmp" ) );
-    auto chaletModel = shared_ptr<Mesh>( new Mesh( "/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/examples/chalet.obj" ) );
+    auto bmpTexture = shared_ptr<Texture>( new Texture( "examples/tree.bmp" ) );
+    auto sphereModel = shared_ptr<Mesh>( new Mesh( "examples/sphere.obj" ) );
+    auto chaletTexture = shared_ptr<Texture>( new Texture( "examples/chalet.bmp" ) );
+    auto chaletModel = shared_ptr<Mesh>( new Mesh( "examples/chalet.obj" ) );
 
 //    Matrix4f objMatrix = Matrix4f::createTranslation( 0, 0, 0 );
 //    Matrix4f objMatrix = Matrix4f::createScale( 0.2f, 0.2f, 0.2f );
     float absoluteRotation = 0.0f;
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 90, 0 ) * Matrix4f::createScale( 0.8f, 0.8f, 0.8f );
-    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0.0f );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 1.5f );
+    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 50 ) * Matrix4f::createScale( 100, 100, 100 );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 50.0f );
     raster->UpdateViewMatrix( viewMatrix );
-    raster->UpdatePerspectiveMatrix( 3000, 0.1f, 1000.0f );
+    raster->UpdatePerspectiveMatrix( 90, 0.1f, 100.0f );
 
     raster->SetDrawColour( triangleColor );
     raster->SetDrawTexture( triangleTexture );
     raster->SetDrawTexture( bmpTexture );
 
     // triangle 3D
-    Vertexf v1;
-    Vertexf v2;
-    Vertexf v3;
-    v1.posVec = Vector4f {   -1, -1, 0, 1 };
-    v2.posVec = Vector4f {    0,  1, 0, 1 };
-    v3.posVec = Vector4f {    1, -1, 0, 1 };
-    v1.texVec = Vector2f {    0,  1 }; // texels starts at bottom,left. texture at top,left.
-    v2.texVec = Vector2f { 0.5f,  0 }; // texels coords compensate for that.
-    v3.texVec = Vector2f {    1,  1 };
+    Triangle tris = Triangle();
+    tris.verts[0].posVec = Vector4f {    1,  1, 0, 1 };
+    tris.verts[1].posVec = Vector4f {    0,  1, 0, 1 };
+    tris.verts[2].posVec = Vector4f {    1,  1, 0, 1 };
+    tris.verts[0].texVec = Vector2f {    0,  1 }; // texels starts at bottom,left. texture at top,left.
+    tris.verts[1].texVec = Vector2f { 0.5f,  0 }; // texels coords compensate for that.
+    tris.verts[2].texVec = Vector2f {    1,  1 };
 
     bool running = true;
     while ( running )
@@ -219,26 +217,23 @@ void demo_rasteriser( Window *window )
         // get per frame rotation factor
         float rotationFactor = 100 * (window->timer.GetDeltaTime() / 1000000000.0);
         absoluteRotation += rotationFactor;
-        // create rotation matrix
         Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0 );
 
-        // apply rotation
-        v1.posVec = rotationMatrix * v1.posVec;
-        v2.posVec = rotationMatrix * v2.posVec;
-        v3.posVec = rotationMatrix * v3.posVec;
+        tris *= rotationMatrix;
+
         #ifdef PRINT_DEBUG_STUFF
-            std::cout << "v1 - x: " << v1.posVec.x << " y: " << v1.posVec.y << " z: " << v1.posVec.z << std::endl;
+            std::cout << "v1 - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << std::endl;
         #endif // PRINT_DEBUG_STUFF
 
         // draw triangle
         raster->SetDrawTexture( bmpTexture );
         raster->UpdateObjectToWorldMatrix( objMatrix_triangle );
-        raster->FillTriangle( v1, v2, v3 );
+        raster->FillTriangle( tris );
 
         // draw mesh
         objMatrix_mesh = Matrix4f::createScale( 0.01f, 0.01f, 0.01f ) * Matrix4f::createRotationAroundAxis( 0, absoluteRotation, 0 );
         raster->UpdateObjectToWorldMatrix( objMatrix_mesh );
-        raster->DrawMesh( sphereModel );
+        // raster->DrawMesh( sphereModel );
 //        raster->SetDrawTexture( chaletTexture );
 //        raster->DrawMesh( chaletModel );
 
@@ -252,7 +247,6 @@ void demo_rasteriser( Window *window )
 
 void demo_DisplayTexture( Window* window )
 {
-    // create a texture
     auto texture1 = shared_ptr<Texture>( new Texture( "examples/tree.bmp" ) );
 
     // draw loop
@@ -268,12 +262,10 @@ void demo_DisplayTexture( Window* window )
         {
             for ( Uint16 x = 0; x < texture1->GetWidth(); x++ ) // iterate over xs
             {
-                // draw pixel
                 window->drawPixel( x, y, texture1->GetPixel( x, y ) );
             }
         }
 
-        // update window
         window->updateWindow();
         #ifdef PRINT_DEBUG_STUFF
             window->timer.printTimes();
