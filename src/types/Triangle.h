@@ -23,6 +23,10 @@ class Triangle
         // operator overloads
         Triangle& operator*=( const Matrix4f& matrix );
         Triangle operator*( const Matrix4f& matrix );
+        Triangle& operator+=( const Vector4f& vec );
+        Triangle operator+( const Vector4f& vec );
+        Triangle& operator-=( const Vector4f& vec );
+        Triangle operator-( const Vector4f& vec );
 };
 
 #endif // TRIANGLE_H

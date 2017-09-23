@@ -70,21 +70,58 @@ void Triangle::calculateTriangleNormal()
 
 Triangle& Triangle::operator*=( const Matrix4f& matrix )
 {
-    // multiple vertices by matrix
     verts[0].posVec = matrix * verts[0].posVec;
     verts[1].posVec = matrix * verts[1].posVec;
     verts[2].posVec = matrix * verts[2].posVec;
 
-    // recalculate normal vector
+    // TODO does this affect texels?
+
     calculateTriangleNormal();
 
     return *this;
 }
-
 Triangle Triangle::operator*( const Matrix4f& matrix )
 {
     Triangle result = *this;
     result *= matrix;
+
+    return result;
+}
+Triangle& Triangle::operator+=( const Vector4f& vec )
+{
+    verts[0].posVec += vec;
+    verts[1].posVec += vec;
+    verts[2].posVec += vec;
+
+    // TODO does this affect texels?
+
+    calculateTriangleNormal();
+
+    return *this;
+}
+Triangle Triangle::operator+( const Vector4f& vec )
+{
+    Triangle result = *this;
+    result +=vec;
+
+    return result;
+}
+Triangle& Triangle::operator-=( const Vector4f& vec )
+{
+    verts[0].posVec -= vec;
+    verts[1].posVec -= vec;
+    verts[2].posVec -= vec;
+
+    // TODO does this affect texels?
+
+    calculateTriangleNormal();
+
+    return *this;
+}
+Triangle Triangle::operator-( const Vector4f& vec )
+{
+    Triangle result = *this;
+    result -=vec;
 
     return result;
 }
