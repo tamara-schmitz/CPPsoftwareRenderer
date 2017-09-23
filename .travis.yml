@@ -1,4 +1,7 @@
+language: cpp
+script: make linux64-debug
 sudo: true
+
 matrix:
   include:
     # works on Precise and Trusty
@@ -120,9 +123,3 @@ before_install:
     - export PATH=~/usr/bin:$PATH
     - sudo apt-get update -qq
     - sudo apt-get install -q -y libsdl2-dev
-
-language: cpp
-script: make linux64-debug
-compiler:
-  - g++
-  - clang++
