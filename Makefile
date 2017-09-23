@@ -1,9 +1,13 @@
 #OBJS specifies which files to compile as part of the project
 OBJS = src/*.cpp src/*/*.cpp
 
-#CC specifies which compiler we're using
-CCWIN64   = x86_64-w64-mingw32-g++
-CCLINUX64 = g++
+#CXX specifies which compiler we're using
+CXXWIN64   = x86_64-w64-mingw32-g++
+ifdef ($(CXX))
+	CXXLINUX64 = $(CXX)
+else
+	CXXLINUX64 = g++
+endif
 
 #INCLUDE_PATHS specifies the additional include paths we'll need
 INCLUDE_PATHS = -Iinclude -Isrc -Iinclude/vmath-0.12
@@ -13,7 +17,7 @@ LIBRARY_PATHS = -Linclude/i686-w64-mingw32/lib
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -Wl,-subsystem,windows gets rid of the console window
-COMPILER_FLAGS_WIN = -Wall -Werror -pedantic-errors -Wl,-subsystem,windows -march=core2 -O3 -fomit-frame-pointer -fexpensive-optimizations -std=c++11 -static-libgcc -static-libstdc++
+COMPILER_FLAGS_WIN = -Wall -Werror -pedantic-errors -Wl,-subsystem,windows -march=core2 -O3 -fomit-frame-pointer -fexpensive-optimizations -std=c++11 -static-libgCXX -static-libstdc++
 COMPILER_FLAGS_LINUX = -Wall -Werror -pedantic-errors -march=core2 -O3 -fexpensive-optimizations -std=c++11
 
 # DEBUG_FLAGS added in addition to COMPILER_FLAGS
@@ -29,14 +33,14 @@ OBJ_NAME_LINUX64 = build/SDLsoftwarerenderer_linux64
 
 #windows
 win64 : $(OBJS)
-	$(CCWIN64) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_WIN) $(LINKER_FLAGS_WIN) -o $(OBJ_NAME_WIN64)
+	$(CXXWIN64) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_WIN) $(LINKER_FLAGS_WIN) -o $(OBJ_NAME_WIN64)
 win64-debug : $(OBJS)
-	$(CCWIN64) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_WIN) $(DEBUG_FLAGS) $(LINKER_FLAGS_WIN) -o $(OBJ_NAME_WIN64)
+	$(CXXWIN64) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_WIN) $(DEBUG_FLAGS) $(LINKER_FLAGS_WIN) -o $(OBJ_NAME_WIN64)
 
 #linux
 linux64 : $(OBJS)
-	$(CCLINUX64) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_LINUX64)
+	$(CXX) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_LINUX64)
 linux64-debug : $(OBJS)
-	$(CCLINUX64) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(DEBUG_FLAGS) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_LINUX64)
+	$(CXX) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(DEBUG_FLAGS) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_LINUX64)
 # default
 .DEFAULT_GOAL := linux64
