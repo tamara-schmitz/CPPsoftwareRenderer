@@ -25,7 +25,7 @@ class Edge
 
         // functions
         void DoYStep(); // add xStep to currentX
-        void GoToStep( Uint16 newY ); // set currentX to new Y (start is 0)
+        void GoToStep( int newY ); // set currentX to new Y (start is 0)
 
     protected:
         //-- constructor vars
@@ -34,8 +34,8 @@ class Edge
         Vertex<T> vertMaxi;
         TexCoordsForEdge<T> texcoords;
         int vertMini_Index;
-        Uint16 yStart;
-        Uint16 yEnd;
+        int yStart;
+        int yEnd;
 
         //-- runtime vars
 

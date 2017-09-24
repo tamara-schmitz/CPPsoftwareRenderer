@@ -59,7 +59,7 @@ void Edge<T>::DoYStep()
 }
 
 template< typename T >
-void Edge<T>::GoToStep( Uint16 newY )
+void Edge<T>::GoToStep( int newY )
 {
     // set currentX to new Y. Also incorporate yPrestep.
     currentX = vertMini.posVec.x + yPrestep * xStep +

@@ -1,6 +1,5 @@
 #include "starfield.h"
 #include <unistd.h>
-#include <omp.h>
 
 Starfield::Starfield( float camera_near_z, float camera_far_z,
                       float camera_fov, Window *window,

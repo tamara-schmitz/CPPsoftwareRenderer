@@ -101,9 +101,13 @@ void Timer::TickCall()
     // calculate frametime diff
     r_frametime_nano = r_tickNow - r_tickLast;
     // update deltatime
-    if ( r_deltatimeLimit_max >= 0 ) // delta same as frametime if no valid limit
+    if ( r_deltatimeLimit_max > 0 ) // delta same as frametime if no valid limit
     {
         r_deltatime_nano = clipNumber( r_frametime_nano, (Uint64) 0, r_deltatimeLimit_max );
+    }
+    else
+    {
+        r_deltatime_nano = r_frametime_nano;
     }
     // calculate sleep overrun ( ^= differnence between expected vs real sleep time )
     r_sleepOverrun  = r_frametime_nano - ( r_tickLimit - r_sleepOverrun );
