@@ -62,6 +62,7 @@ class Window
 
         // State vars
         int r_pitch = 0;
+        int r_pitch_div_4 = 0;
         Uint32 title_fps_count = 0; // shows how many ticks since last title update
 
         // Internal functions

@@ -96,7 +96,7 @@ void Window::drawPixel( int x, int y, SDL_Color color)
             return;
         }
 
-        int offset = y * (r_pitch / 4) + x;
+        int offset = y * r_pitch_div_4 + x;
 
         // obtain fast write access to texture
         LockRTexture();
@@ -251,6 +251,7 @@ void Window::LockRTexture()
         if ( pixels_direct == nullptr )
         {
             SDL_LockTexture( r_ptexture, NULL, (void**)&pixels_direct, &r_pitch );
+            r_pitch_div_4 = r_pitch / 4;
         }
     #endif
 }
@@ -262,7 +263,7 @@ void Window::UnlockRTexture()
         {
             SDL_UnlockTexture( r_ptexture );
             pixels_direct = nullptr;
-            r_pitch = 0;
+            r_pitch = r_pitch_div_4 = 0;
         }
     #endif
 }

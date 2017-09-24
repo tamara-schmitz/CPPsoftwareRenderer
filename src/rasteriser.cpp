@@ -114,8 +114,9 @@ void Rasteriser::FillTriangle( Triangle tris )
     {
         #ifdef PRINT_DEBUG_STUFF
             cout << "Triangle culled because right-handed." << endl;
-            return;
         #endif
+
+        // return;
     }
 
     tris.sortVertsByY();
@@ -166,18 +167,7 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     int xMin = std::ceil( left.GetCurrentX() );
     int xMax = std::ceil( right.GetCurrentX() );
 
-    // are we supposed to draw with one solid colour or with a texture?
-    if ( !drawWithTexture )
-    {
-        // draw line with solid colour
-
-        // clip is used so that loop only runs within screen boundaries
-        for ( int x = clipNumber( xMin , 0, (int) w_window->Getwidth() ); x < clipNumber( xMax , xMin, (int) w_window->Getwidth() ); x++ )
-        {
-            w_window->drawPixel( x, yCoord, current_colour );
-        }
-    }
-    else
+    if ( drawWithTexture )
     {
         // draw line while taking into account our texels and texture
         // texels have to be interpolated along the x-axis
@@ -199,7 +189,7 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
         // if xMin smaller than 0, add steps that are outside of screen area
         if ( xMin < 0 )
         {
-            int distance = abs(0 - xMin);
+            int distance = abs( 0 - xMin );
 
             current_texCoordX += texCoordXX_step * distance;
             current_texCoordY += texCoordYX_step * distance;
@@ -213,9 +203,9 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
 
             // calculate coords in texture
             Uint16 textureX = clipNumber< Uint16 >( std::ceil((current_texCoordX * z) * (current_texture_width  - 1)),
-                                                    0, current_texture_width  - 1 );
+            0, current_texture_width  - 1 );
             Uint16 textureY = clipNumber< Uint16 >( std::ceil((current_texCoordY * z) * (current_texture_height - 1)),
-                                                    0, current_texture_height - 1);
+            0, current_texture_height - 1 );
 
             // add steps
             current_texCoordX += texCoordXX_step;
@@ -224,9 +214,22 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
 
             // draw pixel
             w_window->drawPixel( x, yCoord,
-                        current_texture->GetPixel( textureX, textureY ) );
+            current_texture->GetPixel( textureX, textureY ) );
         }
+    }
+    else
+    {
+        // draw line with solid colour
+        // clip is used so that loop only runs within screen boundaries
+        for ( int x = clipNumber( xMin , 0, (int) w_window->Getwidth() ); x < clipNumber( xMax , xMin, (int) w_window->Getwidth() ); x++ )
+        {
+            w_window->drawPixel( x, yCoord, current_colour );
+        }
+    }
 
+    if ( slowRendering && yCoord >= 0 && yCoord % 8 == 0 )
+    {
+        w_window->updateWindow();
     }
 }
 

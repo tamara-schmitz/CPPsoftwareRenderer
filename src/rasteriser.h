@@ -16,7 +16,7 @@ class Rasteriser
     //
     // Our fill convention is top-left (so make sure to use ceil!)
     public:
-        explicit Rasteriser( Window* window );
+        Rasteriser( Window* window );
         virtual ~Rasteriser();
 
         // Getters
@@ -37,6 +37,8 @@ class Rasteriser
         void DrawMesh( shared_ptr<Mesh> mesh ); // draws a mesh
         void FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 ); // draws a triangle
         void FillTriangle( Triangle tris ); // draws a triangle
+
+        bool slowRendering = false; // instead of drawing entire frame at once, update window every line.
 
     private:
         Window* w_window;

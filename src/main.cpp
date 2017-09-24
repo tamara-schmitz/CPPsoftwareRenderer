@@ -12,7 +12,6 @@
 
 // Global vars
 Window *window;
-bool doSIGTERM = false;
 
 // --switch between demos
 // 0: random pixels
@@ -21,12 +20,6 @@ bool doSIGTERM = false;
 // 3: rasteriser
 // 4: load BMP and draw it using the texture class (slow!)
 const int current_demo = 3;
-
-void sigterm( int signum )
-{
-    doSIGTERM = true;
-    cout << "SIGTERM received! Shutting down..." << endl;
-}
 
 bool checkQuit()
 {
@@ -38,11 +31,6 @@ bool checkQuit()
             return true;
         }
     #endif
-
-    if ( doSIGTERM )
-    {
-        return true;
-    }
 
     #ifndef MODE_HEADLESS
         SDL_Event e;
@@ -201,6 +189,10 @@ void demo_rasteriser( Window *window )
 {
     auto raster = shared_ptr<Rasteriser>( new Rasteriser( window ) );
 
+    #ifdef PRINT_DEBUG_STUFF
+        raster->slowRendering = true;
+    #endif
+
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     auto triangleTexture = shared_ptr<Texture>( new Texture( (Uint16) 150, (Uint16) 150 ) );
     triangleTexture->FillWithRandomPixels();
@@ -212,9 +204,9 @@ void demo_rasteriser( Window *window )
 //    Matrix4f objMatrix = Matrix4f::createTranslation( 0, 0, 0 );
 //    Matrix4f objMatrix = Matrix4f::createScale( 0.2f, 0.2f, 0.2f );
     float absoluteRotation = 0.0f;
-    Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 90, 0 ) * Matrix4f::createScale( 0.5f, 0.5f, 0.5f );
-    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 ) * Matrix4f::createScale( 100, 100, 100 );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 5.0f );
+    Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 90, 0 ) * Matrix4f::createScale( 0.1f, 0.1f, 0.1f );
+    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, -45 );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 50.0f );
     raster->UpdateViewMatrix( viewMatrix );
     raster->UpdatePerspectiveMatrix( 70, 0.1f, 1000.0f );
 
@@ -227,9 +219,9 @@ void demo_rasteriser( Window *window )
     tris.verts[0].posVec = Vector4f {   -1, -1, 0, 1 };
     tris.verts[1].posVec = Vector4f {    0,  1, 0, 1 };
     tris.verts[2].posVec = Vector4f {    1, -1, 0, 1 };
-    tris.verts[0].texVec = Vector2f {    0,  0 }; // texels starts at bottom,left. texture at top,left.
-    tris.verts[1].texVec = Vector2f { 0.5f,  1 }; // texels coords compensate for that.
-    tris.verts[2].texVec = Vector2f {    1,  0 };
+    tris.verts[0].texVec = Vector2f {    0,  1 }; // texels starts at bottom,left. texture at top,left.
+    tris.verts[1].texVec = Vector2f { 0.5f,  0 }; // texels coords have to compensate for that.
+    tris.verts[2].texVec = Vector2f {    1,  1 };
 
     bool running = true;
     while ( running )
@@ -257,7 +249,7 @@ void demo_rasteriser( Window *window )
         // draw mesh
         objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, absoluteRotation, 0 ) * objMatrix_mesh;
         raster->UpdateObjectToWorldMatrix( objMatrix_mesh );
-        raster->DrawMesh( sphereModel );
+        // raster->DrawMesh( sphereModel );
        raster->SetDrawTexture( chaletTexture );
     //    raster->DrawMesh( chaletModel );
 
@@ -304,7 +296,7 @@ int main( int argc, char* argv[] )
     try
     {
         // create window and run demos
-        window = new Window( 1024, 768, 1, "Software Renderer", 60 );
+        window = new Window( 1024, 768, 1, "Software Renderer", 120 );
         window->timer.SetDeltaLimits( (1.0/20.0) * 1000 ); // delta time >= 20 FPS
 
         switch( current_demo )

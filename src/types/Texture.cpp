@@ -128,7 +128,7 @@ void Texture::FillWithRandomPixels()
 
 void Texture::FillWithColour( SDL_Color colour )
 {
-    t_transparent = colour.a != SDL_ALPHA_OPAQUE );
+    t_transparent = colour.a != SDL_ALPHA_OPAQUE;
 
     // iterate over pixels
     for ( Uint32 i = 0; i < t_pixels.size(); i++ )
