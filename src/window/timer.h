@@ -25,6 +25,7 @@ class Timer
         Uint64 GetMaintime() { return r_maintime_nano; }
         double GetCurrentFPS();
         Uint64 GetDeltaTime() { return r_deltatime_nano; }
+        Uint64 GetCurrentTick() { return r_currentTick; }
         void   SetDeltaLimits( Uint64 max_delta ); // in ms
         void   SetDeltaLimitsNs( Uint64 max_delta ); // in ns
 
@@ -46,6 +47,7 @@ class Timer
         Uint64 r_tickNow        = 0;
         Uint64 r_tickLast_main  = 0;
         Uint64 r_tickNow_main   = 0;
+        Uint64 r_currentTick    = 0; // tick count since init
         Uint64 r_frametime_nano = 0; // time between last and previous frames were shown
         Uint64 r_maintime_nano  = 0; // time required to actually render a frame
         Uint64 r_deltatime_nano = 0; // used for framerate independent movement

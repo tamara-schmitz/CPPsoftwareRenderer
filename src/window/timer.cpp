@@ -80,7 +80,7 @@ void   Timer::nsSleep(Uint64 ns)
 // tick function
 void Timer::TickCall()
 {
-    //-- END OF FRAME
+    //-- END OF TICK
     // update maintime counter
     r_tickNow_main = GetHighResClockNs();
     // calculate maintime diff
@@ -97,7 +97,7 @@ void Timer::TickCall()
     r_tickLast = r_tickNow;
     r_tickNow  = GetHighResClockNs();
 
-    //-- BEGINNING OF FRAME
+    //-- BEGINNING OF TICK
     // calculate frametime diff
     r_frametime_nano = r_tickNow - r_tickLast;
     // update deltatime
@@ -109,6 +109,9 @@ void Timer::TickCall()
     {
         r_deltatime_nano = r_frametime_nano;
     }
+
+    r_currentTick++;
+
     // calculate sleep overrun ( ^= differnence between expected vs real sleep time )
     r_sleepOverrun  = r_frametime_nano - ( r_tickLimit - r_sleepOverrun );
     if ( r_frametime_nano < r_tickLimit || r_tickLimit == 0 )

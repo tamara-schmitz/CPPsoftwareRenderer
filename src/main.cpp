@@ -6,11 +6,13 @@
 #include "early_demos/scanRenderer.h"
 #include "rasteriser.h"
 
-
 // This project is based on BennyQBD's 3D software renderer project
 // Github: https://github.com/BennyQBD/3DSoftwareRenderer
 // Youtube-Playlist: https://www.youtube.com/playlist?list=PLEETnX-uPtBUbVOok816vTl1K9vV1GgH5
 
+// Global vars
+Window *window;
+bool doSIGTERM = false;
 
 // --switch between demos
 // 0: random pixels
@@ -20,40 +22,62 @@
 // 4: load BMP and draw it using the texture class (slow!)
 const int current_demo = 3;
 
-bool checkSDLQuit()
+void sigterm( int signum )
 {
-    SDL_Event e;
-    while ( SDL_PollEvent( &e ) )
-    {
-        if ( e.type == SDL_QUIT || e.window.event == SDL_WINDOWEVENT_CLOSE )
+    doSIGTERM = true;
+    cout << "SIGTERM received! Shutting down..." << endl;
+}
+
+bool checkQuit()
+{
+    // returns true if program should quit
+
+    #ifdef MODE_TEST
+        if ( window->timer.GetCurrentTick() > 60 * 3 )
         {
-            std::cout << "SDL QUIT EVENT!" << std::endl;
             return true;
         }
+    #endif
 
-        if ( e.window.event == SDL_WINDOWEVENT_HIDDEN || e.window.event == SDL_WINDOWEVENT_MINIMIZED )
+    if ( doSIGTERM )
+    {
+        return true;
+    }
+
+    #ifndef MODE_HEADLESS
+        SDL_Event e;
+        while ( SDL_PollEvent( &e ) )
         {
-            // loop if window is hidden
-            std::cout << "PAUSING EXECUTION!" << std::endl;
-
-            bool pause = true;
-            while ( pause )
+            if ( e.type == SDL_QUIT || e.window.event == SDL_WINDOWEVENT_CLOSE )
             {
-                SDL_Delay( 10 );
-                while ( SDL_WaitEvent( &e ) )
+                cout << "SDL QUIT EVENT!" << endl;
+                return true;
+            }
+
+            if ( e.window.event == SDL_WINDOWEVENT_HIDDEN || e.window.event == SDL_WINDOWEVENT_MINIMIZED )
+            {
+                cout << "PAUSING EXECUTION!" << endl;
+
+                bool pause = true;
+                while ( pause )
                 {
-                    if ( e.window.event == SDL_WINDOWEVENT_SHOWN ||
-                         e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ||
-                         e.window.event == SDL_WINDOWEVENT_EXPOSED )
+                    SDL_Delay( 10 );
+                    while ( SDL_WaitEvent( &e ) )
                     {
-                        pause = false;
-                        std::cout << "CONTINUE EXECUTION!" << std::endl;
-                        return false;
+                        if ( e.window.event == SDL_WINDOWEVENT_SHOWN ||
+                             e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ||
+                             e.window.event == SDL_WINDOWEVENT_EXPOSED )
+                        {
+                            pause = false;
+                            cout << "CONTINUING EXECUTION!" << endl;
+                            return false;
+                        }
                     }
                 }
             }
         }
-    }
+    #endif
+
     return false;
 }
 
@@ -63,7 +87,7 @@ void demo_randomPixels( Window* window )
 
     while ( running )
     {
-        running = !checkSDLQuit();
+        running = !checkQuit();
 
         window->clearBuffers();
         // splat down some random pixels
@@ -95,7 +119,7 @@ void demo_starfield( Window *window )
     bool running = true;
     while ( running )
     {
-        running = !checkSDLQuit();
+        running = !checkQuit();
 
         window->clearBuffers();
 
@@ -140,7 +164,7 @@ void demo_shapes( Window *window )
     bool running = true;
     while ( running )
     {
-        running = !checkSDLQuit();
+        running = !checkQuit();
 
         window->clearBuffers();
 
@@ -210,7 +234,7 @@ void demo_rasteriser( Window *window )
     bool running = true;
     while ( running )
     {
-        running = !checkSDLQuit();
+        running = !checkQuit();
 
         window->clearBuffers();
 
@@ -222,7 +246,7 @@ void demo_rasteriser( Window *window )
         tris *= rotationMatrix;
 
         #ifdef PRINT_DEBUG_STUFF
-            std::cout << "v1 - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << std::endl;
+            cout << "v1 - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
         #endif // PRINT_DEBUG_STUFF
 
         // draw triangle
@@ -253,7 +277,7 @@ void demo_DisplayTexture( Window* window )
     bool running = true;
     while ( running )
     {
-        running = !checkSDLQuit();
+        running = !checkQuit();
 
         window->clearBuffers();
 
@@ -280,7 +304,7 @@ int main( int argc, char* argv[] )
     try
     {
         // create window and run demos
-        Window *window = new Window( 1024, 768, 1, "Software Renderer", 30 );
+        window = new Window( 1024, 768, 1, "Software Renderer", 60 );
         window->timer.SetDeltaLimits( (1.0/20.0) * 1000 ); // delta time >= 20 FPS
 
         switch( current_demo )
@@ -307,7 +331,7 @@ int main( int argc, char* argv[] )
     }
     catch ( std::exception& e )
     {
-        std::cout << "Standard exception: " << e.what() << std::endl;
+        cout << "Standard exception: " << e.what() << endl;
     }
 
     return 0;

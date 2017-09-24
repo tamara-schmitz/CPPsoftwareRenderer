@@ -1,5 +1,5 @@
 language: cpp
-script: make linux64-debug
+script: make linux64-test
 sudo: true
 
 matrix:
@@ -122,4 +122,4 @@ before_install:
     - sudo apt-add-repository --yes ppa:zoogie/sdl2-snapshots
     - export PATH=~/usr/bin:$PATH
     - sudo apt-get update -qq
-    - sudo apt-get install -q -y libsdl2-dev
+    - sudo apt-get install -q -y libsdl2-dev valgrind
