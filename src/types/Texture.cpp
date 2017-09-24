@@ -33,7 +33,6 @@ Texture::Texture( const char* pathtofile )
     if ( textureSurface != nullptr )
     {
         ImportFromSurface( textureSurface );
-        // free surface
         SDL_FreeSurface( textureSurface );
     }
     else
@@ -50,9 +49,8 @@ void Texture::ImportFromSurface( SDL_Surface* surface )
     t_height = surface->h;
     // allocate texture memory
     t_pixels.resize( t_width * t_height );
-    // shrink capacity to accommodate for new size
     t_pixels.shrink_to_fit();
-    // check if surface has transparency
+
     t_transparent = surface->format->Amask != 0; // alphaMask==0 if no alpha according to docs
 
     // Lock surface so that we get direct pixel access
@@ -68,13 +66,11 @@ void Texture::ImportFromSurface( SDL_Surface* surface )
 
             if ( t_transparent )
             {
-                // get rgba values
                 SDL_GetRGBA( getPixelOn_SDLSurface( surface, x, y ), surface->format,
                              &r, &g, &b, &a );
             }
             else
             {
-                // get rgb values
                 SDL_GetRGB( getPixelOn_SDLSurface( surface, x, y ), surface->format,
                              &r, &g, &b );
                 // set alpha to opaque
@@ -104,12 +100,7 @@ SDL_Color Texture::GetPixel( const Uint16& x, const Uint16& y ) const
 
 void Texture::SetPixel( const Uint16& x, const Uint16& y, const SDL_Color& colour )
 {
-    // transparent colour?
-    if ( colour.a != SDL_ALPHA_OPAQUE )
-    {
-        // yes
-        t_transparent = true;
-    }
+    t_transparent = colour.a != SDL_ALPHA_OPAQUE;
 
     // check if not out of bounds
     if ( x >= 0 && x < GetWidth() &&
@@ -121,7 +112,6 @@ void Texture::SetPixel( const Uint16& x, const Uint16& y, const SDL_Color& colou
 
 void Texture::FillWithRandomPixels()
 {
-    // transparent? no
     t_transparent = false;
 
     // iterate over pixels
@@ -138,17 +128,7 @@ void Texture::FillWithRandomPixels()
 
 void Texture::FillWithColour( SDL_Color colour )
 {
-    // transparent?
-    if ( colour.a == SDL_ALPHA_OPAQUE )
-    {
-        // no
-        t_transparent = false;
-    }
-    else
-    {
-        // yes
-        t_transparent = true;
-    }
+    t_transparent = colour.a != SDL_ALPHA_OPAQUE );
 
     // iterate over pixels
     for ( Uint32 i = 0; i < t_pixels.size(); i++ )

@@ -33,7 +33,7 @@ bool checkQuit()
     // returns true if program should quit
 
     #ifdef MODE_TEST
-        if ( window->timer.GetCurrentTick() > 60 * 3 )
+        if ( window->timer.GetCurrentTick() > 60 )
         {
             return true;
         }
@@ -257,9 +257,9 @@ void demo_rasteriser( Window *window )
         // draw mesh
         objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, absoluteRotation, 0 ) * objMatrix_mesh;
         raster->UpdateObjectToWorldMatrix( objMatrix_mesh );
-        // raster->DrawMesh( sphereModel );
+        raster->DrawMesh( sphereModel );
        raster->SetDrawTexture( chaletTexture );
-       raster->DrawMesh( chaletModel );
+    //    raster->DrawMesh( chaletModel );
 
         window->updateWindow();
         #ifdef PRINT_DEBUG_STUFF
