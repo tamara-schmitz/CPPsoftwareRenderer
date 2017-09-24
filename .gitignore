@@ -33,7 +33,7 @@
 
 # Executables folder
 bin/
-buildWin/
+build/*
 *.zip
 
 # Profile dumps

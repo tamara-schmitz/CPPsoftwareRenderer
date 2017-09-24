@@ -17,8 +17,9 @@ LIBRARY_PATHS = -Linclude/i686-w64-mingw32/lib
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -Wl,-subsystem,windows gets rid of the console window
-COMPILER_FLAGS_WIN = -Wall -Werror -pedantic-errors -Wl,-subsystem,windows -march=core2 -O3 -fomit-frame-pointer -std=c++11 -static-libgCXX -static-libstdc++
-COMPILER_FLAGS_LINUX = -Wall -Werror -pedantic-errors -march=core2 -O3 -std=c++11
+COMPILER_FLAGS_COMMON = -Wall -pedantic-errors -O3 -std=c++11 -Wno-unused-variable
+COMPILER_FLAGS_WIN = $(COMPILER_FLAGS_COMMON) -Wl,-subsystem,windows -march=core2 -static-libgCXX -static-libstdc++
+COMPILER_FLAGS_LINUX = $(COMPILER_FLAGS_COMMON) -march=core2
 
 # DEBUG_FLAGS added in addition to COMPILER_FLAGS
 DEBUG_FLAGS = -DPRINT_DEBUG_STUFF -g
@@ -32,6 +33,9 @@ LINKER_FLAGS_LINUX = -lSDL2
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME_PREFIX = build/SDLsoftwarerenderer_
+
+clean :
+	rm build/*
 
 #windows
 win64 : $(OBJS)

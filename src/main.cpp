@@ -212,11 +212,11 @@ void demo_rasteriser( Window *window )
 //    Matrix4f objMatrix = Matrix4f::createTranslation( 0, 0, 0 );
 //    Matrix4f objMatrix = Matrix4f::createScale( 0.2f, 0.2f, 0.2f );
     float absoluteRotation = 0.0f;
-    Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 90, 0 ) * Matrix4f::createScale( 0.8f, 0.8f, 0.8f );
-    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 50 ) * Matrix4f::createScale( 100, 100, 100 );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 50.0f );
+    Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 90, 0 ) * Matrix4f::createScale( 0.5f, 0.5f, 0.5f );
+    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 ) * Matrix4f::createScale( 100, 100, 100 );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 5.0f );
     raster->UpdateViewMatrix( viewMatrix );
-    raster->UpdatePerspectiveMatrix( 90, 0.1f, 100.0f );
+    raster->UpdatePerspectiveMatrix( 70, 0.1f, 1000.0f );
 
     raster->SetDrawColour( triangleColor );
     raster->SetDrawTexture( triangleTexture );
@@ -224,12 +224,12 @@ void demo_rasteriser( Window *window )
 
     // triangle 3D
     Triangle tris = Triangle();
-    tris.verts[0].posVec = Vector4f {    1,  1, 0, 1 };
+    tris.verts[0].posVec = Vector4f {   -1, -1, 0, 1 };
     tris.verts[1].posVec = Vector4f {    0,  1, 0, 1 };
-    tris.verts[2].posVec = Vector4f {    1,  1, 0, 1 };
-    tris.verts[0].texVec = Vector2f {    0,  1 }; // texels starts at bottom,left. texture at top,left.
-    tris.verts[1].texVec = Vector2f { 0.5f,  0 }; // texels coords compensate for that.
-    tris.verts[2].texVec = Vector2f {    1,  1 };
+    tris.verts[2].posVec = Vector4f {    1, -1, 0, 1 };
+    tris.verts[0].texVec = Vector2f {    0,  0 }; // texels starts at bottom,left. texture at top,left.
+    tris.verts[1].texVec = Vector2f { 0.5f,  1 }; // texels coords compensate for that.
+    tris.verts[2].texVec = Vector2f {    1,  0 };
 
     bool running = true;
     while ( running )
@@ -255,11 +255,11 @@ void demo_rasteriser( Window *window )
         raster->FillTriangle( tris );
 
         // draw mesh
-        objMatrix_mesh = Matrix4f::createScale( 0.01f, 0.01f, 0.01f ) * Matrix4f::createRotationAroundAxis( 0, absoluteRotation, 0 );
+        objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, absoluteRotation, 0 ) * objMatrix_mesh;
         raster->UpdateObjectToWorldMatrix( objMatrix_mesh );
         // raster->DrawMesh( sphereModel );
-//        raster->SetDrawTexture( chaletTexture );
-//        raster->DrawMesh( chaletModel );
+       raster->SetDrawTexture( chaletTexture );
+       raster->DrawMesh( chaletModel );
 
         window->updateWindow();
         #ifdef PRINT_DEBUG_STUFF

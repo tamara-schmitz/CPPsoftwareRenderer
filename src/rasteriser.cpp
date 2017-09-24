@@ -98,18 +98,24 @@ void Rasteriser::FillTriangle( Triangle tris )
         #ifdef PRINT_DEBUG_STUFF
             cout << "Culled because v1.posVec.z: " << tris.verts[0].posVec.z << " v2.posVec.z: " << tris.verts[1].posVec.z << " v3.posVec.z: " << tris.verts[2].posVec.z << endl;
         #endif // PRINT_DEBUG_STUFF
-        // return;
+        return;
     }
 
     // calculate handedness
     float area = triangleArea< float >( tris.verts[0].posVec, tris.verts[1].posVec, tris.verts[2].posVec );
-    // true if right handed (and hence area smaller than 0)
-    bool handedness = area < 0;
 
+    // true if right handed (and hence area bigger than 0)
+    bool handedness = area >= 0;
+    #ifdef PRINT_DEBUG_STUFF
+        cout << "Area: " << area << endl;
+    #endif
     // cull triangle if right-handed (we use left-handed cartesian coordinates)
-    if ( handedness)
+    if ( handedness )
     {
-        return;
+        #ifdef PRINT_DEBUG_STUFF
+            cout << "Triangle culled because right-handed." << endl;
+            return;
+        #endif
     }
 
     tris.sortVertsByY();

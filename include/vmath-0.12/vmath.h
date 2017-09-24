@@ -2533,7 +2533,7 @@ public:
 
 
 
-                                                     C = (zNear) / (zNear - zFar)
+                                                     C = (-zNear -zFar) / (zNear - zFar)
 
                                                      D = (2 zFar zNear) / (zNear - zFar)
         */
@@ -2543,9 +2543,9 @@ public:
 
         ret.at( 0, 0 ) = 1.0f / (tanHalfFOV * aspectRatio);
         ret.at( 1, 1 ) = 1.0f /  tanHalfFOV;
-        ret.at( 2, 2 ) = ( zNear ) / zRange;
+        ret.at( 2, 2 ) = ( -zNear -zFar ) / zRange;
         ret.at( 3, 2 ) = ( 2 * zFar * zNear ) / zRange;
-        ret.at( 2, 3 ) = -1;
+        ret.at( 2, 3 ) = 1;
         ret.at( 3, 3 ) = 0;
 
         return ret;
@@ -4151,4 +4151,3 @@ namespace VMATH_NAMESPACE
 
 
 #endif // __vmath_Header_File__
-
