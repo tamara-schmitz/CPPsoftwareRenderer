@@ -56,6 +56,7 @@ Mesh::Mesh( std::string pathToOBJ )
                 new_vertex.posVec.x = attrib.vertices.at( 3 * current_index.vertex_index + 0 );
                 new_vertex.posVec.y = attrib.vertices.at( 3 * current_index.vertex_index + 1 );
                 new_vertex.posVec.z = attrib.vertices.at( 3 * current_index.vertex_index + 2 );
+                new_vertex.posVec.w = 1;
                 if ( hasTexCoords )
                 {
                     new_vertex.texVec.x = attrib.texcoords.at( 2 * current_index.texcoord_index + 0 );

@@ -190,7 +190,7 @@ void demo_rasteriser( Window *window )
     auto raster = shared_ptr<Rasteriser>( new Rasteriser( window ) );
 
     #ifdef PRINT_DEBUG_STUFF
-        raster->slowRendering = false;
+        raster->slowRendering = false ;
     #endif
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
@@ -202,9 +202,9 @@ void demo_rasteriser( Window *window )
 //    Matrix4f objMatrix = Matrix4f::createTranslation( 0, 0, 0 );
 //    Matrix4f objMatrix = Matrix4f::createScale( 0.2f, 0.2f, 0.2f );
     float absoluteRotation = 0.0f;
-    Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 90, 0 ) * Matrix4f::createScale( 0.1f, 0.1f, 0.1f );
-    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, -45 );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 50.0f );
+    Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 0, 90 );
+    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 5.0f );
     raster->UpdateViewMatrix( viewMatrix );
     raster->UpdatePerspectiveMatrix( 70, 0.1f, 1000.0f );
 
@@ -228,7 +228,7 @@ void demo_rasteriser( Window *window )
         window->clearBuffers();
 
         // get per frame rotation factor
-        float rotationFactor = 100 * (window->timer.GetDeltaTime() / 1000000000.0);
+        float rotationFactor = 75 * (window->timer.GetDeltaTime() / 1000000000.0);
         absoluteRotation += rotationFactor;
         Matrix4f rotationMatrix = Matrix4f::createRotationAroundAxis( 0, rotationFactor, 0 );
 
@@ -244,9 +244,9 @@ void demo_rasteriser( Window *window )
         raster->FillTriangle( tris );
 
         // draw mesh
-        objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, absoluteRotation, 0 ) * objMatrix_mesh;
+        objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, absoluteRotation, 0 );
         raster->UpdateObjectToWorldMatrix( objMatrix_mesh );
-        // raster->DrawMesh( sphereModel );
+        raster->DrawMesh( sphereModel );
        raster->SetDrawTexture( chaletTexture );
     //    raster->DrawMesh( chaletModel );
 
