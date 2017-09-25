@@ -247,8 +247,8 @@ void demo_rasteriser( Window *window )
         objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, absoluteRotation, 0 );
         raster->UpdateObjectToWorldMatrix( objMatrix_mesh );
         raster->DrawMesh( sphereModel );
-       raster->SetDrawTexture( chaletTexture );
-    //    raster->DrawMesh( chaletModel );
+        raster->SetDrawTexture( chaletTexture );
+        // raster->DrawMesh( chaletModel );
 
         window->updateWindow();
         #ifdef PRINT_DEBUG_STUFF

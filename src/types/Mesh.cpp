@@ -75,7 +75,7 @@ Mesh::Mesh( std::string pathToOBJ )
 
             // copy / generate normals
             // this have to be done for every triangle not every vertex
-            if ( i % 3 == 0 && i >= 3 )
+            if ( (i + 1) % 3 == 0 && i >= 2 )
             {
                 Vector3f normal;
                 if ( hasNormals )
@@ -108,18 +108,8 @@ Mesh::Mesh( std::string pathToOBJ )
 
 Triangle Mesh::GetTriangle( Uint32 index ) const
 {
-    // TODO remove if-else. normals should always be present
-    if ( m_indices.size() / 3 == m_normals.size() )
-    {
-        return Triangle( GetVertex( GetIndex(3 * index) ), GetVertex( GetIndex(3 * index + 1) ),
-                         GetVertex( GetIndex(3 * index + 2) ), GetNormal( index ) );
-    }
-    else
-    {
-        return Triangle( GetVertex( GetIndex(3 * index) ), GetVertex( GetIndex(3 * index + 1) ),
-                         GetVertex( GetIndex(3 * index + 2) ) );
-    }
-
+    return Triangle( GetVertex( GetIndex(3 * index) ), GetVertex( GetIndex(3 * index + 1) ),
+                     GetVertex( GetIndex(3 * index + 2) ), GetNormal( index ) );
 }
 
 int64_t Mesh::OBJindexToNewIndex( const tinyobj::attrib_t& attrib, const tinyobj::index_t& obj_index, shared_ptr< std::unordered_map<int, Uint32> > OBJtoNew_List )
