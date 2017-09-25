@@ -1,0 +1,6 @@
+include
+include/vmath-0.12
+src
+src/early_demos
+src/types
+src/window

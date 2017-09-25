@@ -51,4 +51,5 @@ linux64-test : $(OBJS)
 	valgrind --tool=memcheck --leak-check=yes $(OBJ_NAME_PREFIX)linux64-test
 
 # default
+all := linux64
 .DEFAULT_GOAL := linux64

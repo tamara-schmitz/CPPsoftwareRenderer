@@ -6,8 +6,6 @@ Texture::Texture( Uint16 width, Uint16 height )
     t_width = width;
     t_height = height;
     t_pixels.resize( width * height );
-
-    // shrink capacity to accommodate for new size
     t_pixels.shrink_to_fit();
 }
 
@@ -17,8 +15,6 @@ Texture::Texture( Uint16& width, Uint16& height )
     t_width = width;
     t_height = height;
     t_pixels.resize( width * height );
-
-    // shrink capacity to accommodate for new size
     t_pixels.shrink_to_fit();
 }
 

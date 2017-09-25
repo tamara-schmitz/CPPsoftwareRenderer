@@ -687,6 +687,26 @@ public:
 	{
 	}
 
+	/**
+	 * Various direction vector constructors
+	 */
+	static Vector3<T> up()
+	{
+		Vector3<T> vec;
+		vec.x = vec.y = 0;
+		vec.z = 1;
+
+		return vec;
+	}
+	static Vector3<T> forward()
+	{
+		Vector3<T> vec;
+		vec.x = 1;
+		vec.y = vec.z = 0;
+
+		return vec;
+	}
+
 	//----------------[ access operators ]-------------------
 	/**
 	 * Copy operator
@@ -1221,6 +1241,26 @@ public:
 	Vector4(const Vector3<FromT>& src, FromT w)
 		: x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)), w(static_cast<T>(w))
     {}
+
+	/**
+	 * Various direction vector constructors
+	 */
+	static Vector4<T> up()
+	{
+		Vector4<T> vec;
+		vec.x = vec.y = 0;
+		vec.z = vec.w = 1;
+
+		return vec;
+	}
+	static Vector4<T> forward()
+	{
+		Vector4<T> vec;
+		vec.x = vec.w = 1;
+		vec.y = vec.z = 0;
+
+		return vec;
+	}
 
 	//----------------[ access operators ]-------------------
 	/**
@@ -2393,7 +2433,7 @@ public:
                                                     D = - (2 zFar zNear) / (zFar - zNear)
 		 *
 		 */
-		Matrix4<T> ret;
+		Matrix4<T> ret = Matrix4<T>();
 
 		const T invWidth = 1.0 / (right - left);
 		const T invHeight = 1.0 / (top - bottom);
@@ -2457,7 +2497,7 @@ public:
 		const T invHeight = 1.0 / (top - bottom);
 		const T invDepth = 1.0 / (zFar - zNear);
 
-		Matrix4<T> ret;
+		Matrix4<T> ret = Matrix4<T>();
 
 		ret.at(0,0) = 2 * invWidth;
 		ret.at(1,1) = 2 * invHeight;
@@ -2521,15 +2561,15 @@ public:
 		 *
       	     1
         ------------       0              0              0
-        tanHalf * aspect
+    tanHalfFOV * aspect
 
                            1
             0         ------------        0              0
-                        tanHalf
+                        tanHalfFOV
 
             0              0              C              D
 
-            0              0              -1             0
+            0              0              1             0
 
 
 
@@ -2537,7 +2577,7 @@ public:
 
                                                      D = (2 zFar zNear) / (zNear - zFar)
         */
-        Matrix4<T> ret;
+        Matrix4<T> ret = Matrix4<T>();
         const T tanHalfFOV = std::tan( fov / 2.0f );
         const T zRange = zNear - zFar;
 
@@ -2554,7 +2594,7 @@ public:
 	 // matrix that can be used for translating to screenspace
 	 static Matrix4<T> screenspaceTransform( const T halfWidth, const T halfHeight )
 	 {
-        Matrix4<T> ret;
+        Matrix4<T> ret = Matrix4<T>();
         ret.at( 0, 0 ) = halfWidth;
         ret.at( 3, 0 ) = halfWidth;
         ret.at( 1, 1 ) = -halfHeight;

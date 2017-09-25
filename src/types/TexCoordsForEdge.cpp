@@ -14,6 +14,9 @@ TexCoordsForEdge<T>::TexCoordsForEdge(const Vertex<T>& vertMin, const Vertex<T>&
     T oneOverdY = -oneOverdX;
 
     // calculate texCoord values from verts
+    depth_values[0] = vertMin.posVec.z;
+    depth_values[1] = vertMid.posVec.z;
+    depth_values[2] = vertMax.posVec.z;
     oneOverZ_values[0] = 1.0 / vertMin.posVec.w;
     oneOverZ_values[1] = 1.0 / vertMid.posVec.w;
     oneOverZ_values[2] = 1.0 / vertMax.posVec.w;
@@ -31,6 +34,8 @@ TexCoordsForEdge<T>::TexCoordsForEdge(const Vertex<T>& vertMin, const Vertex<T>&
     texCoordY_YStep = calcYStep( texCoordY_values, oneOverdY, vertMin, vertMid, vertMax );
     oneOverZ_XStep  = calcXStep( oneOverZ_values,  oneOverdX, vertMin, vertMid, vertMax );
     oneOverZ_YStep  = calcYStep( oneOverZ_values,  oneOverdY, vertMin, vertMid, vertMax );
+    depth_XStep     = calcXStep( depth_values, oneOverdX, vertMin, vertMid, vertMax );
+    depth_YStep     = calcYStep( depth_values, oneOverdY, vertMin, vertMid, vertMax );
 }
 
 template< typename T >

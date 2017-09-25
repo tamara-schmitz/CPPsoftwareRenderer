@@ -33,6 +33,7 @@ Edge<T>::Edge( const Vertex<T>& vertMin, const Vertex<T>& vertMax, const TexCoor
     texCoordX_step = texcoords.GetTexCoordX_YStep() + texcoords.GetTexCoordX_XStep() * xStep;
     texCoordY_step = texcoords.GetTexCoordY_YStep() + texcoords.GetTexCoordY_XStep() * xStep;
     texCoord_OneOverZ_step = texcoords.GetOneOverZ_YStep() + texcoords.GetOneOverZ_XStep() * xStep;
+    depth_step = texcoords.GetDepth_YStep() + texcoords.GetDepth_XStep() * xStep;
 
     // initialise currentX and current texcoord x and y with first y-Step
     if ( yStart < 0 )
@@ -56,6 +57,7 @@ void Edge<T>::DoYStep()
     texCoord_currentX += texCoordX_step;
     texCoord_currentY += texCoordY_step;
     texCoord_currentOneOverZ += texCoord_OneOverZ_step;
+    currentDepth += depth_step;
 }
 
 template< typename T >
@@ -81,6 +83,9 @@ void Edge<T>::GoToStep( int newY )
                 (texcoords.GetOneOverZ_XStep() * xPrestep) +
                 (texcoords.GetOneOverZ_YStep() * yPrestep) +
                                                 texCoord_OneOverZ_step * newY;
+    currentDepth = texcoords.GetDepth( vertMini_Index ) +
+                (texcoords.GetDepth_XStep() * xPrestep) +
+                (texcoords.GetDepth_YStep() * yPrestep) + depth_step * newY;
 
 }
 

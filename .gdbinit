@@ -1,2 +1,2 @@
 set breakpoint pending on
-b rasteriser.cpp:166
+b rasteriser.cpp:219

@@ -25,46 +25,46 @@ bool checkQuit()
 {
     // returns true if program should quit
 
-    #ifdef MODE_TEST
-        if ( window->timer.GetCurrentTick() > 60 )
+#ifdef MODE_TEST
+    if ( window->timer.GetCurrentTick() > 60 )
+    {
+        return true;
+    }
+#endif
+
+#ifndef MODE_HEADLESS
+    SDL_Event e;
+    while ( SDL_PollEvent( &e ) )
+    {
+        if ( e.type == SDL_QUIT || e.window.event == SDL_WINDOWEVENT_CLOSE )
         {
+            cout << "SDL QUIT EVENT!" << endl;
             return true;
         }
-    #endif
 
-    #ifndef MODE_HEADLESS
-        SDL_Event e;
-        while ( SDL_PollEvent( &e ) )
+        if ( e.window.event == SDL_WINDOWEVENT_HIDDEN || e.window.event == SDL_WINDOWEVENT_MINIMIZED )
         {
-            if ( e.type == SDL_QUIT || e.window.event == SDL_WINDOWEVENT_CLOSE )
-            {
-                cout << "SDL QUIT EVENT!" << endl;
-                return true;
-            }
+            cout << "PAUSING EXECUTION!" << endl;
 
-            if ( e.window.event == SDL_WINDOWEVENT_HIDDEN || e.window.event == SDL_WINDOWEVENT_MINIMIZED )
+            bool pause = true;
+            while ( pause )
             {
-                cout << "PAUSING EXECUTION!" << endl;
-
-                bool pause = true;
-                while ( pause )
+                SDL_Delay( 10 );
+                while ( SDL_WaitEvent( &e ) )
                 {
-                    SDL_Delay( 10 );
-                    while ( SDL_WaitEvent( &e ) )
+                    if ( e.window.event == SDL_WINDOWEVENT_SHOWN ||
+                         e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ||
+                         e.window.event == SDL_WINDOWEVENT_EXPOSED )
                     {
-                        if ( e.window.event == SDL_WINDOWEVENT_SHOWN ||
-                             e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ||
-                             e.window.event == SDL_WINDOWEVENT_EXPOSED )
-                        {
-                            pause = false;
-                            cout << "CONTINUING EXECUTION!" << endl;
-                            return false;
-                        }
+                        pause = false;
+                        cout << "CONTINUING EXECUTION!" << endl;
+                        return false;
                     }
                 }
             }
         }
-    #endif
+    }
+#endif
 
     return false;
 }
@@ -93,9 +93,9 @@ void demo_randomPixels( Window* window )
         }
 
         window->updateWindow();
-        #ifdef PRINT_DEBUG_STUFF
-            window->timer.printTimes();
-        #endif // PRINT_DEBUG_STUFF
+#ifdef PRINT_DEBUG_STUFF
+        window->timer.printTimes();
+#endif
         window->updateTitleWithFPS( 60 );
     }
 }
@@ -114,9 +114,9 @@ void demo_starfield( Window *window )
         field->drawStarfield();
 
         window->updateWindow();
-        #ifdef PRINT_DEBUG_STUFF
-            window->timer.printTimes();
-        #endif // PRINT_DEBUG_STUFF
+#ifdef PRINT_DEBUG_STUFF
+        window->timer.printTimes();
+#endif
         window->updateTitleWithFPS( 60 );
 
     }
@@ -175,9 +175,9 @@ void demo_shapes( Window *window )
         renderer->FillTriangle( v1_no2, v2_no2, v3_no2, triangleColor2 );
 
         window->updateWindow();
-        #ifdef PRINT_DEBUG_STUFF
-            window->timer.printTimes();
-        #endif // PRINT_DEBUG_STUFF
+#ifdef PRINT_DEBUG_STUFF
+        window->timer.printTimes();
+#endif
         window->updateTitleWithFPS( 60 );
     }
 
@@ -189,9 +189,10 @@ void demo_rasteriser( Window *window )
 {
     auto raster = shared_ptr<Rasteriser>( new Rasteriser( window ) );
 
-    #ifdef PRINT_DEBUG_STUFF
-        raster->slowRendering = false ;
-    #endif
+#ifdef PRINT_DEBUG_STUFF
+    raster->slowRendering = false;
+    raster->ignoreZBuffer = false;
+#endif
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     auto bmpTexture = shared_ptr<Texture>( new Texture( "examples/tree.bmp" ) );
@@ -204,7 +205,7 @@ void demo_rasteriser( Window *window )
     float absoluteRotation = 0.0f;
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 0, 90 );
     Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 5.0f );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 3.0f );
     raster->UpdateViewMatrix( viewMatrix );
     raster->UpdatePerspectiveMatrix( 70, 0.1f, 1000.0f );
 
@@ -226,6 +227,7 @@ void demo_rasteriser( Window *window )
         running = !checkQuit();
 
         window->clearBuffers();
+        raster->ClearZBuffer();
 
         // get per frame rotation factor
         float rotationFactor = 75 * (window->timer.GetDeltaTime() / 1000000000.0);
@@ -234,9 +236,9 @@ void demo_rasteriser( Window *window )
 
         tris *= rotationMatrix;
 
-        #ifdef PRINT_DEBUG_STUFF
-            cout << "v1 - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
-        #endif // PRINT_DEBUG_STUFF
+#ifdef PRINT_DEBUG_STUFF
+        cout << "v1 - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
+#endif
 
         // draw triangle
         raster->SetDrawTexture( bmpTexture );
@@ -244,16 +246,16 @@ void demo_rasteriser( Window *window )
         raster->FillTriangle( tris );
 
         // draw mesh
-        objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, absoluteRotation, 0 );
+        objMatrix_mesh = Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
         raster->UpdateObjectToWorldMatrix( objMatrix_mesh );
         raster->DrawMesh( sphereModel );
         raster->SetDrawTexture( chaletTexture );
-        // raster->DrawMesh( chaletModel );
+//        raster->DrawMesh( chaletModel );
 
         window->updateWindow();
-        #ifdef PRINT_DEBUG_STUFF
-            window->timer.printTimes();
-        #endif // PRINT_DEBUG_STUFF
+#ifdef PRINT_DEBUG_STUFF
+        window->timer.printTimes();
+#endif
         window->updateTitleWithFPS( 60 );
     }
 }
@@ -280,9 +282,9 @@ void demo_DisplayTexture( Window* window )
         }
 
         window->updateWindow();
-        #ifdef PRINT_DEBUG_STUFF
-            window->timer.printTimes();
-        #endif // PRINT_DEBUG_STUFF
+#ifdef PRINT_DEBUG_STUFF
+        window->timer.printTimes();
+#endif
         window->updateTitleWithFPS( 240 );
     }
 }

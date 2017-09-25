@@ -6,25 +6,30 @@
 template< typename T >
 struct TexCoordsForEdge
 {
+    // Used by rasteriser to calculate texcoord steps.
+    // Due to its knowledge about all the other edges it can do these caculations
+    // in its ctor.
+
     public:
         TexCoordsForEdge() {} // empty constructor
         TexCoordsForEdge( const Vertex<T>& vertMin, const Vertex<T>& vertMid, const Vertex<T>& vertMax );
         virtual ~TexCoordsForEdge();
 
         // getters
-        T GetTexCoordX_XStep() { return texCoordX_XStep; }
-        T GetTexCoordX_YStep() { return texCoordX_YStep; }
-        T GetTexCoordY_XStep() { return texCoordY_XStep; }
-        T GetTexCoordY_YStep() { return texCoordY_YStep; }
-        T GetOneOverZ_XStep() { return oneOverZ_XStep; }
-        T GetOneOverZ_YStep() { return oneOverZ_YStep; }
-        T GetTexCoordX( int index ) { return texCoordX_values[index]; }
-        T GetTexCoordY( int index ) { return texCoordY_values[index]; }
-        T GetOneOverZ( int index ) { return oneOverZ_values[index]; }
+        T GetTexCoordX_XStep() const { return texCoordX_XStep; }
+        T GetTexCoordX_YStep() const { return texCoordX_YStep; }
+        T GetTexCoordY_XStep() const { return texCoordY_XStep; }
+        T GetTexCoordY_YStep() const { return texCoordY_YStep; }
+        T GetOneOverZ_XStep() const { return oneOverZ_XStep; }
+        T GetOneOverZ_YStep() const { return oneOverZ_YStep; }
+        T GetDepth_XStep() const { return depth_XStep; }
+        T GetDepth_YStep() const { return depth_YStep; }
+        T GetTexCoordX( int index ) const { return texCoordX_values[index]; }
+        T GetTexCoordY( int index ) const { return texCoordY_values[index]; }
+        T GetOneOverZ( int index ) const { return oneOverZ_values[index]; }
+        T GetDepth( int index ) const { return depth_values[index]; }
 
     private:
-        // TODO implement TexCoords Class
-
         //-- vars
         // texcoord steps
         T texCoordX_XStep;
@@ -33,10 +38,13 @@ struct TexCoordsForEdge
         T texCoordY_YStep;
         T oneOverZ_XStep;
         T oneOverZ_YStep;
+        T depth_XStep;
+        T depth_YStep;
         // texcoord arrays (each element represents the 3 vertexes with 0=min, 1=mid, 2=max)
         T texCoordX_values[3];
         T texCoordY_values[3];
         T oneOverZ_values[3];
+        T depth_values[3];
 
         //-- step calc functions
         // these functions calculate the xstep / ystep for given vertexes and values passed by reference

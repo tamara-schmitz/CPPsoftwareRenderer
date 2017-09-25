@@ -23,14 +23,15 @@ class Rasteriser
         float GetNearZ() const { return near_z; }
         float GetFarZ()  const { return far_z;  }
 
-        // set render colour / texture (setting one type deletes the other
+        // set render colour / texture (setting one type deletes the other one)
         void SetDrawColour( const SDL_Color& color );
-        void SetDrawTexture( shared_ptr<Texture> texture ); // passed by shared pointer
+        void SetDrawTexture( shared_ptr<Texture> texture );
+
+        void ClearZBuffer() { z_buffer = z_buffer_empty; }
 
         //-- update matrices
         void UpdateObjectToWorldMatrix( const Matrix4f& objMatrix );
         void UpdateViewMatrix( const Matrix4f& viewMatrix );
-//        void UpdatePerspectiveMatrix( const Matrix4f& perspectiveMatrix );
         void UpdatePerspectiveMatrix( const float& fov, const float& zNear, const float& zFar );
         void UpdateScreenspaceTransformMatrix();
 
@@ -39,6 +40,7 @@ class Rasteriser
         void FillTriangle( Triangle tris ); // draws a triangle
 
         bool slowRendering = false; // instead of drawing entire frame at once, update window every line.
+        bool ignoreZBuffer = false;
 
     private:
         Window* w_window;
@@ -51,6 +53,9 @@ class Rasteriser
         Uint16 current_texture_width = 0, current_texture_height = 0;
         float near_z = 0, far_z = 1; // contains current near and far plane for culling
 
+        std::vector< float > z_buffer;
+        std::vector< float > z_buffer_empty;
+
         // matrices
         Matrix4f objectToWorldTransformMatrix = Matrix4f(); // from object to world
         Matrix4f viewSpaceTransformMatrix = Matrix4f(); // from world to view
@@ -60,6 +65,9 @@ class Rasteriser
 
         //-- internal render functions
         void UpdateMvpsMatrix() { mvpsMatrix = screenspaceTransformMatrix * perspectiveTransformMatrix * viewSpaceTransformMatrix * objectToWorldTransformMatrix; }
+        float GetZ( const int index ) const { return z_buffer.at( index ); }
+        void SetZ( const int index, const float& z_value ) { z_buffer.at( index ) = z_value; }
+
         void ScanTriangle( const Vertexf& vertMin, const Vertexf& vertMid, const Vertexf& vertMax, bool isRightHanded );
         void ScanEdges( Edgef& a, Edgef& b, bool isRightHanded );
         void DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCoord );

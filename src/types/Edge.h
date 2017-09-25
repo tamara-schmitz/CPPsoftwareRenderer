@@ -8,9 +8,10 @@
 template< typename T >
 class Edge
 {
-    // represents an edge used in rasterisation
-    //
-    // call GetNextX() to get next X step value
+    // Represents a triangle edge. used for rasterisation.
+    // You can walk along the y axis by using DoYStep() or GoToStep().
+    // For each Y coordinate you can get your current X coord, texel coords, and depth
+
     public:
         Edge( const Vertex<T>& vertMin, const Vertex<T>& vertMax, const TexCoordsForEdge<T>& texcoordsforedge, int vertMin_Index );
         virtual ~Edge();
@@ -22,6 +23,7 @@ class Edge
         T GetCurrentTexCoordX() const { return texCoord_currentX; }
         T GetCurrentTexCoordY() const { return texCoord_currentY; }
         T GetCurrentOneOverZ() const { return texCoord_currentOneOverZ; }
+        T GetCurrentDepth() const { return currentDepth; }
 
         // functions
         void DoYStep(); // add xStep to currentX
@@ -45,12 +47,14 @@ class Edge
         T xStep;
         T currentX;
         // texcoord x/y and steps
-        T texCoordX_step;
-        T texCoordY_step;
-        T texCoord_OneOverZ_step;
         T texCoord_currentX;
+        T texCoordX_step;
         T texCoord_currentY;
+        T texCoordY_step;
         T texCoord_currentOneOverZ;
+        T texCoord_OneOverZ_step; // used for perspective correction
+        T currentDepth; // used for depth testing
+        T depth_step;
 
 };
 
