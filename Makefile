@@ -19,7 +19,7 @@ LIBRARY_PATHS = -Linclude/i686-w64-mingw32/lib
 # -Wl,-subsystem,windows gets rid of the console window
 COMPILER_FLAGS_COMMON = -Wall -pedantic-errors -std=c++11 -Wno-unused-variable
 COMPILER_FLAGS_RELEASE = -O3
-COMPILER_FLAGS_DEBUG = -DPRINT_DEBUG_STUFF -g -Og
+COMPILER_FLAGS_DEBUG = -DPRINT_DEBUG_STUFF -g
 COMPILER_FLAGS_TEST = $(COMPILER_FLAGS_DEBUG) -DMODE_TEST -DMODE_HEADLESS
 
 COMPILER_FLAGS_WIN = $(COMPILER_FLAGS_COMMON) -Wl,-subsystem,windows -march=core2 -static-libgCXX -static-libstdc++

@@ -190,12 +190,10 @@ void demo_rasteriser( Window *window )
     auto raster = shared_ptr<Rasteriser>( new Rasteriser( window ) );
 
     #ifdef PRINT_DEBUG_STUFF
-        raster->slowRendering = true;
+        raster->slowRendering = false;
     #endif
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
-    auto triangleTexture = shared_ptr<Texture>( new Texture( (Uint16) 150, (Uint16) 150 ) );
-    triangleTexture->FillWithRandomPixels();
     auto bmpTexture = shared_ptr<Texture>( new Texture( "examples/tree.bmp" ) );
     auto sphereModel = shared_ptr<Mesh>( new Mesh( "examples/sphere.obj" ) );
     auto chaletTexture = shared_ptr<Texture>( new Texture( "examples/chalet.bmp" ) );
@@ -211,7 +209,6 @@ void demo_rasteriser( Window *window )
     raster->UpdatePerspectiveMatrix( 70, 0.1f, 1000.0f );
 
     raster->SetDrawColour( triangleColor );
-    raster->SetDrawTexture( triangleTexture );
     raster->SetDrawTexture( bmpTexture );
 
     // triangle 3D

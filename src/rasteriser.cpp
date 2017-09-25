@@ -116,7 +116,7 @@ void Rasteriser::FillTriangle( Triangle tris )
             cout << "Triangle culled because right-handed." << endl;
         #endif
 
-        // return;
+        return;
     }
 
     tris.sortVertsByY();
@@ -166,6 +166,11 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     // ceil xMin and xMax for compliance with our top-left fill convention
     int xMin = std::ceil( left.GetCurrentX() );
     int xMax = std::ceil( right.GetCurrentX() );
+
+    if ( xMin > xMax )
+    {
+        std::swap( xMin, xMax );
+    }
 
     if ( drawWithTexture )
     {
