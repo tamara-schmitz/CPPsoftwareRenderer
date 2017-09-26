@@ -4,3 +4,4 @@ src
 src/early_demos
 src/types
 src/window
+src/rendering

@@ -26,7 +26,7 @@ void Rasteriser::SetDrawColour( const SDL_Color& color )
     current_colour = color;
 }
 
-void Rasteriser::SetDrawTexture(const shared_ptr<Texture> texture )
+void Rasteriser::SetDrawTexture(const shared_ptr<Texture>& texture )
 {
     drawWithTexture = true;
     current_texture = texture;

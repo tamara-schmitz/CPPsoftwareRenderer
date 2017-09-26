@@ -70,6 +70,7 @@ void Triangle::calculateTriangleNormal()
 
 Triangle& Triangle::operator*=( const Matrix4f& matrix )
 {
+
     verts[0].posVec = matrix * verts[0].posVec;
     verts[1].posVec = matrix * verts[1].posVec;
     verts[2].posVec = matrix * verts[2].posVec;
@@ -89,6 +90,7 @@ Triangle Triangle::operator*( const Matrix4f& matrix )
 }
 Triangle& Triangle::operator+=( const Vector4f& vec )
 {
+
     verts[0].posVec += vec;
     verts[1].posVec += vec;
     verts[2].posVec += vec;
@@ -108,6 +110,7 @@ Triangle Triangle::operator+( const Vector4f& vec )
 }
 Triangle& Triangle::operator-=( const Vector4f& vec )
 {
+
     verts[0].posVec -= vec;
     verts[1].posVec -= vec;
     verts[2].posVec -= vec;

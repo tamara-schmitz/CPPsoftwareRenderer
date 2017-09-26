@@ -2,7 +2,6 @@
 #define RASTERISER_H
 
 #include "common.h"
-#include "vmath-0.12/vmath.h"
 #include "types/Edge.h"
 #include "types/TexCoordsForEdge.h"
 #include "types/Texture.h"
@@ -25,7 +24,7 @@ class Rasteriser
 
         // set render colour / texture (setting one type deletes the other one)
         void SetDrawColour( const SDL_Color& color );
-        void SetDrawTexture( const shared_ptr<Texture> texture );
+        void SetDrawTexture( const shared_ptr<Texture>& texture );
 
         void ClearZBuffer() { z_buffer = z_buffer_empty; }
 

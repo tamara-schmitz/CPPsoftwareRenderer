@@ -5,7 +5,7 @@
 #include "window/window.h"
 #include "early_demos/starfield.h"
 #include "early_demos/scanRenderer.h"
-#include "rasteriser.h"
+#include "rendering/rasteriser.h"
 
 // This project is based on BennyQBD's 3D software renderer project
 // Github: https://github.com/BennyQBD/3DSoftwareRenderer

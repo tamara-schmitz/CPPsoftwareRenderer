@@ -1,5 +1,5 @@
 language: cpp
-script: make test
+script: make linux64-test
 sudo: true
 
 matrix:
