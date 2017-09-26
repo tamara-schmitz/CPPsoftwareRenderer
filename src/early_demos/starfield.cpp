@@ -127,9 +127,7 @@ void Starfield::processStar( unsigned int id )
     }
 
 
-    #ifdef PRINT_DEBUG_STUFF
-    // debug star print
-    if ( id == 3 )
+    if ( printDebug && id == 3)
     {
         int offset = pos.y * w_width + pos.x;
         std::cout << "Star id: " << id << std::endl;
@@ -137,7 +135,6 @@ void Starfield::processStar( unsigned int id )
         std::cout << "Star screenpos: " << pos.x << ", " << pos.y << std::endl;
         std::cout << "Star z: " << current_star->z << " Buffer z: " << z_buffer[ offset ] << std::endl;
     }
-    #endif // PRINT_DEBUG_STUFF
 
 }
 
@@ -160,7 +157,8 @@ Starfield::~Starfield()
     z_buffer.clear();
     null_z_buffer.clear();
 
-    #ifdef PRINT_DEBUG_STUFF
-    std::cout << "Dtor of Starfield object was called!" << std::endl;
-    #endif // PRINT_DEBUG_STUFF
+    if ( printDebug )
+    {
+        std::cout << "Dtor of Starfield object was called!" << std::endl;
+    }
 }

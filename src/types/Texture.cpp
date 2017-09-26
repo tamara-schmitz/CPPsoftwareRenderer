@@ -136,7 +136,8 @@ void Texture::FillWithColour( SDL_Color colour )
 Texture::~Texture()
 {
     //dtor
-    #ifdef PRINT_DEBUG_STUFF
+    if ( printDebug )
+    {
         cout << "Dtor of Texture object was called!" << endl;
-    #endif // PRINT_DEBUG_STUFF
+    }
 }

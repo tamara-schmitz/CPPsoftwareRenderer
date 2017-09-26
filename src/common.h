@@ -22,6 +22,14 @@ using std::weak_ptr;
     #define M_PI 3.14159265358979323846
 #endif
 
+// Global vars
+extern int current_demo_index;
+extern bool printDebug;
+extern bool headlessMode;
+extern bool testMode;
+extern bool slowRendering;
+extern bool ignoreZBuffer;
+
 // SDL specific functions
 bool compSDL_Color( SDL_Color c1, SDL_Color c2 );
 bool compSDL_Point( SDL_Point p1, SDL_Point p2 );

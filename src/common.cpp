@@ -1,5 +1,13 @@
 #include "common.h"
 
+// Global vars
+int current_demo_index;
+bool printDebug;
+bool headlessMode;
+bool testMode;
+bool slowRendering;
+bool ignoreZBuffer;
+
 bool compSDL_Color( SDL_Color c1, SDL_Color c2 )
 {
     if ( c1.a == c2.a &&

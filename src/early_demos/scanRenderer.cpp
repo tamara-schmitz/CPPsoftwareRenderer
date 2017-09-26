@@ -237,15 +237,16 @@ void ScanRenderer::FillTriangle( Vector4f v1, Vector4f v2, Vector4f v3, SDL_Colo
     Vector2f yMidVert = ( vpMatrix * v2 ).screenspaceVec3( w_halfwidth, w_halfheight ).xy();
     Vector2f yMaxVert = ( vpMatrix * v3 ).screenspaceVec3( w_halfwidth, w_halfheight ).xy();
 
-    #ifdef PRINT_DEBUG_STUFF
-    // debug print
-    std::cout << "v1::" << " x: " << v1.x << " y: " << v1.y << " z: " << v1.z << " w: " << v1.w << std::endl;
-    std::cout << "v2::" << " x: " << v2.x << " y: " << v2.y << " z: " << v2.z << " w: " << v2.w << std::endl;
-    std::cout << "v3::" << " x: " << v3.x << " y: " << v3.y << " z: " << v3.z << " w: " << v3.w << std::endl;
-    std::cout << "yMinVert (v1)::" << " x: " << yMinVert.x << " y: " << yMinVert.y << std::endl;
-    std::cout << "yMidVert (v2)::" << " x: " << yMidVert.x << " y: " << yMidVert.y << std::endl;
-    std::cout << "yMaxVert (v3)::" << " x: " << yMaxVert.x << " y: " << yMaxVert.y << std::endl;
-    #endif // PRINT_DEBUG_STUFF
+    if ( printDebug )
+    {
+        // debug print
+        std::cout << "v1::" << " x: " << v1.x << " y: " << v1.y << " z: " << v1.z << " w: " << v1.w << std::endl;
+        std::cout << "v2::" << " x: " << v2.x << " y: " << v2.y << " z: " << v2.z << " w: " << v2.w << std::endl;
+        std::cout << "v3::" << " x: " << v3.x << " y: " << v3.y << " z: " << v3.z << " w: " << v3.w << std::endl;
+        std::cout << "yMinVert (v1)::" << " x: " << yMinVert.x << " y: " << yMinVert.y << std::endl;
+        std::cout << "yMidVert (v2)::" << " x: " << yMidVert.x << " y: " << yMidVert.y << std::endl;
+        std::cout << "yMaxVert (v3)::" << " x: " << yMaxVert.x << " y: " << yMaxVert.y << std::endl;
+    }
 
     // call Vector2f version of FillTriangle
     FillTriangle( yMinVert, yMidVert, yMaxVert, color );
@@ -257,7 +258,8 @@ ScanRenderer::~ScanRenderer()
     null_scanBuffer.clear();
     r_scanBuffer.clear();
 
-    #ifdef PRINT_DEBUG_STUFF
-    std::cout << "Dtor of scanRenderer object was called!" << std::endl;
-    #endif // PRINT_DEBUG_STUFF
+    if ( printDebug )
+    {
+        std::cout << "Dtor of scanRenderer object was called!" << std::endl;
+    }
 }

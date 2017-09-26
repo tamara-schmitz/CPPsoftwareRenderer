@@ -23,21 +23,13 @@ Rasteriser::Rasteriser( Window* window )
 void Rasteriser::SetDrawColour( const SDL_Color& color )
 {
     drawWithTexture = false;
-
     current_colour = color;
-
-    current_texture_width = 0;
-    current_texture_height = 0;
 }
 
-void Rasteriser::SetDrawTexture( shared_ptr<Texture> texture )
+void Rasteriser::SetDrawTexture(const shared_ptr<Texture> texture )
 {
     drawWithTexture = true;
-
     current_texture = texture;
-
-    current_texture_width  = current_texture->GetWidth();
-    current_texture_height = current_texture->GetHeight();
 }
 
 void Rasteriser::UpdateObjectToWorldMatrix( const Matrix4f& objMatrix )
@@ -63,7 +55,7 @@ void Rasteriser::UpdatePerspectiveMatrix( const float& fov, const float& zNear, 
     // adjust z_buffer for new farz
     for ( Uint32 i = 0; i < z_buffer_empty.size(); i++ )
     {
-        z_buffer_empty.at( i ) = GetFarZ();
+        z_buffer_empty.at( i ) = std::numeric_limits< float >::max();
     }
     ClearZBuffer();
 }
@@ -71,6 +63,34 @@ void Rasteriser::UpdateScreenspaceTransformMatrix()
 {
     screenspaceTransformMatrix = Matrix4f::screenspaceTransform( w_window->Getwidth() / 2.0f, w_window->Getheight() / 2.0f );
     UpdateMvpsMatrix();
+}
+
+void Rasteriser::DrawFarPlane()
+{
+    SDL_Color colour = { 255, 0, 255, SDL_ALPHA_OPAQUE };
+    SetDrawColour( colour );
+
+    for ( Uint16 y = 0; y < w_window->Getheight(); y++ )
+    {
+        for ( Uint16 x = 0; x < w_window->Getwidth(); x++ )
+        {
+            DrawFragment( x, y, GetFarZ() );
+        }
+    }
+}
+
+void Rasteriser::DrawNearPlane()
+{
+    SDL_Color colour = { 255, 0, 255, SDL_ALPHA_OPAQUE };
+    SetDrawColour( colour );
+
+    for ( Uint16 y = 0; y < w_window->Getheight(); y++ )
+    {
+        for ( Uint16 x = 0; x < w_window->Getwidth(); x++ )
+        {
+            DrawFragment( x, y, GetNearZ() );
+        }
+    }
 }
 
 void Rasteriser::DrawMesh( shared_ptr<Mesh> mesh )
@@ -102,9 +122,10 @@ void Rasteriser::FillTriangle( Triangle tris )
     // if ( ( tris.verts[0].posVec.z < GetNearZ() && tris.verts[1].posVec.z < GetNearZ() && tris.verts[2].posVec.z < GetNearZ() ) ||
     //      ( tris.verts[0].posVec.z > GetFarZ() && tris.verts[1].posVec.z > GetFarZ() && tris.verts[2].posVec.z > GetFarZ()) )
     // {
-    //     #ifdef PRINT_DEBUG_STUFF
+    //     if ( printDebug )
+    //     {
     //         cout << "Culled because v1.posVec.z: " << tris.verts[0].posVec.z << " v2.posVec.z: " << tris.verts[1].posVec.z << " v3.posVec.z: " << tris.verts[2].posVec.z << endl;
-    //     #endif // PRINT_DEBUG_STUFF
+    //     }
     //     return;
     // }
 
@@ -113,23 +134,26 @@ void Rasteriser::FillTriangle( Triangle tris )
 
     // true if right handed (and hence area bigger than 0)
     bool handedness = area < 0;
-    #ifdef PRINT_DEBUG_STUFF
+    if ( printDebug )
+    {
         cout << "Area: " << area << endl;
-    #endif
+    }
     // cull triangle if right-handed (we use left-handed cartesian coordinates)
     if ( handedness )
     {
-        #ifdef PRINT_DEBUG_STUFF
+        if ( printDebug )
+        {
             cout << "Triangle culled because right-handed." << endl;
-        #endif
+        }
         return;
     }
 
     tris.sortVertsByY();
 
-#ifdef PRINT_DEBUG_STUFF
-            cout << "yMinVert - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
-#endif // PRINT_DEBUG_STUFF
+    if ( printDebug )
+    {
+        cout << "yMinVert - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
+    }
 
 
     ScanTriangle( tris.verts[0], tris.verts[1], tris.verts[2], handedness );
@@ -208,34 +232,21 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     // loop through each x and draw pixel, clip ensures that pixels outside of screen are not iterated over
     for ( int x = clipNumber( xMin , 0, (int) w_window->Getwidth() ); x < clipNumber( xMax , xMin, (int) w_window->Getwidth() ); x++ )
     {
-        // depth test
-//        if ( ignoreZBuffer || ( current_depth < GetZ( x * (int) yCoord ) && current_depth > GetNearZ() && current_depth < GetFarZ() ) )
-        if ( ignoreZBuffer || current_depth < GetZ( x * (int) yCoord ) )
+        if ( drawWithTexture )
         {
-            SetZ( x * (int) yCoord, current_depth );
-//#ifdef PRINT_DEBUG_STUFF
-//            cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
-//#endif
+            float z = 1.0f / current_oneOverZ;
 
-            if ( drawWithTexture )
-            {
-                float z = 1.0f / current_oneOverZ;
+            // calculate texture coords
+            Uint16 textureX = clipNumber< Uint16 >( std::ceil((current_texCoordX * z) * (current_texture->GetWidth()  - 1)),
+                                                                                      0, current_texture->GetWidth()  - 1 );
+            Uint16 textureY = clipNumber< Uint16 >( std::ceil((current_texCoordY * z) * (current_texture->GetHeight() - 1)),
+                                                                                      0, current_texture->GetHeight() - 1 );
 
-                // calculate texture coords
-                Uint16 textureX = clipNumber< Uint16 >( std::ceil((current_texCoordX * z) * (current_texture_width  - 1)),
-                                                        0, current_texture_width  - 1 );
-                Uint16 textureY = clipNumber< Uint16 >( std::ceil((current_texCoordY * z) * (current_texture_height - 1)),
-                                                        0, current_texture_height - 1 );
-
-                // draw line with texture pixels
-                w_window->drawPixel( x, yCoord,
-                                     current_texture->GetPixel( textureX, textureY ) );
-            }
-            else
-            {
-                // draw line with solid colour
-                w_window->drawPixel( x, yCoord, current_colour );
-            }
+            DrawFragment( x, yCoord, current_depth, textureX, textureY );
+        }
+        else
+        {
+            DrawFragment( x, yCoord, current_depth );
         }
 
         // add steps
@@ -251,11 +262,53 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     }
 }
 
+void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 texcoordX, Uint16 texcoordY )
+{
+    if ( !drawWithTexture )
+    {
+        cout << "WARNING: Attempting to draw fragment with texcoords although draw with no texture was defined!" << endl;
+    }
+
+    // depth test
+//    if ( ignoreZBuffer || ( current_depth < GetZ( (int) (x * y) ) && current_depth > GetNearZ() && current_depth < GetFarZ() ) )
+    if ( ignoreZBuffer || current_depth < GetZ( x, y ) )
+    {
+//    if ( printDebug )
+//    {
+//        cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
+//    }
+        SetZ( x, y, current_depth );
+        w_window->drawPixel( x, y,
+                             current_texture->GetPixel( texcoordX, texcoordY ) );
+    }
+}
+
+void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
+{
+    if ( drawWithTexture )
+    {
+        cout << "WARNING: Attempting to draw fragment without texcoords although drawWithTexture was set!" << endl;
+    }
+
+    // depth test
+//    if ( ignoreZBuffer || ( current_depth < GetZ( x, y ) && current_depth > GetNearZ() && current_depth < GetFarZ() ) )
+    if ( ignoreZBuffer || current_depth < GetZ( x, y ) )
+    {
+//        if ( printDebug )
+//        {
+//        cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
+//        }
+        SetZ( x, y, current_depth );
+        w_window->drawPixel( x, y, current_colour );
+    }
+}
+
 Rasteriser::~Rasteriser()
 {
     //dtor
 
-#ifdef PRINT_DEBUG_STUFF
+    if ( printDebug )
+    {
         cout << "Dtor of Rasteriser object was called!" << endl;
-#endif // PRINT_DEBUG_STUFF
+    }
 }

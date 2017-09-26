@@ -19,8 +19,7 @@ LIBRARY_PATHS = -Linclude/i686-w64-mingw32/lib
 # -Wl,-subsystem,windows gets rid of the console window
 COMPILER_FLAGS_COMMON = -Wall -pedantic-errors -std=c++11 -Wno-unused-variable
 COMPILER_FLAGS_RELEASE = -O3
-COMPILER_FLAGS_DEBUG = -DPRINT_DEBUG_STUFF -g
-COMPILER_FLAGS_TEST = $(COMPILER_FLAGS_DEBUG) -DMODE_TEST -DMODE_HEADLESS
+COMPILER_FLAGS_DEBUG = -g
 
 COMPILER_FLAGS_WIN = $(COMPILER_FLAGS_COMMON) -Wl,-subsystem,windows -march=core2 -static-libgCXX -static-libstdc++
 COMPILER_FLAGS_LINUX = $(COMPILER_FLAGS_COMMON) -march=core2
@@ -47,9 +46,10 @@ linux64 : $(OBJS)
 linux64-debug : $(OBJS)
 	$(CXX) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(COMPILER_FLAGS_DEBUG) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_PREFIX)linux64-debug
 linux64-test : $(OBJS)
-	$(CXX) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(COMPILER_FLAGS_TEST) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_PREFIX)linux64-test
-	valgrind --tool=memcheck --leak-check=yes $(OBJ_NAME_PREFIX)linux64-test
+	$(CXX) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(COMPILER_FLAGS_DEBUG) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_PREFIX)linux64-test
+	valgrind --tool=memcheck --leak-check=yes $(OBJ_NAME_PREFIX)linux64-test -vtl
 
 # default
 all := linux64
+test := linux64-test
 .DEFAULT_GOAL := linux64

@@ -15,7 +15,8 @@ Window::Window( int width, int height, double scale, std::string title, double f
     // set FPS limit in Timer class
     timer.SetFPSLimit( fpsLock );
 
-    #ifndef MODE_HEADLESS
+    if ( !headlessMode )
+    {
         // Initialise SDL context
         if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS ) < 0 )
         {
@@ -73,7 +74,7 @@ Window::Window( int width, int height, double scale, std::string title, double f
         {
             null_pixels[ i ] = rgbamap;
         }
-    #endif
+    }
 
     // Done
     cout << "Init complete!" << endl;
@@ -88,7 +89,8 @@ void Window::reserveAddLines( Uint64 amount )
 
 void Window::drawPixel( int x, int y, SDL_Color color)
 {
-    #ifndef MODE_HEADLESS
+    if ( !headlessMode )
+    {
         // return if outside of screen bounds
         if ( x >= (int) r_width  || x < 0 ||
              y >= (int) r_height || y < 0 )
@@ -101,12 +103,13 @@ void Window::drawPixel( int x, int y, SDL_Color color)
         // obtain fast write access to texture
         LockRTexture();
         pixels_direct[ offset ] = getPixelFor_SDLColor( &color );
-    #endif
+    }
 }
 
 void Window::drawLine( SDL_Point p1, SDL_Point p2, SDL_Color color )
 {
-    #ifndef MODE_HEADLESS
+    if ( !headlessMode )
+    {
         if ( compSDL_Point( p1, p2 ) )
         {
             // draw pixel if points are the same
@@ -120,12 +123,13 @@ void Window::drawLine( SDL_Point p1, SDL_Point p2, SDL_Color color )
 
             line_colors.push_back( color );
         }
-    #endif
+    }
 }
 
 void Window::updateWindow()
 {
-    #ifndef MODE_HEADLESS
+    if ( !headlessMode )
+    {
         // Draw lines to line texture
         if ( line_points.size() > 1 && line_points.size() % 2 == 0 &&
              line_colors.size() == line_points.size() / 2 ) // we need 2 points per line and 1 colour per line
@@ -189,7 +193,7 @@ void Window::updateWindow()
         SDL_RenderPresent( r_renderer );
         SDL_UpdateWindowSurface( w_window );
 
-    #endif
+    }
 
     // TickCall (after every frame!)
     timer.TickCall();
@@ -200,7 +204,8 @@ void Window::clearBuffers()
     // Clears the render texture and pixel array
     // (no need to clear the window or renderer as it's not blending textures
 
-    #ifndef MODE_HEADLESS
+    if ( !headlessMode )
+    {
         UnlockRTexture();
 
         // clear line array
@@ -224,13 +229,14 @@ void Window::clearBuffers()
         // clear ptexture to black
         LockRTexture();
         memcpy ( pixels_direct, null_pixels, r_pitch * r_height ); // WARNING! DIRECT MEMORY ACCESS
-    #endif
+    }
 }
 
 void Window::updateTitleWithFPS( Uint32 updateInterval )
 {
     // updates windows title every updateInterval (in frames)
-    #ifndef MODE_HEADLESS
+    if ( !headlessMode )
+    {
         if ( title_fps_count > updateInterval )
         {
             title_fps_count = 0;
@@ -242,37 +248,40 @@ void Window::updateTitleWithFPS( Uint32 updateInterval )
         {
             title_fps_count++;
         }
-    #endif
+    }
 }
 
 void Window::LockRTexture()
 {
-    #ifndef MODE_HEADLESS
+    if ( !headlessMode )
+    {
         if ( pixels_direct == nullptr )
         {
             SDL_LockTexture( r_ptexture, NULL, (void**)&pixels_direct, &r_pitch );
             r_pitch_div_4 = r_pitch / 4;
         }
-    #endif
+    }
 }
 
 void Window::UnlockRTexture()
 {
-    #ifndef MODE_HEADLESS
+    if ( !headlessMode )
+    {
         if ( pixels_direct != nullptr )
         {
             SDL_UnlockTexture( r_ptexture );
             pixels_direct = nullptr;
             r_pitch = r_pitch_div_4 = 0;
         }
-    #endif
+    }
 }
 
 Window::~Window()
 {
     //dtor
 
-    #ifndef MODE_HEADLESS
+    if ( !headlessMode )
+    {
         delete[] null_pixels;
 
         // Properly shutdown SDL
@@ -281,10 +290,11 @@ Window::~Window()
         SDL_DestroyRenderer( r_renderer );
         SDL_DestroyWindow(   w_window   );
         SDL_Quit();
-    #endif
+    }
 
 
-    #ifdef PRINT_DEBUG_STUFF
+    if ( printDebug )
+    {
         cout << "Dtor of Window object was called!" << endl;
-    #endif // PRINT_DEBUG_STUFF
+    }
 }

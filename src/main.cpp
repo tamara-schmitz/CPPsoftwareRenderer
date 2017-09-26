@@ -1,5 +1,6 @@
 #include "common.h"
 #include <exception>
+#include <tclap/CmdLine.h>
 #include "vmath-0.12/vmath.h"
 #include "window/window.h"
 #include "early_demos/starfield.h"
@@ -10,61 +11,58 @@
 // Github: https://github.com/BennyQBD/3DSoftwareRenderer
 // Youtube-Playlist: https://www.youtube.com/playlist?list=PLEETnX-uPtBUbVOok816vTl1K9vV1GgH5
 
+//USAGE:
+//
+//   ./build/SDLsoftwarerenderer_linux64  [-z] [-s] [-t] [-l] [-v] [-i
+//                                        <Integer from 0 to 4>] [--]
+//                                        [--version] [-h]
+
 // Global vars
 Window *window;
-
-// --switch between demos
-// 0: random pixels
-// 1: starfield
-// 2: shapes
-// 3: rasteriser
-// 4: load BMP and draw it using the texture class (slow!)
-const int current_demo = 3;
 
 bool checkQuit()
 {
     // returns true if program should quit
 
-#ifdef MODE_TEST
-    if ( window->timer.GetCurrentTick() > 60 )
+    if ( testMode && window->timer.GetCurrentTick() > 60 )
     {
         return true;
     }
-#endif
 
-#ifndef MODE_HEADLESS
-    SDL_Event e;
-    while ( SDL_PollEvent( &e ) )
+    if ( !headlessMode )
     {
-        if ( e.type == SDL_QUIT || e.window.event == SDL_WINDOWEVENT_CLOSE )
+        SDL_Event e;
+        while ( SDL_PollEvent( &e ) )
         {
-            cout << "SDL QUIT EVENT!" << endl;
-            return true;
-        }
-
-        if ( e.window.event == SDL_WINDOWEVENT_HIDDEN || e.window.event == SDL_WINDOWEVENT_MINIMIZED )
-        {
-            cout << "PAUSING EXECUTION!" << endl;
-
-            bool pause = true;
-            while ( pause )
+            if ( e.type == SDL_QUIT || e.window.event == SDL_WINDOWEVENT_CLOSE )
             {
-                SDL_Delay( 10 );
-                while ( SDL_WaitEvent( &e ) )
+                cout << "SDL QUIT EVENT!" << endl;
+                return true;
+            }
+
+            if ( e.window.event == SDL_WINDOWEVENT_HIDDEN || e.window.event == SDL_WINDOWEVENT_MINIMIZED )
+            {
+                cout << "PAUSING EXECUTION!" << endl;
+
+                bool pause = true;
+                while ( pause )
                 {
-                    if ( e.window.event == SDL_WINDOWEVENT_SHOWN ||
-                         e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ||
-                         e.window.event == SDL_WINDOWEVENT_EXPOSED )
+                    SDL_Delay( 10 );
+                    while ( SDL_WaitEvent( &e ) )
                     {
-                        pause = false;
-                        cout << "CONTINUING EXECUTION!" << endl;
-                        return false;
+                        if ( e.window.event == SDL_WINDOWEVENT_SHOWN ||
+                             e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ||
+                             e.window.event == SDL_WINDOWEVENT_EXPOSED )
+                        {
+                            pause = false;
+                            cout << "CONTINUING EXECUTION!" << endl;
+                            return false;
+                        }
                     }
                 }
             }
         }
     }
-#endif
 
     return false;
 }
@@ -93,9 +91,10 @@ void demo_randomPixels( Window* window )
         }
 
         window->updateWindow();
-#ifdef PRINT_DEBUG_STUFF
-        window->timer.printTimes();
-#endif
+        if ( printDebug )
+        {
+            window->timer.printTimes();
+        }
         window->updateTitleWithFPS( 60 );
     }
 }
@@ -114,9 +113,10 @@ void demo_starfield( Window *window )
         field->drawStarfield();
 
         window->updateWindow();
-#ifdef PRINT_DEBUG_STUFF
-        window->timer.printTimes();
-#endif
+        if ( printDebug )
+        {
+            window->timer.printTimes();
+        }
         window->updateTitleWithFPS( 60 );
 
     }
@@ -175,9 +175,10 @@ void demo_shapes( Window *window )
         renderer->FillTriangle( v1_no2, v2_no2, v3_no2, triangleColor2 );
 
         window->updateWindow();
-#ifdef PRINT_DEBUG_STUFF
-        window->timer.printTimes();
-#endif
+        if ( printDebug )
+        {
+            window->timer.printTimes();
+        }
         window->updateTitleWithFPS( 60 );
     }
 
@@ -188,11 +189,6 @@ void demo_shapes( Window *window )
 void demo_rasteriser( Window *window )
 {
     auto raster = shared_ptr<Rasteriser>( new Rasteriser( window ) );
-
-#ifdef PRINT_DEBUG_STUFF
-    raster->slowRendering = false;
-    raster->ignoreZBuffer = false;
-#endif
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     auto bmpTexture = shared_ptr<Texture>( new Texture( "examples/tree.bmp" ) );
@@ -236,9 +232,10 @@ void demo_rasteriser( Window *window )
 
         tris *= rotationMatrix;
 
-#ifdef PRINT_DEBUG_STUFF
-        cout << "v1 - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
-#endif
+        if ( printDebug )
+        {
+            cout << "v1 - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
+        }
 
         // draw triangle
         raster->SetDrawTexture( bmpTexture );
@@ -252,10 +249,17 @@ void demo_rasteriser( Window *window )
         raster->SetDrawTexture( chaletTexture );
 //        raster->DrawMesh( chaletModel );
 
+        if ( !ignoreZBuffer )
+        {
+            raster->DrawFarPlane();
+//            raster->DrawNearPlane();
+        }
+
         window->updateWindow();
-#ifdef PRINT_DEBUG_STUFF
-        window->timer.printTimes();
-#endif
+        if ( printDebug )
+        {
+            window->timer.printTimes();
+        }
         window->updateTitleWithFPS( 60 );
     }
 }
@@ -282,9 +286,10 @@ void demo_DisplayTexture( Window* window )
         }
 
         window->updateWindow();
-#ifdef PRINT_DEBUG_STUFF
-        window->timer.printTimes();
-#endif
+        if ( printDebug )
+        {
+            window->timer.printTimes();
+        }
         window->updateTitleWithFPS( 240 );
     }
 }
@@ -294,11 +299,34 @@ int main( int argc, char* argv[] )
 
     try
     {
+        // configure and parse command line arguments
+        TCLAP::CmdLine cmd( "Software renderer written in C++", ' ' );
+        TCLAP::ValueArg<int> demo_index( "i", "demo-index", "Index of the demo you would like to run", false, 3, "Integer from 0 to 4" );
+        cmd.add( demo_index );
+        TCLAP::SwitchArg printDebugStuff( "v", "verbose", "Prints extra debug information in console", cmd, false );
+        TCLAP::SwitchArg headless( "l", "headless", "Runs renderer without creating a window", cmd, false );
+        TCLAP::SwitchArg testing( "t", "test-mode", "Automatically stops program execution some time", cmd, false );
+        TCLAP::SwitchArg slowRender( "s", "slow-rendering", "(demo 3 only!) Update window each time a triangle line was drawn", cmd, false );
+        TCLAP::SwitchArg ignoreZ( "z", "ignoreZ", "(demo 3 only!) Ignore Z value stored in Z-buffer during fragment depth test", cmd, false );
+        cmd.parse( argc, argv );
+        current_demo_index = demo_index.getValue();
+        printDebug = printDebugStuff.getValue();
+        headlessMode = headless.getValue();
+        testMode = testing.getValue();
+        slowRendering = slowRender.getValue();
+        ignoreZBuffer = ignoreZ.getValue();
+
         // create window and run demos
         window = new Window( 1024, 768, 1, "Software Renderer", 120 );
         window->timer.SetDeltaLimits( (1.0/20.0) * 1000 ); // delta time >= 20 FPS
 
-        switch( current_demo )
+        // --switch between demos
+        // 0: random pixels
+        // 1: starfield
+        // 2: shapes
+        // 3: rasteriser
+        // 4: load BMP image file and draw it using the texture class (slow!)
+        switch( current_demo_index )
         {
             case 0:
                 demo_randomPixels( window );
@@ -315,14 +343,22 @@ int main( int argc, char* argv[] )
             case 4:
                 demo_DisplayTexture( window );
                 break;
+            default:
+                demo_rasteriser( window );
         }
 
         // dtor
         delete window;
     }
+    catch ( TCLAP::ArgException &e )
+    {
+        std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
+        return 1;
+    }
     catch ( std::exception& e )
     {
-        cout << "Standard exception: " << e.what() << endl;
+        std::cerr << "Standard exception: " << e.what() << endl;
+        return 1;
     }
 
     return 0;
