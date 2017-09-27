@@ -1,11 +1,10 @@
 #include "common.h"
-#include <exception>
 #include <tclap/CmdLine.h>
 #include "vmath-0.12/vmath.h"
 #include "window/window.h"
 #include "early_demos/starfield.h"
 #include "early_demos/scanRenderer.h"
-#include "rendering/rasteriser.h"
+#include "rendering/renderer.h"
 
 // This project is based on BennyQBD's 3D software renderer project
 // Github: https://github.com/BennyQBD/3DSoftwareRenderer
@@ -188,7 +187,7 @@ void demo_shapes( Window *window )
 
 void demo_rasteriser( Window *window )
 {
-    auto raster = shared_ptr<Rasteriser>( new Rasteriser( window ) );
+    auto render = shared_ptr<Renderer>( new Renderer( window ) );
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     auto bmpTexture = shared_ptr<Texture>( new Texture( "examples/tree.bmp" ) );
@@ -202,11 +201,11 @@ void demo_rasteriser( Window *window )
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 0, 90 );
     Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 );
     Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 3.0f );
-    raster->UpdateViewMatrix( viewMatrix );
-    raster->UpdatePerspectiveMatrix( 70, 0.1f, 1000.0f );
+    render->SetWorldToViewMatrix( viewMatrix );
+    render->SetViewToPerspectiveMatrix( 70, 0.1f, 1000.0f );
 
-    raster->SetDrawColour( triangleColor );
-    raster->SetDrawTexture( bmpTexture );
+    render->SetDrawColour( triangleColor );
+    render->SetDrawTexture( bmpTexture );
 
     // triangle 3D
     Triangle tris = Triangle();
@@ -223,7 +222,7 @@ void demo_rasteriser( Window *window )
         running = !checkQuit();
 
         window->clearBuffers();
-        raster->ClearZBuffer();
+        render->ClearBuffers();
 
         // get per frame rotation factor
         float rotationFactor = 75 * (window->timer.GetDeltaTime() / 1000000000.0);
@@ -238,21 +237,21 @@ void demo_rasteriser( Window *window )
         }
 
         // draw triangle
-        raster->SetDrawTexture( bmpTexture );
-        raster->UpdateObjectToWorldMatrix( objMatrix_triangle );
-        raster->FillTriangle( tris );
+        render->SetDrawTexture( bmpTexture );
+        render->SetObjectToWorldMatrix( objMatrix_triangle );
+        render->FillTriangle( tris );
 
         // draw mesh
         objMatrix_mesh = Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
-        raster->UpdateObjectToWorldMatrix( objMatrix_mesh );
-        raster->DrawMesh( sphereModel );
-        raster->SetDrawTexture( chaletTexture );
-//        raster->DrawMesh( chaletModel );
+        render->SetObjectToWorldMatrix( objMatrix_mesh );
+        render->DrawMesh( sphereModel );
+        render->SetDrawTexture( chaletTexture );
+//        render->DrawMesh( chaletModel );
 
         if ( !ignoreZBuffer )
         {
-            raster->DrawFarPlane();
-//            raster->DrawNearPlane();
+            render->DrawFarPlane();
+//            render->DrawNearPlane();
         }
 
         window->updateWindow();

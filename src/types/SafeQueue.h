@@ -15,11 +15,28 @@ class SafeQueue
     // be added.
 
     std::queue< T > queue;
-    bool new_blocked;
 
 public:
 
     SafeQueue() {}
+
+    void clear()
+    {
+        std::unique_lock< std::mutex > lock( mutex );
+        while ( !queue.empty() )
+        {
+            queue.pop();
+        }
+        lock.unlock();
+    }
+
+    void block_new()
+    {
+        std::unique_lock< std::mutex > lock( mutex );
+        new_blocked = true;
+        lock.unlock();
+        cond.notify_all();
+    }
 
     void push( T obj )
     {
@@ -48,6 +65,10 @@ public:
             else
             {
                 cond.wait( lock );
+                if ( new_blocked )
+                {
+                    return false;
+                }
             }
         }
         obj = queue.front();
@@ -56,6 +77,7 @@ public:
         return true;
     }
 private:
+    bool new_blocked;
     std::mutex mutex;
     std::condition_variable cond;
 };

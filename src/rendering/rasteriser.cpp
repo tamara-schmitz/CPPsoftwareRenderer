@@ -1,162 +1,36 @@
 #include "rasteriser.h"
 
-Rasteriser::Rasteriser( Window* window )
+Rasteriser::Rasteriser( Window* window, shared_ptr< std::vector< float > > z_buffer, const Uint16& y_begin, Uint16& y_end,
+                        const float& near_z, const float& far_z  )
 {
     //ctor
-    w_window = window;
+    this->w_window = window;
+    this->z_buffer = z_buffer;
+    this->y_begin = y_begin;
+    this->y_end   = y_end;
+    this->near_z = near_z;
+    this->far_z  = far_z;
 
     // Init with default values
-    UpdateScreenspaceTransformMatrix();
     SetDrawColour( SDL_Color{ 200, 200, 200, SDL_ALPHA_OPAQUE } );
+}
 
-    z_buffer.resize( w_window->Getwidth() * w_window->Getheight() );
-    z_buffer.shrink_to_fit();
-    z_buffer_empty.resize( w_window->Getwidth() * w_window->Getheight() );
-    z_buffer_empty.shrink_to_fit();
-    for ( Uint32 i = 0; i < z_buffer_empty.size(); i++ )
+float Rasteriser::GetZ( const Uint32& index ) const
+{
+    if ( index < y_begin * w_window->Getwidth() || index > y_end * w_window->Getwidth() )
     {
-        z_buffer_empty.at( i ) = GetFarZ();
+        throw std::out_of_range( "Illegal z_buffer read in Rasteriser." );
     }
-    ClearZBuffer();
+    return z_buffer->at( index );
 }
 
-void Rasteriser::SetDrawColour( const SDL_Color& color )
+void Rasteriser::SetZ( const Uint32& index, const float& z_value )
 {
-    drawWithTexture = false;
-    current_colour = color;
-}
-
-void Rasteriser::SetDrawTexture(const shared_ptr<Texture>& texture )
-{
-    drawWithTexture = true;
-    current_texture = texture;
-}
-
-void Rasteriser::UpdateObjectToWorldMatrix( const Matrix4f& objMatrix )
-{
-    objectToWorldTransformMatrix = objMatrix;
-    UpdateMvpsMatrix();
-}
-
-void Rasteriser::UpdateViewMatrix( const Matrix4f& viewMatrix )
-{
-    viewSpaceTransformMatrix = viewMatrix;
-    UpdateMvpsMatrix();
-}
-
-void Rasteriser::UpdatePerspectiveMatrix( const float& fov, const float& zNear, const float& zFar )
-{
-//    perspectiveTransformMatrix = Matrix4f::createFrustum( fov, w_window->Getwidth(), w_window->Getheight(), zNear, zFar );
-    perspectiveTransformMatrix = Matrix4f::perspectiveTransform( fov, (float) w_window->Getwidth() / (float) w_window->Getheight(), zNear, zFar );
-    UpdateMvpsMatrix();
-    near_z = zNear;
-    far_z = zFar;
-
-    // adjust z_buffer for new farz
-    for ( Uint32 i = 0; i < z_buffer_empty.size(); i++ )
+    if ( index < y_begin * w_window->Getwidth() || index > y_end * w_window->Getwidth() )
     {
-        z_buffer_empty.at( i ) = std::numeric_limits< float >::max();
+        throw std::out_of_range( "Illegal z_buffer write in Rasteriser." );
     }
-    ClearZBuffer();
-}
-void Rasteriser::UpdateScreenspaceTransformMatrix()
-{
-    screenspaceTransformMatrix = Matrix4f::screenspaceTransform( w_window->Getwidth() / 2.0f, w_window->Getheight() / 2.0f );
-    UpdateMvpsMatrix();
-}
-
-void Rasteriser::DrawFarPlane()
-{
-    SDL_Color colour = { 255, 0, 255, SDL_ALPHA_OPAQUE };
-    SetDrawColour( colour );
-
-    for ( Uint16 y = 0; y < w_window->Getheight(); y++ )
-    {
-        for ( Uint16 x = 0; x < w_window->Getwidth(); x++ )
-        {
-            DrawFragment( x, y, GetFarZ() );
-        }
-    }
-}
-
-void Rasteriser::DrawNearPlane()
-{
-    SDL_Color colour = { 255, 0, 255, SDL_ALPHA_OPAQUE };
-    SetDrawColour( colour );
-
-    for ( Uint16 y = 0; y < w_window->Getheight(); y++ )
-    {
-        for ( Uint16 x = 0; x < w_window->Getwidth(); x++ )
-        {
-            DrawFragment( x, y, GetNearZ() );
-        }
-    }
-}
-
-void Rasteriser::DrawMesh( shared_ptr<Mesh> mesh )
-{
-    // iterate over each triangle
-    for ( Uint32 i = 0; i < mesh->GetTriangleCount(); i++ )
-    {
-        // fill triangle
-        FillTriangle( mesh->GetTriangle( i ) );
-    }
-}
-
-void Rasteriser::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 )
-{
-    Triangle triangle = Triangle( v1, v2, v3 );
-    FillTriangle( triangle );
-}
-
-void Rasteriser::FillTriangle( Triangle tris )
-{
-    tris *= mvpsMatrix;
-
-    // perspective divison
-    tris.verts[0].posVec.divideByWOnly();
-    tris.verts[1].posVec.divideByWOnly();
-    tris.verts[2].posVec.divideByWOnly();
-
-    // // cull triangle if z of every posvec is smaller than near plane or bigger than far plane
-    // if ( ( tris.verts[0].posVec.z < GetNearZ() && tris.verts[1].posVec.z < GetNearZ() && tris.verts[2].posVec.z < GetNearZ() ) ||
-    //      ( tris.verts[0].posVec.z > GetFarZ() && tris.verts[1].posVec.z > GetFarZ() && tris.verts[2].posVec.z > GetFarZ()) )
-    // {
-    //     if ( printDebug )
-    //     {
-    //         cout << "Culled because v1.posVec.z: " << tris.verts[0].posVec.z << " v2.posVec.z: " << tris.verts[1].posVec.z << " v3.posVec.z: " << tris.verts[2].posVec.z << endl;
-    //     }
-    //     return;
-    // }
-
-    // calculate handedness
-    float area = triangleArea< float >( tris.verts[0].posVec, tris.verts[1].posVec, tris.verts[2].posVec );
-
-    // true if right handed (and hence area bigger than 0)
-    bool handedness = area < 0;
-    if ( printDebug )
-    {
-        cout << "Area: " << area << endl;
-    }
-    // cull triangle if right-handed (we use left-handed cartesian coordinates)
-    if ( handedness )
-    {
-        if ( printDebug )
-        {
-            cout << "Triangle culled because right-handed." << endl;
-        }
-        return;
-    }
-
-    tris.sortVertsByY();
-
-    if ( printDebug )
-    {
-        cout << "yMinVert - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
-    }
-
-
-    ScanTriangle( tris.verts[0], tris.verts[1], tris.verts[2], handedness );
+    z_buffer->at( index ) = z_value;
 }
 
 void Rasteriser::ScanTriangle( const Vertexf& vertMin, const Vertexf& vertMid, const Vertexf& vertMax, bool isRightHanded )
@@ -181,10 +55,10 @@ void Rasteriser::ScanEdges( Edgef& a, Edgef& b, bool isRightHanded )
 //    Edgef& left  = isRightHanded ? b : a;
 //    Edgef& right = isRightHanded ? a : b;
 
-    Uint16 yStart = b.GetYStart();
-    Uint16 yEnd   = b.GetYEnd();
+    Uint16 yEdge_Start = b.GetYStart();
+    Uint16 yEdge_End   = b.GetYEnd();
 
-    for ( Uint16 i = yStart; i < clipNumber( yEnd, yStart, (Uint16) w_window->Getheight() ); i++ )
+    for ( Uint16 i = yEdge_Start; i < clipNumber( yEdge_End, yEdge_Start, y_end ); i++ )
     {
         DrawScanLine( left, right, i );
         left.DoYStep();
@@ -273,10 +147,14 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 t
 //    if ( ignoreZBuffer || ( current_depth < GetZ( (int) (x * y) ) && current_depth > GetNearZ() && current_depth < GetFarZ() ) )
     if ( ignoreZBuffer || current_depth < GetZ( x, y ) )
     {
-//    if ( printDebug )
-//    {
-//        cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
-//    }
+//        if ( printDebug )
+//        {
+//            cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
+//        }
+        if ( y < y_begin || y > y_end )
+        {
+            throw std::out_of_range( "Illegal pixel write in Rasteriser." );
+        }
         SetZ( x, y, current_depth );
         w_window->drawPixel( x, y,
                              current_texture->GetPixel( texcoordX, texcoordY ) );
@@ -298,6 +176,10 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
 //        {
 //        cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
 //        }
+        if ( y < y_begin || y > y_end )
+        {
+            throw std::out_of_range( "Illegal pixel write in Rasteriser." );
+        }
         SetZ( x, y, current_depth );
         w_window->drawPixel( x, y, current_colour );
     }

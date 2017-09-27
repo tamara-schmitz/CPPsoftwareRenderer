@@ -12,15 +12,33 @@ class SafeDynArray
     // Ensures thread safety through a mutex combined with
     // a lock guard.
 
-    std::vector< T > dynarray;
 
 public:
 
     SafeDynArray() {}
 
+    void clear()
+    {
+        std::unique_lock< std::mutex > lock( mutex );
+        dynarray.clear();
+        lock.unlock();
+    }
+
+    void block_new()
+    {
+        std::unique_lock< std::mutex > lock( mutex );
+        new_blocked = true;
+        lock.unlock();
+        cond.notify_all();
+    }
+
     void push_back( T obj )
     {
         std::unique_lock< std::mutex > lock( mutex );
+        if ( new_blocked )
+        {
+            new_blocked = false;
+        }
         dynarray.push_back( obj );
         lock.unlock();
         cond.notify_one();
@@ -30,7 +48,35 @@ public:
     {
         return dynarray.at( pos );
     }
+
+    bool isLast( size_t index )
+    {
+        std::unique_lock< std::mutex > lock( mutex );
+        if ( index >= dynarray.size() )
+        {
+            if ( new_blocked )
+            {
+                return true;
+            }
+            else
+            {
+                cond.wait( lock );
+                if ( new_blocked )
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    size_t size() const
+    {
+        return dynarray.size();
+    }
 private:
+    std::vector< T > dynarray;
+    bool new_blocked;
     std::mutex mutex;
     std::condition_variable cond;
 };

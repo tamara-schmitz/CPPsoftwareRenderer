@@ -15,56 +15,23 @@ class Rasteriser
     //
     // Our fill convention is top-left (so make sure to use ceil!)
     public:
-        Rasteriser( Window* window );
+        Rasteriser( Window* window, shared_ptr< std::vector< float > > z_buffer, const Uint16& y_begin, Uint16& y_end,
+                    const float& near_z, const float& far_z );
         virtual ~Rasteriser();
 
-        // Getters
-        float GetNearZ() const { return near_z; }
-        float GetFarZ()  const { return far_z;  }
-
-        // set render colour / texture (setting one type deletes the other one)
-        void SetDrawColour( const SDL_Color& color );
-        void SetDrawTexture( const shared_ptr<Texture>& texture );
-
-        void ClearZBuffer() { z_buffer = z_buffer_empty; }
-
-        //-- update matrices
-        void UpdateObjectToWorldMatrix( const Matrix4f& objMatrix );
-        void UpdateViewMatrix( const Matrix4f& viewMatrix );
-        void UpdatePerspectiveMatrix( const float& fov, const float& zNear, const float& zFar );
-        void UpdateScreenspaceTransformMatrix();
-
-        void DrawFarPlane();
-        void DrawNearPlane();
-        void DrawMesh( shared_ptr<Mesh> mesh ); // draws a mesh
-        void FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 ); // draws a triangle
-        void FillTriangle( Triangle tris ); // draws a triangle
+        float near_z, far_z; // contains current near and far plane for culling
+        Uint16 y_begin = 0, y_end = 0; // area in which rasteriser is supposed to draw in.
 
     private:
-        Window* w_window;
 
         //-- render vars
+        Window* w_window;
 
-        bool drawWithTexture = false; // determines whether a texture or a colour should be drawn
-        SDL_Color current_colour = { 0, 0, 0, SDL_ALPHA_TRANSPARENT }; // contains current render color
-        shared_ptr<Texture> current_texture = NULL; // contains shared pointer to current render texture
-        float near_z = 0, far_z = 1; // contains current near and far plane for culling
+        shared_ptr< std::vector< float > > z_buffer;
 
-        std::vector< float > z_buffer;
-        std::vector< float > z_buffer_empty;
-
-        // matrices
-        Matrix4f objectToWorldTransformMatrix = Matrix4f(); // from object to world
-        Matrix4f viewSpaceTransformMatrix = Matrix4f(); // from world to view
-        Matrix4f perspectiveTransformMatrix = Matrix4f(); // from view to projection
-        Matrix4f screenspaceTransformMatrix = Matrix4f(); // from projection to screenspace
-        Matrix4f mvpsMatrix = Matrix4f(); // = screenspaceTransformMatrix * perspectiveTransformMatrix * viewSpaceTransformMatrix * objectToWorldTransformMatrix
-
-        //-- internal render functions
-        void UpdateMvpsMatrix() { mvpsMatrix = screenspaceTransformMatrix * perspectiveTransformMatrix * viewSpaceTransformMatrix * objectToWorldTransformMatrix; }
-        float GetZ( const int& index ) const { return z_buffer.at( index ); }
+        float GetZ( const Uint32& index ) const;
         float GetZ( const Uint16& x, const Uint16& y ) const { return GetZ( y*w_window->Getwidth() + x ); }
-        void SetZ( const int& index, const float& z_value ) { z_buffer.at( index ) = z_value; }
+        void SetZ( const Uint32& index, const float& z_value );
         void SetZ( const Uint16& x, const Uint16& y, const float& z_value ) { SetZ( y*w_window->Getwidth() + x, z_value ); }
 
         void ScanTriangle( const Vertexf& vertMin, const Vertexf& vertMid, const Vertexf& vertMax, bool isRightHanded );

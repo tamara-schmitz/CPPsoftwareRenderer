@@ -28,7 +28,7 @@ src/types/Texture.h
 src/types/Triangle.cpp
 src/types/Triangle.h
 src/types/Vertex.h
-src/types/VertexProcessorObj.h
+src/types/VertexProcessorObjs.h
 src/window/timer.cpp
 src/window/timer.h
 src/window/window.cpp

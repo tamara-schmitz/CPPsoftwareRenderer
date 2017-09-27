@@ -2,8 +2,6 @@
 #define TEXTURE_H
 
 #include "common.h"
-#include <exception>
-#include <stdexcept>
 
 class Texture
 {

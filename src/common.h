@@ -1,6 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <exception>
+#include <stdexcept>
 #include <iostream>
 #include <memory>
 #include <vector>
