@@ -74,8 +74,8 @@ public:
         return dynarray.size();
     }
 private:
-    std::vector< T > dynarray;
-    bool new_blocked;
+    std::vector< T > dynarray = std::vector< T >();
+    bool new_blocked = false;
     std::mutex mutex;
     std::condition_variable cond;
 };

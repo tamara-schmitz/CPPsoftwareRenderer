@@ -14,7 +14,8 @@ struct Vertex
     // ctor that inits with 0
     Vertex()
     {
-        posVec.x = posVec.y = posVec.z = posVec.w = 0;
+        posVec.x = posVec.y = posVec.z = 0;
+        posVec.w = 1;
         texVec.x = texVec.y = 0;
     }
 };

@@ -161,8 +161,8 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 t
     }
 
     // depth test
-//    if ( ignoreZBuffer || ( current_depth < GetZ( (int) (x * y) ) && current_depth > GetNearZ() && current_depth < GetFarZ() ) )
-    if ( ignoreZBuffer || current_depth < GetZ( x, y ) )
+//    if ( ignoreZBuffer || ( current_depth <= GetZ( x * y ) && current_depth >= near_z && current_depth <= far_z ) )
+    if ( ignoreZBuffer || current_depth <= GetZ( x, y ) )
     {
 //        if ( printDebug )
 //        {
@@ -187,8 +187,8 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
     }
 
     // depth test
-//    if ( ignoreZBuffer || ( current_depth < GetZ( x, y ) && current_depth > GetNearZ() && current_depth < GetFarZ() ) )
-    if ( ignoreZBuffer || current_depth < GetZ( x, y ) )
+//    if ( ignoreZBuffer || ( current_depth <= GetZ( x, y ) && current_depth >= near_z && current_depth <= far_z ) )
+    if ( ignoreZBuffer || current_depth <= GetZ( x, y ) )
     {
 //        if ( printDebug )
 //        {

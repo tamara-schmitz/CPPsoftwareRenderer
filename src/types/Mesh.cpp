@@ -18,7 +18,7 @@ Mesh::Mesh( std::string pathToOBJ )
     std::vector< tinyobj::material_t > materials;
     std::string error_msg;
     shared_ptr< std::unordered_map<int, Uint32> > OBJtoNewposindex_transl =
-        shared_ptr< std::unordered_map<int, Uint32> >( new std::unordered_map<int, Uint32>() );  // .at(obj_index) gives corresponding index in m_indices
+        make_shared< std::unordered_map<int, Uint32> >();  // .at(obj_index) gives corresponding index in m_indices
 
     // load obj. throw exception on failure
     if ( !tinyobj::LoadObj( &attrib, &shapes, &materials, &error_msg, pathToOBJ.c_str() ) )

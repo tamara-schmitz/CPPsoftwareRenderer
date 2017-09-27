@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.4.0, 2017-09-27T15:18:23. -->
+<!-- Written by QtCreator 4.4.0, 2017-09-27T23:08:55. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -167,7 +167,7 @@
     </valuelist>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments"></value>
+    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-v</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Executable">/home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/build/SDLsoftwarerenderer_linux64-debug</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.WorkingDirectory">%{buildDir}</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Run /home/thomas/Programmier-Projekte/Software-Rendering/CPPsoftwareRenderer/build/SDLsoftwarerenderer_linux64-debug</value>

@@ -1,11 +1,15 @@
 #include "renderer.h"
 
-Renderer::Renderer( Window* window )
+Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_count )
 {
     w_window = window;
     SetPerspectiveToScreenSpaceMatrix();
 
     // init vars with defaults
+    in_vpios = make_shared< SafeQueue< VPIO > >();
+    out_vpoos = make_shared< SafeDynArray< VPOO > >();
+    z_buffer = make_shared< std::vector< float > >();
+
     z_buffer_empty.resize( w_window->Getwidth() * w_window->Getheight() );
     z_buffer_empty.shrink_to_fit();
     for ( Uint32 i = 0; i < w_window->Getwidth() * w_window->Getheight(); i++ )
@@ -15,13 +19,37 @@ Renderer::Renderer( Window* window )
     *z_buffer = z_buffer_empty;
 
     // create workers
-    vertex_processors.push_back( VertexProcessor( in_vpios, out_vpoos ) );
-    Uint16 w_height = w_window->Getheight();
-    rasterisers.push_back( Rasteriser( out_vpoos, w_window, z_buffer, 0, w_height ) );
+    for ( Uint8 i = 0; i < vp_thread_count; i++ )
+    {
+        if ( printDebug )
+            cout << "'in_vpios' uses: " << in_vpios.use_count() << " 'out_vpoos' uses: " << out_vpoos.use_count() << endl;
+        vertex_processors.push_back( VertexProcessor( in_vpios, out_vpoos ) );
+//        vp_threads.push_back( vertex_processors[i].ProcessQueueAsThread() );
+    }
+
+    if ( printDebug )
+        cout << "Spawned " << vertex_processors.size() << " vertex processing threads." << endl;
+
+    float y_count = 0;
+    float y_incre = (float) (w_window->Getheight() - 1) / (float) raster_thread_count;
+    for ( Uint8 i = 0; i < raster_thread_count; i++ )
+    {
+        Uint16 y_begin;
+        if ( y_count > 0 && y_count == (float) y_count )
+            y_begin = y_count - 1;
+        else
+            y_begin = std::ceil( y_count );
+        y_count += y_incre;
+        Uint16 y_end   = std::floor( y_count );
+        rasterisers.push_back( Rasteriser( out_vpoos, w_window, z_buffer, y_begin, y_end ) );
+    }
+
+    if ( printDebug )
+        cout << "Spawned " << rasterisers.size() << " rasteriser threads." << endl;
 }
 void Renderer::SetObjectToWorldMatrix( const Matrix4f& objectMatrix )
 {
-    objMatrix  = shared_ptr< Matrix4f >( new Matrix4f() );
+    objMatrix  = make_shared< Matrix4f >();
     *objMatrix = objectMatrix;
 }
 void Renderer::SetWorldToViewMatrix( const Matrix4f& viewMatrix )
@@ -66,7 +94,7 @@ void Renderer::SetPerspectiveToScreenSpaceMatrix()
 void Renderer::SetDrawColour( const SDL_Color& color )
 {
     drawWithTexture = false;
-    current_colour = shared_ptr< SDL_Color >( new SDL_Color() );
+    current_colour = make_shared< SDL_Color >( SDL_Color() );
     *current_colour = color;
 }
 
@@ -121,6 +149,7 @@ void Renderer::WaitUntilFinished()
     for ( Uint32 i = 0; i < vertex_processors.size(); i++ )
     {
         vertex_processors[i].ProcessQueue();
+//        vp_threads[i].join();
     }
 
     out_vpoos->block_new();
@@ -130,18 +159,48 @@ void Renderer::WaitUntilFinished()
     }
 }
 
-void Renderer::DrawFarPlane()
+void Renderer::DrawDebugPlane( float z_value )
 {
-    SDL_Color colour = { 255, 0, 255, SDL_ALPHA_OPAQUE };
+    shared_ptr< SDL_Color > colour = make_shared< SDL_Color >();
+    colour->r = colour->b = 255;
+    colour->g = 0;
+    colour->a = SDL_ALPHA_OPAQUE;
     // TODO implement using two triangles
     // Generate 2 big triangles in perspective space that the screen and z = far_z.
     // Apply screenspace matrix to triangles and add to out_vpoos
-}
+    Triangle tri1, tri2;
 
-void Renderer::DrawNearPlane()
-{
-    SDL_Color colour = { 255, 0, 255, SDL_ALPHA_OPAQUE };
-    // TODO implement using two triangles
-    // Generate 2 big triangles in perspective space that the screen and z = near_z.
-    // Apply screenspace matrix to triangles and add to out_vpoos
+    // set zs to far_z
+    tri1.verts[0].posVec.z = tri1.verts[1].posVec.z = tri1.verts[2].posVec.z =
+           tri2.verts[0].posVec.z = tri2.verts[1].posVec.z = tri2.verts[2].posVec.z = z_value;
+
+    tri1.verts[0].posVec.w = tri1.verts[1].posVec.w = tri1.verts[2].posVec.w =
+           tri2.verts[0].posVec.w = tri2.verts[1].posVec.w = tri2.verts[2].posVec.w = 1;
+
+    tri1.verts[0].posVec.x = tri2.verts[0].posVec.x = tri1.verts[0].posVec.y = tri2.verts[0].posVec.y = -1;
+    tri1.verts[1].posVec.x = tri2.verts[1].posVec.x = tri1.verts[1].posVec.y = tri2.verts[1].posVec.y = 1;
+    tri1.verts[2].posVec.x = -1;
+    tri1.verts[2].posVec.y = 1;
+    tri2.verts[2].posVec.x = 1;
+    tri2.verts[2].posVec.y = -1;
+
+    // from view to screen space
+    tri1 *= screenMatrix;
+    tri2 *= screenMatrix;
+
+    tri1.verts[0].posVec.divideByWOnly();
+    tri1.verts[1].posVec.divideByWOnly();
+    tri1.verts[2].posVec.divideByWOnly();
+    tri2.verts[0].posVec.divideByWOnly();
+    tri2.verts[1].posVec.divideByWOnly();
+    tri2.verts[2].posVec.divideByWOnly();
+
+    tri1.sortVertsByY();
+    tri2.sortVertsByY();
+
+    bool tri1_handedness = triangleArea< float >( tri1.verts[0].posVec, tri1.verts[1].posVec, tri1.verts[2].posVec ) < 0;
+    bool tri2_handedness = triangleArea< float >( tri2.verts[0].posVec, tri2.verts[1].posVec, tri2.verts[2].posVec ) < 0;
+
+    out_vpoos->push_back( VPOO( tri1.verts[0], tri1.verts[1], tri1.verts[2], tri1_handedness, colour ) );
+    out_vpoos->push_back( VPOO( tri2.verts[0], tri2.verts[1], tri2.verts[2], tri2_handedness, colour ) );
 }

@@ -13,6 +13,7 @@ class VertexProcessor
     public:
         VertexProcessor( shared_ptr< SafeQueue< VPIO > > in, shared_ptr< SafeDynArray< VPOO > > out );
 
+        std::thread ProcessQueueAsThread() { return std::thread( &VertexProcessor::ProcessQueue, this ); }
         void ProcessQueue();
 
         Matrix4f perspScreenMatrix;

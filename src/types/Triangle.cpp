@@ -75,8 +75,6 @@ Triangle& Triangle::operator*=( const Matrix4f& matrix )
     verts[1].posVec = matrix * verts[1].posVec;
     verts[2].posVec = matrix * verts[2].posVec;
 
-    // TODO does this affect texels?
-
     calculateTriangleNormal();
 
     return *this;
@@ -95,8 +93,6 @@ Triangle& Triangle::operator+=( const Vector4f& vec )
     verts[1].posVec += vec;
     verts[2].posVec += vec;
 
-    // TODO does this affect texels?
-
     calculateTriangleNormal();
 
     return *this;
@@ -114,8 +110,6 @@ Triangle& Triangle::operator-=( const Vector4f& vec )
     verts[0].posVec -= vec;
     verts[1].posVec -= vec;
     verts[2].posVec -= vec;
-
-    // TODO does this affect texels?
 
     calculateTriangleNormal();
 

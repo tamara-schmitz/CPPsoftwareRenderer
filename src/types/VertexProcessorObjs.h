@@ -25,7 +25,7 @@ struct VertexProcessorInputObject
         tri = Triangle();
 
         drawWithTexture = false;
-        colour = shared_ptr< SDL_Color >( new SDL_Color() );
+        colour = make_shared< SDL_Color >();
         colour->r = colour->g = colour->b = 200;
         colour->a = SDL_ALPHA_OPAQUE;
     }

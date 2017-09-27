@@ -187,13 +187,13 @@ void demo_shapes( Window *window )
 
 void demo_rasteriser( Window *window )
 {
-    auto render = shared_ptr<Renderer>( new Renderer( window ) );
+    auto render = make_shared<Renderer>( window );
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
-    auto bmpTexture = shared_ptr<Texture>( new Texture( "examples/tree.bmp" ) );
-    auto sphereModel = shared_ptr<Mesh>( new Mesh( "examples/sphere.obj" ) );
-    auto chaletTexture = shared_ptr<Texture>( new Texture( "examples/chalet.bmp" ) );
-    auto chaletModel = shared_ptr<Mesh>( new Mesh( "examples/chalet.obj" ) );
+    auto bmpTexture = make_shared<Texture>( "examples/tree.bmp" );
+    auto sphereModel = make_shared<Mesh>( "examples/sphere.obj" );
+    auto chaletTexture = make_shared<Texture>( "examples/chalet.bmp" );
+    auto chaletModel = make_shared<Mesh>( "examples/chalet.obj" );
 
 //    Matrix4f objMatrix = Matrix4f::createTranslation( 0, 0, 0 );
 //    Matrix4f objMatrix = Matrix4f::createScale( 0.2f, 0.2f, 0.2f );
@@ -202,7 +202,7 @@ void demo_rasteriser( Window *window )
     Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 );
     Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 3.0f );
     render->SetWorldToViewMatrix( viewMatrix );
-    render->SetViewToPerspectiveMatrix( 70, 0.1f, 1000.0f );
+    render->SetViewToPerspectiveMatrix( 70, 0.4f, 1.5f );
 
     render->SetDrawColour( triangleColor );
     render->SetDrawTexture( bmpTexture );
@@ -266,7 +266,7 @@ void demo_rasteriser( Window *window )
 
 void demo_DisplayTexture( Window* window )
 {
-    auto texture1 = shared_ptr<Texture>( new Texture( "examples/tree.bmp" ) );
+    auto texture1 = make_shared<Texture>( "examples/tree.bmp" );
 
     // draw loop
     bool running = true;

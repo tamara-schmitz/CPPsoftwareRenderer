@@ -14,7 +14,7 @@ class SafeQueue
     // new_blocked knows whether new elements are soon going to
     // be added.
 
-    std::queue< T > queue;
+    std::queue< T > queue = std::queue< T >();
 
 public:
 

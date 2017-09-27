@@ -16,7 +16,7 @@
 class Renderer
 {
     public:
-        Renderer( Window* window );
+        Renderer( Window* window, Uint8 vp_thread_count = 2, Uint8 raster_thread_count = 2 );
 
         // settings
         void SetObjectToWorldMatrix( const Matrix4f& objectMatrix );
@@ -34,8 +34,8 @@ class Renderer
         void WaitUntilFinished();
 
         // debug rendering functions
-        void DrawFarPlane();
-        void DrawNearPlane();
+        void DrawFarPlane()  { DrawDebugPlane( far_z  ); }
+        void DrawNearPlane() { DrawDebugPlane( near_z ); }
 
     private:
         Window* w_window;
@@ -46,17 +46,20 @@ class Renderer
         float near_z = 0;
         float far_z  = 1;
 
-        shared_ptr< SafeQueue< VPIO > > in_vpios = shared_ptr< SafeQueue< VPIO > >( new SafeQueue< VPIO >() );
-        shared_ptr< SafeDynArray< VPOO > > out_vpoos = shared_ptr< SafeDynArray< VPOO > >( new SafeDynArray< VPOO >() );
-        shared_ptr< std::vector< float > > z_buffer = shared_ptr< std::vector< float > >( new std::vector< float >() );
+        shared_ptr< SafeQueue< VPIO > > in_vpios;
+        shared_ptr< SafeDynArray< VPOO > > out_vpoos;
+        shared_ptr< std::vector< float > > z_buffer;
         std::vector< float > z_buffer_empty;
 
+        std::vector< std::thread > vp_threads;
         std::vector< VertexProcessor > vertex_processors;
         std::vector< Rasteriser > rasterisers;
 
-        shared_ptr< Matrix4f > objMatrix = shared_ptr< Matrix4f >( new Matrix4f() );
+        shared_ptr< Matrix4f > objMatrix = make_shared< Matrix4f >();
         Matrix4f viewMatrix, perspMatrix, screenMatrix;
         Matrix4f perspScreenMatrix;
+
+        void DrawDebugPlane( float z_value );
 };
 
 #endif // RENDERER_H

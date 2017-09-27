@@ -9,7 +9,7 @@ VertexProcessor::VertexProcessor( shared_ptr< SafeQueue< VPIO > > in, shared_ptr
 void VertexProcessor::ProcessQueue()
 {
     bool queue_not_empty;
-    VPIO current_vpio;
+    VPIO current_vpio = VPIO();
     do
     {
         queue_not_empty = in_vpios->pop( current_vpio );
