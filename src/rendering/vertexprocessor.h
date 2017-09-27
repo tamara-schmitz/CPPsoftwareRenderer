@@ -11,15 +11,17 @@
 class VertexProcessor
 {
     public:
-        VertexProcessor( shared_ptr< SafeQueue< VPIO > > in, shared_ptr< SafeDynArray< VPOO > > out,
-                         Matrix4f objMatrix, Matrix4f viewMatrix, Matrix4f perspMatrix, Matrix4f screenMatrix,
-                         Matrix4f objViewMatrix, Matrix4f perspScreenMatrix );
+        VertexProcessor( shared_ptr< SafeQueue< VPIO > > in, shared_ptr< SafeDynArray< VPOO > > out );
+
+        void ProcessQueue();
+
+        Matrix4f perspScreenMatrix;
+        Matrix4f viewMatrix, perspMatrix, screenMatrix;
 
     private:
+        shared_ptr< SafeQueue< VPIO > > in_vpios;
         shared_ptr< SafeDynArray< VPOO > > output_vpoos;
 
-        Matrix4f objMatrix, viewMatrix, perspMatrix, screenMatrix;
-        Matrix4f objViewMatrix, perspScreenMatrix;
 
         void ProcessTriangle( VPIO current_vpio );
         std::array< Vertexf, 3 > toModelViewTranslation ( Vertexf vert1, Vertexf vert2, Vertexf vert3 );

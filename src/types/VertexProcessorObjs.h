@@ -1,7 +1,6 @@
 #ifndef VERTEXPROCESSOROBJ_H
 #define VERTEXPROCESSOROBJ_H
 
-#
 #include "types/Vertex.h"
 #include "types/Triangle.h"
 #include "types/Texture.h"
@@ -15,6 +14,7 @@ struct VertexProcessorInputObject
 
     Triangle tri;
 
+    shared_ptr< Matrix4f > objMatrix;
     bool drawWithTexture;
     shared_ptr< SDL_Color > colour;
     shared_ptr< Texture > texture;
@@ -29,17 +29,19 @@ struct VertexProcessorInputObject
         colour->r = colour->g = colour->b = 200;
         colour->a = SDL_ALPHA_OPAQUE;
     }
-    VertexProcessorInputObject( const Triangle& triangle, const shared_ptr< SDL_Color >& colour )
+    VertexProcessorInputObject( const Triangle& triangle, const shared_ptr< Matrix4f >& objMatrix, const shared_ptr< SDL_Color >& colour )
     {
         tri = triangle;
 
+        this->objMatrix = objMatrix;
         drawWithTexture = false;
         this->colour = colour;
     }
-    VertexProcessorInputObject( const Triangle& triangle, const shared_ptr< Texture >& texture )
+    VertexProcessorInputObject( const Triangle& triangle, const shared_ptr< Matrix4f >& objMatrix, const shared_ptr< Texture >& texture )
     {
         tri = triangle;
 
+        this->objMatrix = objMatrix;
         drawWithTexture = true;
         this->texture = texture;
     }

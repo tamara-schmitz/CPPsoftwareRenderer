@@ -21,7 +21,6 @@ public:
     {
         std::unique_lock< std::mutex > lock( mutex );
         dynarray.clear();
-        lock.unlock();
     }
 
     void block_new()

@@ -1,28 +1,23 @@
 #include "vertexprocessor.h"
 
-VertexProcessor::VertexProcessor( shared_ptr< SafeQueue< VPIO > > in, shared_ptr< SafeDynArray< VPOO > > out,
-                                  Matrix4f objMatrix, Matrix4f viewMatrix, Matrix4f perspMatrix, Matrix4f screenMatrix,
-                                  Matrix4f objViewMatrix, Matrix4f perspScreenMatrix )
+VertexProcessor::VertexProcessor( shared_ptr< SafeQueue< VPIO > > in, shared_ptr< SafeDynArray< VPOO > > out )
 {
-    this->objMatrix = objMatrix;
-    this->viewMatrix = viewMatrix;
-    this->perspMatrix = perspMatrix;
-    this->screenMatrix = screenMatrix;
-    this->objViewMatrix = objViewMatrix;
-    this->perspScreenMatrix = perspScreenMatrix;
+    this->in_vpios = in;
     this->output_vpoos = out;
+}
 
-    // fetch triangle and process until no more are left
-    bool success;
+void VertexProcessor::ProcessQueue()
+{
+    bool queue_not_empty;
     VPIO current_vpio;
     do
     {
-        success = in->pop( current_vpio );
-        if ( success )
+        queue_not_empty = in_vpios->pop( current_vpio );
+        if ( queue_not_empty )
         {
             ProcessTriangle( current_vpio );
         }
-    } while ( success );
+    } while ( queue_not_empty );
 }
 
 void VertexProcessor::ProcessTriangle( VPIO current_vpio )
@@ -32,11 +27,17 @@ void VertexProcessor::ProcessTriangle( VPIO current_vpio )
     // Possible spaces: object, world, view, perspective, screen
 
     // -- Object Space
-    current_vpio.tri *= objViewMatrix;
+    current_vpio.tri *= *(current_vpio.objMatrix);
+    // -- World Space
+    current_vpio.tri *= viewMatrix;
     // -- View Space
     // TODO do clipping
     current_vpio.tri *= perspScreenMatrix;
     // -- Screen Space
+    current_vpio.tri.verts[0].posVec.divideByWOnly();
+    current_vpio.tri.verts[1].posVec.divideByWOnly();
+    current_vpio.tri.verts[2].posVec.divideByWOnly();
+
     // TODO backface culling based on normal vector
 
     // calculate handedness

@@ -254,6 +254,7 @@ void demo_rasteriser( Window *window )
 //            render->DrawNearPlane();
         }
 
+        render->WaitUntilFinished();
         window->updateWindow();
         if ( printDebug )
         {

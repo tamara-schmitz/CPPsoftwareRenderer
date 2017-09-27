@@ -27,7 +27,6 @@ public:
         {
             queue.pop();
         }
-        lock.unlock();
     }
 
     void block_new()
@@ -76,8 +75,9 @@ public:
 
         return true;
     }
+
 private:
-    bool new_blocked;
+    bool new_blocked = false;
     std::mutex mutex;
     std::condition_variable cond;
 };
