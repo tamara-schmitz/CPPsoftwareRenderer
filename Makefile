@@ -18,8 +18,8 @@ LIBRARY_PATHS = -Linclude/i686-w64-mingw32/lib
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -Wl,-subsystem,windows gets rid of the console window
 COMPILER_FLAGS_COMMON = -Wall -pedantic-errors -std=c++11 -Wno-unused-variable -fstack-protector-strong
-COMPILER_FLAGS_RELEASE = -O3
-COMPILER_FLAGS_DEBUG = -g -O1 -fno-omit-frame-pointer -fsanitize=address
+COMPILER_FLAGS_RELEASE = -O3 -fomit-frame-pointer
+COMPILER_FLAGS_DEBUG = -g -O1 -fno-omit-frame-pointer -fsanitize=address -fuse-ld=gold
 
 COMPILER_FLAGS_WIN = $(COMPILER_FLAGS_COMMON) -Wl,-subsystem,windows -march=core2 -static-libgCXX -static-libstdc++
 COMPILER_FLAGS_LINUX = $(COMPILER_FLAGS_COMMON) -march=core2
