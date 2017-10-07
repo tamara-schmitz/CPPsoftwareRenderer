@@ -200,9 +200,9 @@ void demo_rasteriser( Window *window )
     float absoluteRotation = 0.0f;
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 0, 90 );
     Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 3.0f );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 1.0f );
     render->SetWorldToViewMatrix( viewMatrix );
-    render->SetViewToPerspectiveMatrix( 70, 0.4f, 1.5f );
+    render->SetViewToPerspectiveMatrix( 70, 0.1f, 10000.0f );
 
     render->SetDrawColour( triangleColor );
     render->SetDrawTexture( bmpTexture );

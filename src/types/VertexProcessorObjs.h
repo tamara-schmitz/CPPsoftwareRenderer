@@ -13,6 +13,7 @@ struct VertexProcessorInputObject
     // Vertices are expected to always be sorted by their posVec.y component.
 
     Triangle tri;
+    bool isEmpty = true;
 
     shared_ptr< Matrix4f > objMatrix;
     bool drawWithTexture;
@@ -22,6 +23,7 @@ struct VertexProcessorInputObject
     // ctors
     VertexProcessorInputObject()
     {
+        isEmpty = false;
         tri = Triangle();
 
         drawWithTexture = false;
@@ -31,6 +33,7 @@ struct VertexProcessorInputObject
     }
     VertexProcessorInputObject( const Triangle& triangle, const shared_ptr< Matrix4f >& objMatrix, const shared_ptr< SDL_Color >& colour )
     {
+        isEmpty = false;
         tri = triangle;
 
         this->objMatrix = objMatrix;
@@ -39,11 +42,17 @@ struct VertexProcessorInputObject
     }
     VertexProcessorInputObject( const Triangle& triangle, const shared_ptr< Matrix4f >& objMatrix, const shared_ptr< Texture >& texture )
     {
+        isEmpty = false;
         tri = triangle;
 
         this->objMatrix = objMatrix;
         drawWithTexture = true;
         this->texture = texture;
+    }
+    VertexProcessorInputObject createEmpty()
+    {
+        isEmpty = true;
+        return *this;
     }
 };
 
@@ -77,6 +86,7 @@ struct VertexProcessorOutputObject
         tris_verts[0] = vertMin;
         tris_verts[1] = vertMid;
         tris_verts[2] = vertMax;
+        sortVertsByY();
         this->isRightHanded = isRightHanded;
 
         drawWithTexture = false;
@@ -88,10 +98,28 @@ struct VertexProcessorOutputObject
         tris_verts[0] = vertMin;
         tris_verts[1] = vertMid;
         tris_verts[2] = vertMax;
+        sortVertsByY();
         this->isRightHanded = isRightHanded;
 
         drawWithTexture = true;
         this->texture = texture;
+    }
+
+    void sortVertsByY()
+    {
+        // sorts verts by posVec.y
+        if ( tris_verts[2].posVec.y < tris_verts[1].posVec.y )
+        {
+            std::swap( tris_verts[1], tris_verts[2] );
+        }
+        if ( tris_verts[1].posVec.y < tris_verts[0].posVec.y )
+        {
+            std::swap( tris_verts[0], tris_verts[1] );
+        }
+        if ( tris_verts[2].posVec.y < tris_verts[1].posVec.y )
+        {
+            std::swap( tris_verts[1], tris_verts[2] );
+        }
     }
 };
 

@@ -2596,9 +2596,9 @@ public:
 	 {
         Matrix4<T> ret = Matrix4<T>();
         ret.at( 0, 0 ) = halfWidth;
-        ret.at( 3, 0 ) = halfWidth;
+        ret.at( 3, 0 ) = halfWidth - 0.5f; // -0.5 is for compliance with our fill convention
         ret.at( 1, 1 ) = -halfHeight;
-        ret.at( 3, 1 ) = halfHeight;
+        ret.at( 3, 1 ) = halfHeight - 0.5f; // -0.5 is for compliance with our fill convention
         ret.at( 2, 2 ) = 1;
         ret.at( 3, 3 ) = 1;
 

@@ -41,6 +41,7 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
             y_begin = std::ceil( y_count );
         y_count += y_incre;
         Uint16 y_end   = std::floor( y_count );
+
         rasterisers.push_back( Rasteriser( out_vpoos, w_window, z_buffer, y_begin, y_end ) );
     }
 
@@ -152,6 +153,9 @@ void Renderer::WaitUntilFinished()
 //        vp_threads[i].join();
     }
 
+    if ( printDebug )
+        cout << "out_vpoos queue size: " << out_vpoos->size() << endl;
+
     out_vpoos->block_new();
     for ( Uint32 i = 0; i < rasterisers.size(); i++ )
     {
@@ -161,16 +165,17 @@ void Renderer::WaitUntilFinished()
 
 void Renderer::DrawDebugPlane( float z_value )
 {
+    // Sorry but this is quite hacky...
+
     shared_ptr< SDL_Color > colour = make_shared< SDL_Color >();
     colour->r = colour->b = 255;
     colour->g = 0;
     colour->a = SDL_ALPHA_OPAQUE;
-    // TODO implement using two triangles
-    // Generate 2 big triangles in perspective space that the screen and z = far_z.
-    // Apply screenspace matrix to triangles and add to out_vpoos
+    // Generate 2 big triangles in perspective space that cover the screen with z = far_z.
+    // Then apply screenspace matrix to triangles and add to out_vpoos
     Triangle tri1, tri2;
 
-    // set zs to far_z
+    // manually set values of triangle verts
     tri1.verts[0].posVec.z = tri1.verts[1].posVec.z = tri1.verts[2].posVec.z =
            tri2.verts[0].posVec.z = tri2.verts[1].posVec.z = tri2.verts[2].posVec.z = z_value;
 
@@ -184,17 +189,15 @@ void Renderer::DrawDebugPlane( float z_value )
     tri2.verts[2].posVec.x = 1;
     tri2.verts[2].posVec.y = -1;
 
-    // from view to screen space
+    // go from view to screen space
     tri1 *= screenMatrix;
     tri2 *= screenMatrix;
-
     tri1.verts[0].posVec.divideByWOnly();
     tri1.verts[1].posVec.divideByWOnly();
     tri1.verts[2].posVec.divideByWOnly();
     tri2.verts[0].posVec.divideByWOnly();
     tri2.verts[1].posVec.divideByWOnly();
     tri2.verts[2].posVec.divideByWOnly();
-
     tri1.sortVertsByY();
     tri2.sortVertsByY();
 
@@ -203,4 +206,14 @@ void Renderer::DrawDebugPlane( float z_value )
 
     out_vpoos->push_back( VPOO( tri1.verts[0], tri1.verts[1], tri1.verts[2], tri1_handedness, colour ) );
     out_vpoos->push_back( VPOO( tri2.verts[0], tri2.verts[1], tri2.verts[2], tri2_handedness, colour ) );
+}
+
+Renderer::~Renderer()
+{
+    //dtor
+
+    if ( printDebug )
+    {
+        cout << "Dtor of Renderer object was called!" << endl;
+    }
 }

@@ -17,6 +17,7 @@ class Renderer
 {
     public:
         Renderer( Window* window, Uint8 vp_thread_count = 2, Uint8 raster_thread_count = 2 );
+        virtual ~Renderer();
 
         // settings
         void SetObjectToWorldMatrix( const Matrix4f& objectMatrix );

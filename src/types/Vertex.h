@@ -18,6 +18,38 @@ struct Vertex
         posVec.w = 1;
         texVec.x = texVec.y = 0;
     }
+
+    Vertex& lerp( Vertex other, T lerpamount )
+    {
+        posVec.lerp( lerpamount, other.posVec );
+        texVec.lerp( lerpamount, other.texVec );
+
+        return *this;
+    }
+    Vertex lerp_new( Vertex other, T lerpamount ) const
+    {
+        Vertex result = *this;
+        result.lerp( other, lerpamount );
+
+        return result;
+    }
+
+    T GetPosVecComponent ( Uint8 index ) const
+    {
+        switch ( index )
+        {
+        case 0:
+            return posVec.x;
+        case 1:
+            return posVec.y;
+        case 2:
+            return posVec.z;
+        case 3:
+            return posVec.w;
+        default:
+            throw std::out_of_range( "Not a valid posvec component index!" );
+        }
+    }
 };
 
 typedef Vertex< int > Vertexi;
