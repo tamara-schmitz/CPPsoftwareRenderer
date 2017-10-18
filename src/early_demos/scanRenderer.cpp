@@ -42,7 +42,7 @@ void ScanRenderer::ClearScanBuffer()
 
 int ScanRenderer::getScanValue( int yCoord, bool isMin )
 {
-    Uint8 offset;
+    uint_fast8_t offset;
 
     if ( isMin )
     {
@@ -60,7 +60,7 @@ int ScanRenderer::getScanValue( int yCoord, bool isMin )
 
 void ScanRenderer::setScanValue( int yCoord, int value, bool isMin )
 {
-    Uint8 offset;
+    uint_fast8_t offset;
 
     if ( isMin )
     {

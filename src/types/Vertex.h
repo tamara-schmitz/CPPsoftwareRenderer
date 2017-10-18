@@ -34,7 +34,7 @@ struct Vertex
         return result;
     }
 
-    T GetPosVecComponent ( Uint8 index ) const
+    T GetPosVecComponent ( uint_fast8_t index ) const
     {
         switch ( index )
         {

@@ -80,7 +80,7 @@ void VertexProcessor::ClipTriangle( const VPIO& current_vpio, std::vector< Verte
     ClipPolygonAxis( result_vertices, 2);
 }
 
-void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, int_fast8_t componentIndex )
+void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, uint_fast8_t componentIndex )
 {
     // clips all vertices of a certain axis. results overwrite existing vertices
     std::vector<Vertexf> result_temp; // like vertices has to be passed by reference
@@ -94,9 +94,9 @@ void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, int_fast8
     result_temp.clear();
 }
 
-void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices, int_fast8_t componentIndex, float componentFactor, std::vector<Vertexf>& result )
+void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices, uint_fast8_t componentIndex, float componentFactor, std::vector<Vertexf>& result )
 {
-    // iterates over each vertex and do one dimensional lerping
+    // iterate over each vertex and do one dimensional lerping
 
     if ( vertices.size() <= 0 )
     {
@@ -106,21 +106,24 @@ void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices
 	return;
     }
 
-    // for the first component comparison we just take the last one in the list
-    int previousVertex = vertices.size() - 1;
+    // for the initial component comparison we just take the last one in the list
+    Uint32 previousVertex = vertices.size() - 1;
     float previousComponent = vertices.at( previousVertex ).GetPosVecComponent( componentIndex ) * componentFactor;
     bool previousInside = previousComponent <= vertices.at( previousVertex ).posVec.w;
 
     for ( uint_fast8_t i = 0; i < vertices.size(); i++ )
     {
         float currentComponent = vertices.at( i ).GetPosVecComponent( componentIndex ) * componentFactor;
+
+	// CurrentComponent gets inverted if componentfactor is negativ. Hence only <= is required.
         bool currentInside = currentComponent <= vertices.at( i ).posVec.w;
 
         if ( printDebug && componentIndex > 0 )
-            cout << "vertex with index " << (int) i << " for component " << (int) componentIndex
-                 << " has w " << vertices.at( i ).posVec.w << " compared to currentComponent " << currentComponent << endl;
+            cout << "Vertex with index " << (int) i << " for component " << (int) componentIndex
+                 << " has w of " << vertices.at( i ).posVec.w << " compared to currentComponent " << currentComponent 
+		 << ". Hence inside: " << currentInside << endl;
 
-        // we only need to clip if last polys are both inside and outside at the same time
+        // we only need to clip if this and last vert were both inside and outside of frustrum
         if ( currentInside ^ previousInside )
         {
             float lerp = ( vertices.at( previousVertex ).posVec.w - previousComponent ) /
