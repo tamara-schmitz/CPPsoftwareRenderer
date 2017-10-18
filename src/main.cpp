@@ -188,7 +188,7 @@ void demo_shapes( Window *window )
 void demo_rasteriser( Window *window )
 {
     auto render = make_shared<Renderer>( window );
-    Do_VP_Clipping = false;
+    Do_VP_Clipping = true;
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     auto bmpTexture = make_shared<Texture>( "examples/tree.bmp" );

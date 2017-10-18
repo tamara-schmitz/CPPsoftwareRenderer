@@ -9,14 +9,13 @@ VertexProcessor::VertexProcessor( shared_ptr< SafeQueue< VPIO > > in, shared_ptr
 void VertexProcessor::ProcessQueue()
 {
     bool queue_not_empty;
-    VPIO current_vpio = VPIO();
+    VPIO current_vpio;
     do
     {
         queue_not_empty = in_vpios->pop( current_vpio );
         if ( queue_not_empty )
-        {
             ProcessTriangle( current_vpio );
-        }
+
     } while ( queue_not_empty );
 }
 
@@ -42,25 +41,25 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
     if ( tri_vertices.size() <= 0 )
     	return;
 
-    for ( uint_fast8_t i = 0; i <= tri_vertices.size() - 3; i++ )
+    // prepare verts for rasterisation
+    for ( uint_fast8_t i = 0; i < tri_vertices.size(); i++ )
     {
-        tri_vertices.at( i + 0 ).posVec = perspScreenMatrix * tri_vertices.at( i + 0 ).posVec ;
-        tri_vertices.at( i + 1 ).posVec = perspScreenMatrix * tri_vertices.at( i + 1 ).posVec ;
-        tri_vertices.at( i + 2 ).posVec = perspScreenMatrix * tri_vertices.at( i + 2 ).posVec ;
+	tri_vertices.at( i ).posVec = perspScreenMatrix * tri_vertices.at( i ).posVec ;
         // -- Screen Space
-        tri_vertices.at( i + 0 ).posVec.divideByWOnly();
-        tri_vertices.at( i + 1 ).posVec.divideByWOnly();
-        tri_vertices.at( i + 2 ).posVec.divideByWOnly();
+        tri_vertices.at( i ).posVec.divideByWOnly();
+    }
 
+   // It is likely that we end up with more than 3 vertices after clipping. so we have to create more than 1 triangle. we can create these new triangles
+   // by assuming that all triangles share at least one vertices.
+   for ( uint_fast8_t i = 0; i <= tri_vertices.size() - 3; i++ )
+    {
         // TODO backface culling based on normal vector
 
         // calculate handedness
-        float area = triangleArea< float >( tri_vertices.at( i + 0 ).posVec, tri_vertices.at( i + 1 ).posVec, tri_vertices.at( i + 2 ).posVec );
+        float area = triangleArea< float >( tri_vertices.at( 0 ).posVec, tri_vertices.at( i + 1 ).posVec, tri_vertices.at( i + 2 ).posVec );
         // true if right handed (and hence area bigger than 0)
         bool handedness = area < 0;
 
-	// it is likely that we end up with more than 3 vertices after clipping. so we have to create more than 1 triangle. we can create these new triangles
-	// by assuming that all triangles share at least one vertices.
 	if ( current_vpio.drawWithTexture )
         {
             output_vpoos->push_back( VPOO( tri_vertices.at( 0 ), tri_vertices.at( i + 1 ), tri_vertices.at( i + 2 ),
@@ -84,7 +83,7 @@ void VertexProcessor::ClipTriangle( const VPIO& current_vpio, std::vector< Verte
 void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, int_fast8_t componentIndex )
 {
     // clips all vertices of a certain axis. results overwrite existing vertices
-    std::vector<Vertexf> result_temp;
+    std::vector<Vertexf> result_temp; // like vertices has to be passed by reference
 
     // clip against w=1
     ClipPolygonComponent( vertices, componentIndex, 1.0f, result_temp );
@@ -100,7 +99,12 @@ void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices
     // iterates over each vertex and do one dimensional lerping
 
     if ( vertices.size() <= 0 )
-        return;
+    {
+        if ( printDebug )
+	    cout << "There were no verts left for component " << (int) componentIndex << "!" << endl;
+
+	return;
+    }
 
     // for the first component comparison we just take the last one in the list
     int previousVertex = vertices.size() - 1;
@@ -112,7 +116,7 @@ void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices
         float currentComponent = vertices.at( i ).GetPosVecComponent( componentIndex ) * componentFactor;
         bool currentInside = currentComponent <= vertices.at( i ).posVec.w;
 
-        if ( printDebug && componentIndex == 2 )
+        if ( printDebug && componentIndex > 0 )
             cout << "vertex with index " << (int) i << " for component " << (int) componentIndex
                  << " has w " << vertices.at( i ).posVec.w << " compared to currentComponent " << currentComponent << endl;
 
