@@ -23,7 +23,7 @@ class Window
         SDL_Surface* GetSurface() { return SDL_GetWindowSurface( w_window ); }
 
         // Window functions
-        void updateTitleWithFPS( Uint32 updateInterval );
+        void updateTitleWithFPS( int updateInterval ); // interval in seconds
 
         // Timer object
         Timer timer;
@@ -63,7 +63,7 @@ class Window
         // State vars
         int r_pitch = 0;
         int r_pitch_div_4 = 0;
-        Uint32 title_fps_count = 0; // shows how many ticks since last title update
+        std::chrono::system_clock::time_point w_title_fps_time = std::chrono::system_clock::now(); // contains time at which we are supposed to update window title 
 
         // Internal functions
         void LockRTexture();

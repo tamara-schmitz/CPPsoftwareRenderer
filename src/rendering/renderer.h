@@ -21,6 +21,8 @@ class Renderer
 
         // settings
         void SetObjectToWorldMatrix( const Matrix4f& objectMatrix );
+	// updating the following 3 matrices is not thread safe and 
+	// functions should be called before any data is supplied
         void SetWorldToViewMatrix( const Matrix4f& viewMatrix );
         void SetViewToPerspectiveMatrix( const float& fov, const float& zNear, const float& zFar );
         void SetPerspectiveToScreenSpaceMatrix();
@@ -52,8 +54,8 @@ class Renderer
         shared_ptr< std::vector< float > > z_buffer;
         std::vector< float > z_buffer_empty;
 
-        std::vector< std::thread > vp_threads;
-        std::vector< VertexProcessor > vertex_processors;
+        std::vector< shared_ptr< std::thread > > vp_threads;
+        std::vector< shared_ptr< VertexProcessor > > vertex_processors;
         std::vector< Rasteriser > rasterisers;
 
         shared_ptr< Matrix4f > objMatrix = make_shared< Matrix4f >();

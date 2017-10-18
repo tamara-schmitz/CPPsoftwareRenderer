@@ -122,4 +122,9 @@ const Vector3< I > calculateNormal( const Vector4< I >& v1, const Vector4< I >& 
     return normal_vec;
 }
 
+// Hacky make_unique port because this is a C++11 project
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args) {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
 #endif // COMMON_H

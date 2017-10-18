@@ -232,21 +232,17 @@ void Window::clearBuffers()
     }
 }
 
-void Window::updateTitleWithFPS( Uint32 updateInterval )
+void Window::updateTitleWithFPS( int updateInterval )
 {
-    // updates windows title every updateInterval (in frames)
+    // updates windows title every updateInterval (in seconds)
     if ( !headlessMode )
     {
-        if ( title_fps_count > updateInterval )
+        if ( w_title_fps_time < std::chrono::system_clock::now() )
         {
-            title_fps_count = 0;
+            w_title_fps_time = std::chrono::system_clock::now() + std::chrono::seconds( updateInterval );
             std::stringstream title;
             title << w_title << " - " << timer.GetCurrentFPS() << " FPS";
             SDL_SetWindowTitle( w_window, title.str().c_str() );
-        }
-        else
-        {
-            title_fps_count++;
         }
     }
 }

@@ -23,8 +23,8 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
     {
         if ( printDebug )
             cout << "'in_vpios' uses: " << in_vpios.use_count() << " 'out_vpoos' uses: " << out_vpoos.use_count() << endl;
-        vertex_processors.push_back( VertexProcessor( in_vpios, out_vpoos ) );
-//        vp_threads.push_back( vertex_processors[i].ProcessQueueAsThread() );
+        vertex_processors.push_back( make_shared< VertexProcessor >( in_vpios, out_vpoos ) );
+//        vp_threads.push_back( vertex_processors[i]->ProcessQueueAsThread() );
     }
 
     if ( printDebug )
@@ -59,7 +59,7 @@ void Renderer::SetWorldToViewMatrix( const Matrix4f& viewMatrix )
 
     for ( Uint32 i = 0; i < vertex_processors.size(); i++ )
     {
-        vertex_processors[i].viewMatrix = this->viewMatrix;
+        vertex_processors[i]->viewMatrix = this->viewMatrix;
     }
 }
 void Renderer::SetViewToPerspectiveMatrix( const float &fov, const float &zNear, const float &zFar )
@@ -71,8 +71,8 @@ void Renderer::SetViewToPerspectiveMatrix( const float &fov, const float &zNear,
 
     for ( Uint32 i = 0; i < vertex_processors.size(); i++ )
     {
-        vertex_processors[i].perspMatrix = perspMatrix;
-        vertex_processors[i].perspScreenMatrix = perspScreenMatrix;
+        vertex_processors[i]->perspMatrix = perspMatrix;
+        vertex_processors[i]->perspScreenMatrix = perspScreenMatrix;
     }
     for ( Uint32 i = 0; i < rasterisers.size(); i++ )
     {
@@ -87,8 +87,8 @@ void Renderer::SetPerspectiveToScreenSpaceMatrix()
 
     for ( Uint32 i = 0; i < vertex_processors.size(); i++ )
     {
-        vertex_processors[i].screenMatrix = screenMatrix;
-        vertex_processors[i].perspScreenMatrix = perspScreenMatrix;
+        vertex_processors[i]->screenMatrix = screenMatrix;
+        vertex_processors[i]->perspScreenMatrix = perspScreenMatrix;
     }
 }
 
@@ -147,14 +147,15 @@ void Renderer::WaitUntilFinished()
 
     // TODO turn this into a thread.join() at some point
     in_vpios->block_new();
+//    assert( vertex_processors.size() == vp_threads.size() );
     for ( Uint32 i = 0; i < vertex_processors.size(); i++ )
     {
-        vertex_processors[i].ProcessQueue();
-//        vp_threads[i].join();
+        vertex_processors[i]->ProcessQueue();
+//        vp_threads[i]->join();
     }
 
     if ( printDebug )
-        cout << "out_vpoos queue size: " << out_vpoos->size() << endl;
+        cout << "out_vpoos queue size after all vps are finished: " << out_vpoos->size() << endl;
 
     out_vpoos->block_new();
     for ( Uint32 i = 0; i < rasterisers.size(); i++ )

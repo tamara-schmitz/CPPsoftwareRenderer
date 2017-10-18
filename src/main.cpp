@@ -94,7 +94,7 @@ void demo_randomPixels( Window* window )
         {
             window->timer.printTimes();
         }
-        window->updateTitleWithFPS( 60 );
+        window->updateTitleWithFPS( 1 );
     }
 }
 
@@ -116,7 +116,7 @@ void demo_starfield( Window *window )
         {
             window->timer.printTimes();
         }
-        window->updateTitleWithFPS( 60 );
+        window->updateTitleWithFPS( 1 );
 
     }
 
@@ -178,7 +178,7 @@ void demo_shapes( Window *window )
         {
             window->timer.printTimes();
         }
-        window->updateTitleWithFPS( 60 );
+        window->updateTitleWithFPS( 1 );
     }
 
     // dtor
@@ -261,7 +261,7 @@ void demo_rasteriser( Window *window )
         {
             window->timer.printTimes();
         }
-        window->updateTitleWithFPS( 60 );
+        window->updateTitleWithFPS( 1 );
     }
 }
 
@@ -291,7 +291,7 @@ void demo_DisplayTexture( Window* window )
         {
             window->timer.printTimes();
         }
-        window->updateTitleWithFPS( 240 );
+        window->updateTitleWithFPS( 1 );
     }
 }
 
@@ -356,11 +356,11 @@ int main( int argc, char* argv[] )
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
         return 1;
     }
-    catch ( std::exception& e )
-    {
-        std::cerr << "Standard exception: " << e.what() << endl;
-        return 1;
-    }
+//    catch ( std::exception& e )
+//    {
+//        std::cerr << "Standard exception: " << e.what() << endl;
+//        return 1;
+//    }
 
     return 0;
 }
