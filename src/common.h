@@ -34,6 +34,7 @@ extern bool headlessMode;
 extern bool testMode;
 extern bool slowRendering;
 extern bool ignoreZBuffer;
+extern bool Do_VP_Clipping;
 
 // SDL specific functions
 bool compSDL_Color( SDL_Color c1, SDL_Color c2 );

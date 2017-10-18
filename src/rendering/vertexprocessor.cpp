@@ -36,9 +36,13 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
 
     // -- View Space
     std::vector< Vertexf > tri_vertices = { current_vpio.tri.verts[0], current_vpio.tri.verts[1], current_vpio.tri.verts[2] };
-    ClipTriangle( current_vpio, tri_vertices );
+    if ( Do_VP_Clipping )
+    	ClipTriangle( current_vpio, tri_vertices );
 
-    for ( uint_fast8_t i = 0; i < tri_vertices.size(); i = i + 3 )
+    if ( tri_vertices.size() <= 0 )
+    	return;
+
+    for ( uint_fast8_t i = 0; i <= tri_vertices.size() - 3; i++ )
     {
         tri_vertices.at( i + 0 ).posVec = perspScreenMatrix * tri_vertices.at( i + 0 ).posVec ;
         tri_vertices.at( i + 1 ).posVec = perspScreenMatrix * tri_vertices.at( i + 1 ).posVec ;
@@ -55,17 +59,18 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
         // true if right handed (and hence area bigger than 0)
         bool handedness = area < 0;
 
-        if ( current_vpio.drawWithTexture )
+	// it is likely that we end up with more than 3 vertices after clipping. so we have to create more than 1 triangle. we can create these new triangles
+	// by assuming that all triangles share at least one vertices.
+	if ( current_vpio.drawWithTexture )
         {
-            output_vpoos->push_back( VPOO( tri_vertices.at( i + 0 ), tri_vertices.at( i + 1 ), tri_vertices.at( i + 2 ),
+            output_vpoos->push_back( VPOO( tri_vertices.at( 0 ), tri_vertices.at( i + 1 ), tri_vertices.at( i + 2 ),
                                            handedness, current_vpio.texture ) );
         }
         else
         {
-            output_vpoos->push_back( VPOO( tri_vertices.at( i + 0 ), tri_vertices.at( i + 1 ), tri_vertices.at( i + 2 ),
+            output_vpoos->push_back( VPOO( tri_vertices.at( 0 ), tri_vertices.at( i + 1 ), tri_vertices.at( i + 2 ),
                                            handedness, current_vpio.colour ) );
         }
-
     }
 }
 
@@ -74,8 +79,6 @@ void VertexProcessor::ClipTriangle( const VPIO& current_vpio, std::vector< Verte
     ClipPolygonAxis( result_vertices, 0);
     ClipPolygonAxis( result_vertices, 1);
     ClipPolygonAxis( result_vertices, 2);
-
-    assert( result_vertices.size() % 3 == 0 );
 }
 
 void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, int_fast8_t componentIndex )

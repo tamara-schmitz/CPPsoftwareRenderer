@@ -188,6 +188,7 @@ void demo_shapes( Window *window )
 void demo_rasteriser( Window *window )
 {
     auto render = make_shared<Renderer>( window );
+    Do_VP_Clipping = false;
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     auto bmpTexture = make_shared<Texture>( "examples/tree.bmp" );
@@ -200,9 +201,9 @@ void demo_rasteriser( Window *window )
     float absoluteRotation = 0.0f;
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 0, 90 );
     Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 1.0f );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 3.0f );
     render->SetWorldToViewMatrix( viewMatrix );
-    render->SetViewToPerspectiveMatrix( 70, 0.1f, 10000.0f );
+    render->SetViewToPerspectiveMatrix( 70, 0.4f, 1.5f );
 
     render->SetDrawColour( triangleColor );
     render->SetDrawTexture( bmpTexture );
