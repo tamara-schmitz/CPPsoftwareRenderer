@@ -243,7 +243,7 @@ void demo_rasteriser( Window *window )
         render->FillTriangle( tris );
 
         // draw mesh
-        objMatrix_mesh = Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
+        objMatrix_mesh = Matrix4f::createTranslation( 2.5f * sin( 0.01f * absoluteRotation ), 0, 2.5f * sin( 0.01f * absoluteRotation ) ) * Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
         render->SetObjectToWorldMatrix( objMatrix_mesh );
         render->DrawMesh( sphereModel );
         render->SetDrawTexture( chaletTexture );

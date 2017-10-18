@@ -16,7 +16,7 @@
 class Renderer
 {
     public:
-        Renderer( Window* window, Uint8 vp_thread_count = 2, Uint8 raster_thread_count = 2 );
+        Renderer( Window* window, Uint8 vp_thread_count = 2, Uint8 raster_thread_count = 4 );
         virtual ~Renderer();
 
         // settings

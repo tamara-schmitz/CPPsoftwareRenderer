@@ -35,11 +35,26 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
 
     // -- View Space
     std::vector< Vertexf > tri_vertices = { current_vpio.tri.verts[0], current_vpio.tri.verts[1], current_vpio.tri.verts[2] };
+    // cull early if all posVec.w are outside of frustum
+    bool cull_early = true;
+    for ( uint_fast8_t i = 0; i < tri_vertices.size(); i++ )
+    {
+        if ( abs( tri_vertices.at( i ).posVec.x ) <= abs( tri_vertices.at( i ).posVec.w ) &&
+	     abs( tri_vertices.at( i ).posVec.y ) <= abs( tri_vertices.at( i ).posVec.w ) &&
+             abs( tri_vertices.at( i ).posVec.z ) <= abs( tri_vertices.at( i ).posVec.w ) )
+	{
+	    cull_early = false;
+	    break;
+	}
+    }
+    if ( cull_early )
+    	return;
+
     if ( Do_VP_Clipping )
-    	ClipTriangle( current_vpio, tri_vertices );
+	ClipTriangle( current_vpio, tri_vertices );
 
     if ( tri_vertices.size() <= 0 )
-    	return;
+	return;
 
     // prepare verts for rasterisation
     for ( uint_fast8_t i = 0; i < tri_vertices.size(); i++ )
@@ -84,6 +99,7 @@ void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, uint_fast
 {
     // clips all vertices of a certain axis. results overwrite existing vertices
     std::vector<Vertexf> result_temp; // like vertices has to be passed by reference
+    result_temp.clear();
 
     // clip against w=1
     ClipPolygonComponent( vertices, componentIndex, 1.0f, result_temp );
@@ -115,7 +131,7 @@ void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices
     {
         float currentComponent = vertices.at( i ).GetPosVecComponent( componentIndex ) * componentFactor;
 
-	// CurrentComponent gets inverted if componentfactor is negativ. Hence only <= is required.
+	// currentComponent gets inverted if componentFactor is negativ. Hence only <= is required.
         bool currentInside = currentComponent <= vertices.at( i ).posVec.w;
 
         if ( printDebug && componentIndex > 0 )

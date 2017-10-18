@@ -77,7 +77,8 @@ void Rasteriser::ScanEdges( Edgef& a, Edgef& b, bool isRightHanded )
 
     for ( Uint16 i = yEdge_Start; i < clipNumber( yEdge_End, yEdge_Start, y_end ); i++ )
     {
-        DrawScanLine( left, right, i );
+        if ( i >= y_begin )
+            DrawScanLine( left, right, i );
         left.DoYStep();
         right.DoYStep();
     }

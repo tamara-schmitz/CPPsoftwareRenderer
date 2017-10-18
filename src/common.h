@@ -22,6 +22,7 @@ using std::shared_ptr;
 using std::make_shared;
 using std::weak_ptr;
 using std::unique_ptr;
+using std::abs;
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
