@@ -44,3 +44,4 @@ callgrind.out.*
 
 # Vim backup files
 *.un~
+*.swp

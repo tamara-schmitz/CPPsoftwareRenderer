@@ -64,7 +64,7 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
         tri_vertices.at( i ).posVec.divideByWOnly();
     }
 
-   // It is likely that we end up with more than 3 vertices after clipping. so we have to create more than 1 triangle. we can create these new triangles
+   // It is possible that we end up with more than 3 vertices after clipping. so we have to create more than 1 triangle. we can create these new triangles
    // by assuming that all triangles share at least one vertices.
    for ( uint_fast8_t i = 0; i <= tri_vertices.size() - 3; i++ )
     {
@@ -134,12 +134,15 @@ void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices
 	// currentComponent gets inverted if componentFactor is negativ. Hence only <= is required.
         bool currentInside = currentComponent <= vertices.at( i ).posVec.w;
 
-        if ( printDebug && componentIndex > 0 )
+        /*
+	if ( printDebug && componentIndex > 0 )
             cout << "Vertex with index " << (int) i << " for component " << (int) componentIndex
                  << " has w of " << vertices.at( i ).posVec.w << " compared to currentComponent " << currentComponent 
 		 << ". Hence inside: " << currentInside << endl;
+        */
 
-        // we only need to clip if this and last vert were both inside and outside of frustrum
+        // we only need to clip if the vert was inside and the last vert was outside of the frustrum
+	// (or the over way around)
         if ( currentInside ^ previousInside )
         {
             float lerp = ( vertices.at( previousVertex ).posVec.w - previousComponent ) /
