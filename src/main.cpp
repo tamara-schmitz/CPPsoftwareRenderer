@@ -201,9 +201,9 @@ void demo_rasteriser( Window *window )
     float absoluteRotation = 0.0f;
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 0, 90 );
     Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 0.5f ) * Matrix4f::createScale( 0.125f, 0.125f, 0.125f );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 3.0f ); // * Matrix4f::createScale( 0.25f, 0.25f, 0.25f );
     render->SetWorldToViewMatrix( viewMatrix );
-    render->SetViewToPerspectiveMatrix( 70, 0.4f, 1.5f );
+    render->SetViewToPerspectiveMatrix( 70, 0.2f, 100.0f );
 
     render->SetDrawColour( triangleColor );
     render->SetDrawTexture( bmpTexture );
@@ -225,6 +225,12 @@ void demo_rasteriser( Window *window )
         window->clearBuffers();
         render->ClearBuffers();
 
+        if ( !ignoreZBuffer )
+        {
+            render->DrawFarPlane();
+//            render->DrawNearPlane();
+        }
+
         // get per frame rotation factor
         float rotationFactor = 75 * (window->timer.GetDeltaTime() / 1000000000.0);
         absoluteRotation += rotationFactor;
@@ -232,10 +238,10 @@ void demo_rasteriser( Window *window )
 
         tris *= rotationMatrix;
 
-        if ( printDebug )
+        /* if ( printDebug )
         {
             cout << "v1 - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
-        }
+        } */
 
         // draw triangle
         render->SetDrawTexture( bmpTexture );
@@ -243,17 +249,11 @@ void demo_rasteriser( Window *window )
         render->FillTriangle( tris );
 
         // draw mesh
-        objMatrix_mesh = Matrix4f::createTranslation( 2.5f * sin( 0.01f * absoluteRotation ), 0, 2.5f * sin( 0.01f * absoluteRotation ) ) * Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
+        objMatrix_mesh = Matrix4f::createTranslation( 0, 2.5f * sin( 0.01f * absoluteRotation ), 2.5f * sin( 0.01f * absoluteRotation ) ) * Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
         render->SetObjectToWorldMatrix( objMatrix_mesh );
         render->DrawMesh( sphereModel );
         render->SetDrawTexture( chaletTexture );
 //        render->DrawMesh( chaletModel );
-
-        if ( !ignoreZBuffer )
-        {
-            render->DrawFarPlane();
-//            render->DrawNearPlane();
-        }
 
         render->WaitUntilFinished();
         window->updateWindow();

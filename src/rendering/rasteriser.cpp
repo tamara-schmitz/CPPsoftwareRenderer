@@ -9,8 +9,6 @@ Rasteriser::Rasteriser( shared_ptr< SafeDynArray< VPOO > > in, Window* window, s
     this->z_buffer = z_buffer;
     this->y_begin = y_begin;
     this->y_end   = y_end;
-    this->near_z = near_z;
-    this->far_z  = far_z;
 }
 
 void Rasteriser::ProcessVPOOArray()
@@ -171,7 +169,7 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 t
 //        }
         if ( y < y_begin || y > y_end )
         {
-//            throw std::out_of_range( "Illegal pixel write in Rasteriser." );
+            throw std::out_of_range( "Illegal pixel write in Rasteriser." );
             return;
         }
         SetZ( x, y, current_depth );
@@ -197,7 +195,7 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
 //        }
         if ( y < y_begin || y > y_end )
         {
-//            throw std::out_of_range( "Illegal pixel write in Rasteriser." );
+            throw std::out_of_range( "Illegal pixel write in Rasteriser." );
             return;
         }
         SetZ( x, y, current_depth );

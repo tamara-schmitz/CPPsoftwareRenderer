@@ -23,7 +23,7 @@ class Rasteriser
 
         void ProcessVPOOArray();
 
-        float near_z, far_z; // contains current near and far plane for culling
+        float near_z = 0, far_z = 0; // contains current near and far plane for culling
         Uint16 y_begin = 0, y_end = 0; // area in which rasteriser is supposed to draw in.
 
     private:

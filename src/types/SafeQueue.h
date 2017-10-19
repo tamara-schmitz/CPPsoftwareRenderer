@@ -52,7 +52,7 @@ public:
     bool pop( T& obj )
     {
         // By default in blocking mode (waits for new objects if queue
-        // is empty). However returns NULL if queue is
+        // is empty). However returns false if queue is
         // empty AND new_blocked == true.
         std::unique_lock< std::mutex > lock( mutex );
         if ( queue.empty() )

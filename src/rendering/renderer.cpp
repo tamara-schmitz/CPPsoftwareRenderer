@@ -152,6 +152,8 @@ void Renderer::WaitUntilFinished()
     {
         vertex_processors[i]->ProcessQueue();
 //        vp_threads[i]->join();
+        if ( printDebug)
+            cout << "VP " << (int) i << " has processed a total of " << (int) vertex_processors[i]->GetProcessedVPIOsCount() << " VPIOs." << endl;
     }
 
     if ( printDebug )

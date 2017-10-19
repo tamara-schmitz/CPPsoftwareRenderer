@@ -2575,7 +2575,7 @@ public:
 
                                                      C = (-zNear -zFar) / (zNear - zFar)
 
-                                                     D = (2 zFar zNear) / (zNear - zFar)
+                                                     D = (2 * zFar * zNear) / (zNear - zFar)
         */
         Matrix4<T> ret = Matrix4<T>();
         const T tanHalfFOV = std::tan( fov / 2.0f );

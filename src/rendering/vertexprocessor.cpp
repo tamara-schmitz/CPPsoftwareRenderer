@@ -8,6 +8,7 @@ VertexProcessor::VertexProcessor( shared_ptr< SafeQueue< VPIO > > in, shared_ptr
 
 void VertexProcessor::ProcessQueue()
 {
+    processedVPIOs_count = 0;
     bool queue_not_empty;
     VPIO current_vpio;
     do
@@ -15,6 +16,7 @@ void VertexProcessor::ProcessQueue()
         queue_not_empty = in_vpios->pop( current_vpio );
         if ( queue_not_empty )
             ProcessTriangle( current_vpio );
+            processedVPIOs_count++;
 
     } while ( queue_not_empty );
 }
@@ -32,34 +34,56 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
     current_vpio.tri *= *(current_vpio.objMatrix);
     // -- World Space
     current_vpio.tri *= viewMatrix;
-
     // -- View Space
+    current_vpio.tri *= perspMatrix;
+    // -- Perspective Space
     std::vector< Vertexf > tri_vertices = { current_vpio.tri.verts[0], current_vpio.tri.verts[1], current_vpio.tri.verts[2] };
-    // cull early if all posVec.w are outside of frustum
+   
+    // cull triangle earlier if all posVec.w are outside of frustum
     bool cull_early = true;
     for ( uint_fast8_t i = 0; i < tri_vertices.size(); i++ )
     {
         if ( abs( tri_vertices.at( i ).posVec.x ) <= abs( tri_vertices.at( i ).posVec.w ) &&
-	     abs( tri_vertices.at( i ).posVec.y ) <= abs( tri_vertices.at( i ).posVec.w ) &&
+             abs( tri_vertices.at( i ).posVec.y ) <= abs( tri_vertices.at( i ).posVec.w ) &&
              abs( tri_vertices.at( i ).posVec.z ) <= abs( tri_vertices.at( i ).posVec.w ) )
-	{
-	    cull_early = false;
-	    break;
-	}
+        {
+            cull_early = false;
+            break;
+        }
     }
     if ( cull_early )
-    	return;
-
+    {
+        if ( printDebug )
+            cout << "Tri was culled before vp clipping." << endl;
+        return;
+    }
+    
+    bool clipping_required = false;
     if ( Do_VP_Clipping )
-	ClipTriangle( current_vpio, tri_vertices );
+    {
+        // this check ensures that triangles inside the frustum get passed through directly
+        for ( uint_fast8_t i = 0; i < tri_vertices.size(); i++ )
+        {
+            if ( abs( tri_vertices.at( i ).posVec.x ) > abs( tri_vertices.at( i ).posVec.w ) ||
+                 abs( tri_vertices.at( i ).posVec.y ) > abs( tri_vertices.at( i ).posVec.w ) ||
+                 abs( tri_vertices.at( i ).posVec.z ) > abs( tri_vertices.at( i ).posVec.w ) )
+            {
+                clipping_required = true;
+                break;
+            }
+        }
+
+        if ( clipping_required )
+            ClipTriangle( current_vpio, tri_vertices );
+    }
 
     if ( tri_vertices.size() <= 0 )
-	return;
+        return;
 
     // prepare verts for rasterisation
     for ( uint_fast8_t i = 0; i < tri_vertices.size(); i++ )
     {
-	tri_vertices.at( i ).posVec = perspScreenMatrix * tri_vertices.at( i ).posVec ;
+        tri_vertices.at( i ).posVec = screenMatrix * tri_vertices.at( i ).posVec;
         // -- Screen Space
         tri_vertices.at( i ).posVec.divideByWOnly();
     }
@@ -75,7 +99,7 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
         // true if right handed (and hence area bigger than 0)
         bool handedness = area < 0;
 
-	if ( current_vpio.drawWithTexture )
+        if ( current_vpio.drawWithTexture )
         {
             output_vpoos->push_back( VPOO( tri_vertices.at( 0 ), tri_vertices.at( i + 1 ), tri_vertices.at( i + 2 ),
                                            handedness, current_vpio.texture ) );
@@ -117,9 +141,9 @@ void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices
     if ( vertices.size() <= 0 )
     {
         if ( printDebug )
-	    cout << "There were no verts left for component " << (int) componentIndex << "!" << endl;
+            cout << "There were no verts left for component " << (int) componentIndex << "!" << endl;
 
-	return;
+        return;
     }
 
     // for the initial component comparison we just take the last one in the list
@@ -131,18 +155,18 @@ void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices
     {
         float currentComponent = vertices.at( i ).GetPosVecComponent( componentIndex ) * componentFactor;
 
-	// currentComponent gets inverted if componentFactor is negativ. Hence only <= is required.
+        // currentComponent gets inverted if componentFactor is negativ. Hence only <= is required.
         bool currentInside = currentComponent <= vertices.at( i ).posVec.w;
 
-        /*
-	if ( printDebug && componentIndex > 0 )
+        /* 
+        if ( printDebug && componentIndex > 0 )
             cout << "Vertex with index " << (int) i << " for component " << (int) componentIndex
                  << " has w of " << vertices.at( i ).posVec.w << " compared to currentComponent " << currentComponent 
-		 << ". Hence inside: " << currentInside << endl;
+                 << ". Hence inside: " << currentInside << endl;
         */
 
         // we only need to clip if the vert was inside and the last vert was outside of the frustrum
-	// (or the over way around)
+        // (or the over way around)
         if ( currentInside ^ previousInside )
         {
             float lerp = ( vertices.at( previousVertex ).posVec.w - previousComponent ) /
