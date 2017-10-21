@@ -25,6 +25,10 @@ Edge<T>::Edge( const Vertex<T>& vertMin, const Vertex<T>& vertMax, const TexCoor
     T yDist = posMax.y - posMin.y;
     T xDist = posMax.x - posMin.x;
 
+    // prevent division by zero
+    if ( yDist == 0 )
+        return;
+
     // calulate stepping for absolute and real prestep
     yPrestep = (T) yStart - posMin.y;
     xStep = xDist / yDist;

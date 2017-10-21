@@ -96,6 +96,10 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     float xPrestep = xMin - left.GetCurrentX();
     float xDist = right.GetCurrentX() - left.GetCurrentX();
 
+    // stop here if both x are exactly the same
+    if ( xDist == 0 )
+        return;
+
     // now calculate xx, yx and zx steps
     float texCoordXX_step = ( right.GetCurrentTexCoordX() - left.GetCurrentTexCoordX() ) / xDist;
     float texCoordYX_step = ( right.GetCurrentTexCoordY() - left.GetCurrentTexCoordY() ) / xDist;

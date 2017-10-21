@@ -5,21 +5,27 @@ TexCoordsForEdge<T>::TexCoordsForEdge(const Vertex<T>& vertMin, const Vertex<T>&
 {
     //ctor
 
+    // prevent division by zero
+    assert( vertMin.posVec.w != 0 );
+    assert( vertMid.posVec.w != 0 );
+    assert( vertMax.posVec.w != 0 );
+
     // calculuate oneOver_dX and oneOver_dY
-    T oneOverdX = 1.0 /
-      ( ( (vertMid.posVec.x - vertMax.posVec.x) *
-          (vertMin.posVec.y - vertMax.posVec.y) ) -
-        ( (vertMin.posVec.x - vertMax.posVec.x) *
-          (vertMid.posVec.y - vertMax.posVec.y) ) );
+    T dX =( (vertMid.posVec.x - vertMax.posVec.x) *
+                   (vertMin.posVec.y - vertMax.posVec.y) ) -
+                 ( (vertMin.posVec.x - vertMax.posVec.x) *
+                   (vertMid.posVec.y - vertMax.posVec.y) );
+    assert( dX != 0 );
+    T oneOverdX = 1.0f / dX;
     T oneOverdY = -oneOverdX;
 
     // calculate texCoord values from verts
     depth_values[0] = vertMin.posVec.z;
     depth_values[1] = vertMid.posVec.z;
     depth_values[2] = vertMax.posVec.z;
-    oneOverZ_values[0] = 1.0 / vertMin.posVec.w;
-    oneOverZ_values[1] = 1.0 / vertMid.posVec.w;
-    oneOverZ_values[2] = 1.0 / vertMax.posVec.w;
+    oneOverZ_values[0] = 1.0f / vertMin.posVec.w;
+    oneOverZ_values[1] = 1.0f / vertMid.posVec.w;
+    oneOverZ_values[2] = 1.0f / vertMax.posVec.w;
     texCoordX_values[0] = vertMin.texVec.x * oneOverZ_values[0];
     texCoordX_values[1] = vertMid.texVec.x * oneOverZ_values[1];
     texCoordX_values[2] = vertMax.texVec.x * oneOverZ_values[2];
