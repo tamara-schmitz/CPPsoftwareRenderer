@@ -15,12 +15,15 @@ void VertexProcessor::ProcessQueue()
     {
         queue_not_empty = in_vpios->pop( current_vpio );
         if ( queue_not_empty )
+	{
             ProcessTriangle( current_vpio );
             processedVPIOs_count++;
+	}
 
     } while ( queue_not_empty );
 }
 
+__attribute__((target_clones("avx2","arch=westmere","default")))
 void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
 {
     // From here on current coordinate space of tri will be
@@ -134,6 +137,7 @@ void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, uint_fast
     result_temp.clear();
 }
 
+__attribute__((target_clones("avx2","arch=westmere","default")))
 void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices, uint_fast8_t componentIndex, float componentFactor, std::vector<Vertexf>& result )
 {
     // iterate over each vertex and do one dimensional lerping

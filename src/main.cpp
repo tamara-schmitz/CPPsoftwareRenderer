@@ -23,7 +23,7 @@ bool checkQuit()
 {
     // returns true if program should quit
 
-    if ( testMode && window->timer.GetCurrentTick() > 60 )
+    if ( testMode && window->timer.GetCurrentTick() > 90 )
     {
         return true;
     }

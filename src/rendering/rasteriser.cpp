@@ -82,6 +82,7 @@ void Rasteriser::ScanEdges( Edgef& a, Edgef& b, bool isRightHanded )
     }
 }
 
+__attribute__((target_clones("avx2","arch=westmere","default")))
 void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCoord )
 {
     // ceil xMin and xMax for compliance with our top-left fill convention
