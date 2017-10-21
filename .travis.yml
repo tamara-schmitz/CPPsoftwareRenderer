@@ -106,6 +106,17 @@ matrix:
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
 
+    # works on windows
+    - os: linux
+      script: make win64
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - wine
+            - mingw-w64
+
 before_install:
     - eval "${MATRIX_EVAL}"
     - sudo apt-add-repository --yes ppa:zoogie/sdl2-snapshots
