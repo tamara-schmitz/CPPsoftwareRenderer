@@ -17,11 +17,10 @@ INCLUDE_PATHS = -Iinclude -Isrc -Iinclude/vmath-0.12
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -Wl,-subsystem,windows gets rid of the console window
-COMPILER_FLAGS_COMMON = -Wall -pedantic-errors -std=c++11 -Wno-unused-variable -fstack-protector-strong -fPIC -pie
-COMPILER_FLAGS_GRAPHITE = -fgraphite-identity -ftree-loop-distribution -floop-nest-optimize -floop-interchange -floop-strip-mine -floop-block 
-COMPILER_FLAGS_RELEASE = -O3 -fomit-frame-pointer -flto -fuse-linker-plugin -ftree-vectorize ${COMPILER_FLAGS_GRAPHITE}
-COMPILER_FLAGS_DEBUG = -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-check -fuse-ld=gold
-
+COMPILER_FLAGS_COMMON = -Wall -pedantic-errors -std=c++11 -Wno-unused-variable -fstack-protector-strong -fuse-ld=gold
+COMPILER_FLAGS_GRAPHITE = -fgraphite-identity -ftree-loop-distribution -floop-nest-optimize
+COMPILER_FLAGS_RELEASE = -O3 -fomit-frame-pointer -flto -fuse-linker-plugin -ftree-vectorize -fPIC -pie ${COMPILER_FLAGS_GRAPHITE}
+COMPILER_FLAGS_DEBUG = -g -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-check
 COMPILER_FLAGS_WIN = $(COMPILER_FLAGS_COMMON) -Wl,-subsystem,windows -march=core2 -static-libgCXX -static-libstdc++
 COMPILER_FLAGS_LINUX = $(COMPILER_FLAGS_COMMON) -march=core2
 

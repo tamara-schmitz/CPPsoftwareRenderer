@@ -102,6 +102,12 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
         // true if right handed (and hence area bigger than 0)
         bool handedness = area < 0;
 
+        /*
+        // cull tiny triangle that probably wont affect the final result
+        if ( abs( area ) < 0.1 )
+            continue;
+        */
+
         if ( current_vpio.drawWithTexture )
         {
             output_vpoos->push_back( VPOO( tri_vertices.at( 0 ), tri_vertices.at( i + 1 ), tri_vertices.at( i + 2 ),
@@ -151,7 +157,7 @@ void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices
     }
 
     // for the initial component comparison we just take the last one in the list
-    Uint32 previousVertex = vertices.size() - 1;
+    uint_fast8_t previousVertex = vertices.size() - 1;
     float previousComponent = vertices.at( previousVertex ).GetPosVecComponent( componentIndex ) * componentFactor;
     bool previousInside = previousComponent <= vertices.at( previousVertex ).posVec.w;
 

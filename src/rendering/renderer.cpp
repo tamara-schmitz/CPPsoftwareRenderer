@@ -18,7 +18,7 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
     }
     *z_buffer = z_buffer_empty;
 
-    // create workers
+    // create workers (vps and rasterisers)
     for ( Uint8 i = 0; i < vp_thread_count; i++ )
     {
         if ( printDebug )
@@ -30,6 +30,7 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
     if ( printDebug )
         cout << "Spawned " << vertex_processors.size() << " vertex processing threads." << endl;
 
+    // For the rasterisers we split the rendering surface vertically into even parts that do not overlap. All rasterisers write to the same framebuffer and z_buffer without any locking mechanism in place which requires some extra check to prevent interference with other threads.
     float y_count = 0;
     float y_incre = (float) (w_window->Getheight() - 1) / (float) raster_thread_count;
     for ( Uint8 i = 0; i < raster_thread_count; i++ )

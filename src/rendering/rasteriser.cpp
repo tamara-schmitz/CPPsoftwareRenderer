@@ -132,10 +132,10 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
             float z = 1.0f / current_oneOverZ;
 
             // calculate texture coords
-            Uint16 textureX = clipNumber< Uint16 >( std::ceil((current_texCoordX * z) * (current_vpoo.texture->GetWidth()  - 1)),
-                                                                                      0, current_vpoo.texture->GetWidth()  - 1 );
-            Uint16 textureY = clipNumber< Uint16 >( std::ceil((current_texCoordY * z) * (current_vpoo.texture->GetHeight() - 1)),
-                                                                                      0, current_vpoo.texture->GetHeight() - 1 );
+            Uint16 textureX = clipNumber< Uint16 >( std::ceil((current_texCoordX * z) * (current_vpoo.texture->GetWidth()  - 1) + 0.5f ),
+                                                                                      0, current_vpoo.texture->GetWidth()  - 1  + 0.5f );
+            Uint16 textureY = clipNumber< Uint16 >( std::ceil((current_texCoordY * z) * (current_vpoo.texture->GetHeight() - 1) + 0.5f ),
+                                                                                      0, current_vpoo.texture->GetHeight() - 1  + 0.5f );
 
             DrawFragment( x, yCoord, current_depth, textureX, textureY );
         }
@@ -153,6 +153,8 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
 
     if ( slowRendering && yCoord >= 0 && yCoord % 8 == 0 )
     {
+        std::mutex mutex;
+        std::unique_lock< std::mutex > lock( mutex );
         w_window->updateWindow();
     }
 }

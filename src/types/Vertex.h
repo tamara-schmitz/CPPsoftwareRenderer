@@ -21,8 +21,8 @@ struct Vertex
 
     Vertex& lerp( Vertex other, T lerpamount )
     {
-        posVec.lerp( lerpamount, other.posVec );
-        texVec.lerp( lerpamount, other.texVec );
+        posVec = posVec.lerp( lerpamount, other.posVec );
+        texVec = texVec.lerp( lerpamount, other.texVec );
 
         return *this;
     }
