@@ -24,7 +24,6 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
         if ( printDebug )
             cout << "'in_vpios' uses: " << in_vpios.use_count() << " 'out_vpoos' uses: " << out_vpoos.use_count() << endl;
         vertex_processors.push_back( make_shared< VertexProcessor >( in_vpios, out_vpoos ) );
-//        vp_threads.push_back( vertex_processors[i]->ProcessQueueAsThread() );
     }
 
     if ( printDebug )
@@ -43,7 +42,7 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
         y_count += y_incre;
         Uint16 y_end   = std::floor( y_count );
 
-        rasterisers.push_back( Rasteriser( out_vpoos, w_window, z_buffer, y_begin, y_end ) );
+        rasterisers.push_back( make_shared< Rasteriser >( out_vpoos, w_window, z_buffer, y_begin, y_end ) );
     }
 
     if ( printDebug )
@@ -77,8 +76,8 @@ void Renderer::SetViewToPerspectiveMatrix( const float &fov, const float &zNear,
     }
     for ( Uint32 i = 0; i < rasterisers.size(); i++ )
     {
-        rasterisers[i].near_z = zNear;
-        rasterisers[i].far_z  = zFar;
+        rasterisers[i]->near_z = zNear;
+        rasterisers[i]->far_z  = zFar;
     }
 }
 void Renderer::SetPerspectiveToScreenSpaceMatrix()
@@ -140,6 +139,21 @@ void Renderer::FillTriangle( Triangle tris )
     }
 }
 
+void Renderer::InitiateRendering()
+{
+    in_vpios->unblock_new();
+    out_vpoos->unblock_new();
+
+    for ( Uint8 i = 0; i < vertex_processors.size(); i++ )
+    {
+        vp_threads.push_back( vertex_processors[i]->ProcessQueueAsThread() );
+    }
+    for ( Uint8 i = 0; i < rasterisers.size(); i++ )
+    {
+        rast_threads.push_back( rasterisers[i]->ProcessVPOOArrayAsThread() );
+    }
+}
+
 void Renderer::WaitUntilFinished()
 {
     // waits for vertex processing and rasteriser to be finished.
@@ -149,21 +163,29 @@ void Renderer::WaitUntilFinished()
     // TODO turn this into a thread.join() at some point
     in_vpios->block_new();
 //    assert( vertex_processors.size() == vp_threads.size() );
-    for ( Uint32 i = 0; i < vertex_processors.size(); i++ )
+
+    int i = 0; // tracks vertex_processor processed in queue.
+    for ( auto it = vp_threads.begin(); it != vp_threads.end(); )
     {
-        vertex_processors[i]->ProcessQueue();
-//        vp_threads[i]->join();
+        vp_threads[0]->join(); // always 0 because we empty the queue and never skip an elemen
+	vp_threads.erase( it );
+
         if ( printDebug)
-            cout << "VP " << (int) i << " has processed a total of " << (int) vertex_processors[i]->GetProcessedVPIOsCount() << " VPIOs." << endl;
+            cout << "VP " << i << " has processed a total of " << (int) vertex_processors[ i ]->GetProcessedVPIOsCount() << " VPIOs." << endl;
+
+	i++;
     }
 
     if ( printDebug )
         cout << "out_vpoos queue size after all vps are finished: " << out_vpoos->size() << endl;
 
     out_vpoos->block_new();
-    for ( Uint32 i = 0; i < rasterisers.size(); i++ )
+    for ( auto it = rast_threads.begin(); it != rast_threads.end(); )
     {
-        rasterisers[i].ProcessVPOOArray();
+        rast_threads[0]->join(); // always 0 because we empty the queue and never skip an elemen
+	rast_threads.erase( it );
+
+	i++;
     }
 }
 

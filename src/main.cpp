@@ -196,12 +196,10 @@ void demo_rasteriser( Window *window )
     auto chaletTexture = make_shared<Texture>( "examples/chalet.bmp" );
     auto chaletModel = make_shared<Mesh>( "examples/chalet.obj" );
 
-//    Matrix4f objMatrix = Matrix4f::createTranslation( 0, 0, 0 );
-//    Matrix4f objMatrix = Matrix4f::createScale( 0.2f, 0.2f, 0.2f );
     float absoluteRotation = 0.0f;
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 0, 90 );
     Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 3.0f ); // * Matrix4f::createScale( 0.25f, 0.25f, 0.25f );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, .75f ) * Matrix4f::createScale( 0.25f, 0.25f, 0.25f );
     render->SetWorldToViewMatrix( viewMatrix );
     render->SetViewToPerspectiveMatrix( 70, 0.2f, 100.0f );
 
@@ -224,6 +222,8 @@ void demo_rasteriser( Window *window )
 
         window->clearBuffers();
         render->ClearBuffers();
+
+	render->InitiateRendering();
 
         if ( !ignoreZBuffer )
         {
@@ -249,7 +249,7 @@ void demo_rasteriser( Window *window )
         render->FillTriangle( tris );
 
         // draw mesh
-        objMatrix_mesh = Matrix4f::createTranslation( 0, 2.5f * sin( 0.01f * absoluteRotation ), 2.5f * sin( 0.01f * absoluteRotation ) ) * Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
+        objMatrix_mesh = Matrix4f::createTranslation( 0, 2.5f * sin( 0.01f * absoluteRotation ), .25f * sin( 0.01f * absoluteRotation ) ) * Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
         render->SetObjectToWorldMatrix( objMatrix_mesh );
         render->DrawMesh( sphereModel );
         render->SetDrawTexture( chaletTexture );

@@ -16,7 +16,7 @@
 class Renderer
 {
     public:
-        Renderer( Window* window, Uint8 vp_thread_count = 2, Uint8 raster_thread_count = 4 );
+        Renderer( Window* window, Uint8 vp_thread_count = 1, Uint8 raster_thread_count = 4 );
         virtual ~Renderer();
 
         // settings
@@ -34,6 +34,7 @@ class Renderer
         void DrawMesh( shared_ptr<Mesh> mesh );
         void FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 );
         void FillTriangle( Triangle tris );
+	void InitiateRendering();
         void WaitUntilFinished();
 
         // debug rendering functions
@@ -55,8 +56,9 @@ class Renderer
         std::vector< float > z_buffer_empty;
 
         std::vector< shared_ptr< std::thread > > vp_threads;
+        std::vector< shared_ptr< std::thread > > rast_threads;
         std::vector< shared_ptr< VertexProcessor > > vertex_processors;
-        std::vector< Rasteriser > rasterisers;
+        std::vector< shared_ptr< Rasteriser > > rasterisers;
 
         shared_ptr< Matrix4f > objMatrix = make_shared< Matrix4f >();
         Matrix4f viewMatrix, perspMatrix, screenMatrix;

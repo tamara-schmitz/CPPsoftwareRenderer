@@ -37,7 +37,12 @@ public:
         cond.notify_all();
     }
 
-    void push( T obj )
+    void unblock_new()
+    {
+        new_blocked=false;
+    }
+
+   void push( T obj )
     {
         std::unique_lock< std::mutex > lock( mutex );
         if ( new_blocked )

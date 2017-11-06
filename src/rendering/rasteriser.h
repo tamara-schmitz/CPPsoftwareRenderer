@@ -21,6 +21,7 @@ class Rasteriser
                     const Uint16& y_begin, Uint16& y_end );
         virtual ~Rasteriser();
 
+        shared_ptr< std::thread > ProcessVPOOArrayAsThread() { return make_shared< std::thread >( &Rasteriser::ProcessVPOOArray, this ); }
         void ProcessVPOOArray();
 
         float near_z = 0, far_z = 0; // contains current near and far plane for culling

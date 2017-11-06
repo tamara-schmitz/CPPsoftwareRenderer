@@ -98,7 +98,11 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
 
     // stop here if both x are exactly the same
     if ( xDist == 0 )
+    {
+        if ( printDebug )
+	    cout << "Scanline had xDist of 0!" << endl;
         return;
+    }
 
     // now calculate xx, yx and zx steps
     float texCoordXX_step = ( right.GetCurrentTexCoordX() - left.GetCurrentTexCoordX() ) / xDist;

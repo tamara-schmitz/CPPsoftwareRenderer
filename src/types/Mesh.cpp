@@ -43,7 +43,7 @@ Mesh::Mesh( std::string pathToOBJ )
 
             // check if index already exists as a vertex
             int64_t objindex = OBJindexToNewIndex( attrib, current_index, OBJtoNewposindex_transl );
-//            objindex = -1;
+            objindex = -1;
             if ( objindex >= 0 )
             {
                 // vertex already exists. hence refer to it in indices.
