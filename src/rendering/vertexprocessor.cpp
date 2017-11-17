@@ -34,7 +34,7 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
         return;
 
     // -- Object Space
-    current_vpio.tri *= *(current_vpio.objMatrix);
+    current_vpio.tri *= current_vpio.objMatrix;
     // -- World Space
     current_vpio.tri *= viewMatrix;
     // -- View Space

@@ -210,7 +210,7 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
             return;
         }
         SetZ( x, y, current_depth );
-        w_window->drawPixel( x, y, *current_vpoo.colour );
+        w_window->drawPixel( x, y, current_vpoo.colour );
     }
 }
 

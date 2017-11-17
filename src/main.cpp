@@ -227,7 +227,7 @@ void demo_rasteriser( Window *window )
 
         if ( !ignoreZBuffer )
         {
-            render->DrawFarPlane();
+//            render->DrawFarPlane();
 //            render->DrawNearPlane();
         }
 

@@ -30,7 +30,6 @@ class VertexProcessor
         void ClipTriangle( const VPIO& current_vpio, std::vector< Vertexf >& result_vertices );
         void ClipPolygonAxis( std::vector<Vertexf>& vertices, uint_fast8_t componentIndex );
         void ClipPolygonComponent( const std::vector<Vertexf>& vertices, uint_fast8_t componentIndex, float componentFactor, std::vector<Vertexf>& result );
-        //std::array< Vertexf, 3 > toModelViewTranslation ( Vertexf vert1, Vertexf vert2, Vertexf vert3 );
 };
 
 #endif // VERTEXPROCESSOR_H

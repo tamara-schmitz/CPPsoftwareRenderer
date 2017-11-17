@@ -131,11 +131,11 @@ void Renderer::FillTriangle( Triangle tris )
 {
     if ( drawWithTexture )
     {
-        in_vpios->push( VPIO( tris, objMatrix, current_texture ) );
+        in_vpios->push( VPIO( tris, *objMatrix, current_texture ) );
     }
     else
     {
-        in_vpios->push( VPIO( tris, objMatrix, current_colour ) );
+        in_vpios->push( VPIO( tris, *objMatrix, *current_colour ) );
     }
 }
 
@@ -230,8 +230,8 @@ void Renderer::DrawDebugPlane( float z_value )
     bool tri1_handedness = triangleArea< float >( tri1.verts[0].posVec, tri1.verts[1].posVec, tri1.verts[2].posVec ) < 0;
     bool tri2_handedness = triangleArea< float >( tri2.verts[0].posVec, tri2.verts[1].posVec, tri2.verts[2].posVec ) < 0;
 
-    out_vpoos->push_back( VPOO( tri1.verts[0], tri1.verts[1], tri1.verts[2], tri1_handedness, colour ) );
-    out_vpoos->push_back( VPOO( tri2.verts[0], tri2.verts[1], tri2.verts[2], tri2_handedness, colour ) );
+    out_vpoos->push_back( VPOO( tri1.verts[0], tri1.verts[1], tri1.verts[2], tri1_handedness, *colour ) );
+    out_vpoos->push_back( VPOO( tri2.verts[0], tri2.verts[1], tri2.verts[2], tri2_handedness, *colour ) );
 }
 
 Renderer::~Renderer()

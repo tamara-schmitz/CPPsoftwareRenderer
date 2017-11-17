@@ -15,9 +15,9 @@ struct VertexProcessorInputObject
     Triangle tri;
     bool isEmpty = true;
 
-    shared_ptr< Matrix4f > objMatrix;
+    Matrix4f objMatrix;
     bool drawWithTexture;
-    shared_ptr< SDL_Color > colour;
+    SDL_Color colour;
     shared_ptr< Texture > texture;
 
     // ctors
@@ -27,11 +27,11 @@ struct VertexProcessorInputObject
         tri = Triangle();
 
         drawWithTexture = false;
-        colour = make_shared< SDL_Color >();
-        colour->r = colour->g = colour->b = 200;
-        colour->a = SDL_ALPHA_OPAQUE;
+        colour = SDL_Color();
+        colour.r = colour.g = colour.b = 200;
+        colour.a = SDL_ALPHA_OPAQUE;
     }
-    VertexProcessorInputObject( const Triangle& triangle, const shared_ptr< Matrix4f >& objMatrix, const shared_ptr< SDL_Color >& colour )
+    VertexProcessorInputObject( const Triangle& triangle, const Matrix4f& objMatrix, const SDL_Color& colour )
     {
         isEmpty = false;
         tri = triangle;
@@ -40,7 +40,7 @@ struct VertexProcessorInputObject
         drawWithTexture = false;
         this->colour = colour;
     }
-    VertexProcessorInputObject( const Triangle& triangle, const shared_ptr< Matrix4f >& objMatrix, const shared_ptr< Texture >& texture )
+    VertexProcessorInputObject( const Triangle& triangle, const Matrix4f& objMatrix, const shared_ptr< Texture >& texture )
     {
         isEmpty = false;
         tri = triangle;
@@ -66,7 +66,7 @@ struct VertexProcessorOutputObject
     bool isRightHanded;
 
     bool drawWithTexture;
-    shared_ptr< SDL_Color > colour;
+    SDL_Color colour;
     shared_ptr< Texture > texture;
 
     // ctors
@@ -76,12 +76,12 @@ struct VertexProcessorOutputObject
         isRightHanded = false;
 
         drawWithTexture = false;
-        colour = shared_ptr< SDL_Color >( new SDL_Color() );
-        colour->r = colour->g = colour->b = 200;
-        colour->a = SDL_ALPHA_OPAQUE;
+        colour = SDL_Color();
+        colour.r = colour.g = colour.b = 200;
+        colour.a = SDL_ALPHA_OPAQUE;
     }
     VertexProcessorOutputObject( const Vertexf& vertMin, const Vertexf& vertMid,
-                                 const Vertexf& vertMax, bool isRightHanded, const shared_ptr< SDL_Color >& colour )
+                                 const Vertexf& vertMax, bool isRightHanded, const SDL_Color& colour )
     {
         tris_verts[0] = vertMin;
         tris_verts[1] = vertMid;
