@@ -33,36 +33,43 @@ bool checkQuit()
         SDL_Event e;
         while ( SDL_PollEvent( &e ) )
         {
-            if ( e.type == SDL_QUIT || e.window.event == SDL_WINDOWEVENT_CLOSE )
+            if ( e.type == SDL_QUIT )
             {
                 cout << "SDL QUIT EVENT!" << endl;
                 return true;
             }
 
-            if ( e.window.event == SDL_WINDOWEVENT_HIDDEN || e.window.event == SDL_WINDOWEVENT_MINIMIZED )
-            {
-                cout << "PAUSING EXECUTION!" << endl;
-
-                bool pause = true;
-                while ( pause )
+            if ( e.type == SDL_WINDOWEVENT )
+	    {
+                if ( e.window.event == SDL_WINDOWEVENT_CLOSE )
                 {
-                    SDL_Delay( 10 );
-                    while ( SDL_WaitEvent( &e ) )
+                    cout << "SDL WINDOW CLOSE!" << endl;
+                    return true;
+                }
+                if ( e.window.event == SDL_WINDOWEVENT_HIDDEN || e.window.event == SDL_WINDOWEVENT_MINIMIZED )
+                {
+                    cout << "PAUSING EXECUTION!" << endl;
+
+                    bool pause = true;
+                    while ( pause )
                     {
-                        if ( e.window.event == SDL_WINDOWEVENT_SHOWN ||
-                             e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ||
-                             e.window.event == SDL_WINDOWEVENT_EXPOSED )
+                        SDL_Delay( 10 );
+                        while ( SDL_WaitEvent( &e ) )
                         {
-                            pause = false;
-                            cout << "CONTINUING EXECUTION!" << endl;
-                            return false;
+                            if ( e.window.event == SDL_WINDOWEVENT_SHOWN ||
+                                 e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ||
+                                 e.window.event == SDL_WINDOWEVENT_EXPOSED )
+                            {
+                                pause = false;
+                                cout << "CONTINUING EXECUTION!" << endl;
+                                return false;
+                            }
                         }
                     }
                 }
             }
         }
     }
-
     return false;
 }
 
@@ -193,8 +200,8 @@ void demo_rasteriser( Window *window )
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     auto bmpTexture = make_shared<Texture>( "examples/tree.bmp" );
     auto sphereModel = make_shared<Mesh>( "examples/sphere.obj" );
-    auto chaletTexture = make_shared<Texture>( "examples/chalet.bmp" );
-    auto chaletModel = make_shared<Mesh>( "examples/chalet.obj" );
+    //auto chaletTexture = make_shared<Texture>( "examples/chalet.bmp" );
+    //auto chaletModel = make_shared<Mesh>( "examples/chalet.obj" );
 
     float absoluteRotation = 0.0f;
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 0, 90 );
@@ -238,10 +245,10 @@ void demo_rasteriser( Window *window )
 
         tris *= rotationMatrix;
 
-        /* if ( printDebug )
+        if ( printDebug )
         {
             cout << "v1 - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
-        } */
+        }
 
         // draw triangle
         render->SetDrawTexture( bmpTexture );
@@ -252,8 +259,8 @@ void demo_rasteriser( Window *window )
         objMatrix_mesh = Matrix4f::createTranslation( 0, 2.5f * sin( 0.01f * absoluteRotation ), .25f * sin( 0.01f * absoluteRotation ) ) * Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
         render->SetObjectToWorldMatrix( objMatrix_mesh );
         render->DrawMesh( sphereModel );
-        render->SetDrawTexture( chaletTexture );
-//        render->DrawMesh( chaletModel );
+        //render->SetDrawTexture( chaletTexture );
+        //render->DrawMesh( chaletModel );
 
         render->WaitUntilFinished();
         window->updateWindow();
@@ -318,7 +325,7 @@ int main( int argc, char* argv[] )
         ignoreZBuffer = ignoreZ.getValue();
 
         // create window and run demos
-        window = new Window( 1024, 768, 1, "Software Renderer", 120 );
+        window = new Window( 1024, 768, 1, "Software Renderer", 30 );
         window->timer.SetDeltaLimits( (1.0/20.0) * 1000 ); // delta time >= 20 FPS
 
         // --switch between demos

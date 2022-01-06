@@ -41,7 +41,7 @@ Window::Window( int width, int height, double scale, std::string title, double f
         }
         SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
         SDL_RenderSetLogicalSize( r_renderer, r_width, r_height );
-        SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ); // hint better texture scaling
+        SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "0" ); // hint nearest pixel texture scaling
 
         // Create Texture for Pixelaccess
         r_ptexture = SDL_CreateTexture( r_renderer,
