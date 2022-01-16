@@ -1,6 +1,6 @@
 #include "vertexprocessor.h"
 
-VertexProcessor::VertexProcessor( shared_ptr< SafeQueue< VPIO > > in, shared_ptr< SafeDynArray< VPOO > > out )
+VertexProcessor::VertexProcessor( shared_ptr< SafeDeque< VPIO > > in, shared_ptr< SafeDeque< VPOO > > out )
 {
     this->in_vpios = in;
     this->output_vpoos = out;
@@ -15,12 +15,33 @@ void VertexProcessor::ProcessQueue()
     {
         queue_not_empty = in_vpios->pop( current_vpio );
         if ( queue_not_empty )
-	{
-            ProcessTriangle( current_vpio );
+        {
+            if ( current_vpio.mesh != nullptr )
+            {
+                ProcessMesh( current_vpio );
+            }
+            else {
+                ProcessTriangle( current_vpio );
+            }
             processedVPIOs_count++;
 	}
 
     } while ( queue_not_empty );
+}
+
+__attribute__((target_clones("avx2","arch=westmere","default")))
+void VertexProcessor::ProcessMesh( VPIO& current_vpio )
+{
+    if ( current_vpio.isEmpty )
+        return;
+
+    // calculate mesh matrix
+    Matrix4f transMatrix = perspMatrix * viewMatrix * current_vpio.objMatrix;
+
+    for ( Uint32 i = 0; i < current_vpio.mesh->GetTriangleCount(); i++ )
+    {
+        ProcessTriangle( current_vpio.mesh->GetTriangle( i ), transMatrix, current_vpio.colour, current_vpio.texture );
+    }
 }
 
 __attribute__((target_clones("avx2","arch=westmere","default")))
@@ -33,22 +54,26 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
     if ( current_vpio.isEmpty )
         return;
 
-    // -- Object Space
-    current_vpio.tri *= current_vpio.objMatrix;
-    // -- World Space
-    current_vpio.tri *= viewMatrix;
-    // -- View Space
-    current_vpio.tri *= perspMatrix;
-    // -- Perspective Space
-    std::vector< Vertexf > tri_vertices = { current_vpio.tri.verts[0], current_vpio.tri.verts[1], current_vpio.tri.verts[2] };
+    Matrix4f matrix = perspMatrix * viewMatrix * Matrix4f(current_vpio.objMatrix); // -- to World Space
+    
+    ProcessTriangle( current_vpio.tri, matrix, current_vpio.colour, current_vpio.texture );
+}
+
+__attribute__((target_clones("avx2","arch=westmere","default")))
+void VertexProcessor::ProcessTriangle( const Triangle& tri, const Matrix4f& mat, SDL_Color colour, shared_ptr< Texture > tex )
+{
+    std::vector< Vertexf > tri_verts = { tri.verts[0], tri.verts[1], tri.verts[2] };
+    tri_verts[0].posVec = mat * tri_verts[0].posVec;
+    tri_verts[1].posVec = mat * tri_verts[1].posVec;
+    tri_verts[2].posVec = mat * tri_verts[2].posVec;
    
     // cull triangle earlier if all posVec.w are outside of frustum
     bool cull_early = true;
-    for ( uint_fast8_t i = 0; i < tri_vertices.size(); i++ )
+    for ( uint_fast8_t i = 0; i < 3; i++ )
     {
-        if ( abs( tri_vertices.at( i ).posVec.x ) <= abs( tri_vertices.at( i ).posVec.w ) &&
-             abs( tri_vertices.at( i ).posVec.y ) <= abs( tri_vertices.at( i ).posVec.w ) &&
-             abs( tri_vertices.at( i ).posVec.z ) <= abs( tri_vertices.at( i ).posVec.w ) )
+        if ( abs( tri_verts[i].posVec.x ) <= abs( tri_verts[i].posVec.w ) &&
+             abs( tri_verts[i].posVec.y ) <= abs( tri_verts[i].posVec.w ) &&
+             abs( tri_verts[i].posVec.z ) <= abs( tri_verts[i].posVec.w ) )
         {
             cull_early = false;
             break;
@@ -56,8 +81,8 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
     }
     if ( cull_early )
     {
-        if ( printDebug )
-            cout << "Tri was culled before vp clipping." << endl;
+        //if ( printDebug )
+        //    cout << "Tri was culled before vp clipping." << endl;
         return;
     }
     
@@ -65,11 +90,11 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
     if ( Do_VP_Clipping )
     {
         // this check ensures that triangles inside the frustum get passed through directly
-        for ( uint_fast8_t i = 0; i < tri_vertices.size(); i++ )
+        for ( uint_fast8_t i = 0; i < 3; i++ )
         {
-            if ( abs( tri_vertices.at( i ).posVec.x ) > abs( tri_vertices.at( i ).posVec.w ) ||
-                 abs( tri_vertices.at( i ).posVec.y ) > abs( tri_vertices.at( i ).posVec.w ) ||
-                 abs( tri_vertices.at( i ).posVec.z ) > abs( tri_vertices.at( i ).posVec.w ) )
+            if ( abs( tri_verts[i].posVec.x ) > abs( tri_verts[i].posVec.w ) ||
+                 abs( tri_verts[i].posVec.y ) > abs( tri_verts[i].posVec.w ) ||
+                 abs( tri_verts[i].posVec.z ) > abs( tri_verts[i].posVec.w ) )
             {
                 clipping_required = true;
                 break;
@@ -77,28 +102,28 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
         }
 
         if ( clipping_required )
-            ClipTriangle( current_vpio, tri_vertices );
+            ClipTriangle( tri_verts );
     }
 
-    if ( tri_vertices.size() <= 0 )
+    if ( tri_verts.size() <= 0 )
         return;
 
     // prepare verts for rasterisation
-    for ( uint_fast8_t i = 0; i < tri_vertices.size(); i++ )
+    for ( uint_fast8_t i = 0; i < 3; i++ )
     {
-        tri_vertices.at( i ).posVec = screenMatrix * tri_vertices.at( i ).posVec;
+        tri_verts[i].posVec = screenMatrix * tri_verts[i].posVec;
         // -- Screen Space
-        tri_vertices.at( i ).posVec.divideByWOnly();
+        tri_verts[i].posVec.divideByWOnly();
     }
 
-   // It is possible that we end up with more than 3 vertices after clipping. so we have to create more than 1 triangle. we can create these new triangles
-   // by assuming that all triangles share at least one vertices.
-   for ( uint_fast8_t i = 0; i <= tri_vertices.size() - 3; i++ )
+    // It is possible that we end up with more than 3 vertices after clipping. so we have to create more than 1 triangle. we can create these new triangles
+    // by assuming that all triangles share at least one vertices.
+    for ( uint_fast8_t i = 0; i <= tri_verts.size() - 3; i++ )
     {
         // TODO backface culling based on normal vector
 
         // calculate handedness
-        float area = triangleArea< float >( tri_vertices.at( 0 ).posVec, tri_vertices.at( i + 1 ).posVec, tri_vertices.at( i + 2 ).posVec );
+        float area = triangleArea< float >( tri_verts[0].posVec, tri_verts[i+1].posVec, tri_verts[i+2].posVec );
         // true if right handed (and hence area bigger than 0)
         bool handedness = area < 0;
 
@@ -107,27 +132,22 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
         if ( abs( area ) < 0.1 )
             continue;
         */
-
-        if ( current_vpio.drawWithTexture )
-        {
-            output_vpoos->push_back( VPOO( tri_vertices.at( 0 ), tri_vertices.at( i + 1 ), tri_vertices.at( i + 2 ),
-                                           handedness, current_vpio.texture ) );
-        }
-        else
-        {
-            output_vpoos->push_back( VPOO( tri_vertices.at( 0 ), tri_vertices.at( i + 1 ), tri_vertices.at( i + 2 ),
-                                           handedness, current_vpio.colour ) );
-        }
+        
+        VPOO vpoo = VPOO( tri_verts[i], tri_verts[i+1], tri_verts[i+2],
+                                           handedness, tex );
+        output_vpoos->push_back( vpoo );
     }
 }
 
-void VertexProcessor::ClipTriangle( const VPIO& current_vpio, std::vector< Vertexf >& result_vertices )
+__attribute__((target_clones("avx2","arch=westmere","default")))
+void VertexProcessor::ClipTriangle( std::vector< Vertexf >& result_vertices )
 {
     ClipPolygonAxis( result_vertices, 0);
     ClipPolygonAxis( result_vertices, 1);
     ClipPolygonAxis( result_vertices, 2);
 }
 
+__attribute__((target_clones("avx2","arch=westmere","default")))
 void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, uint_fast8_t componentIndex )
 {
     // clips all vertices of a certain axis. results overwrite existing vertices

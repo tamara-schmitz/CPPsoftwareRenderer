@@ -35,6 +35,7 @@ extern bool headlessMode;
 extern bool testMode;
 extern bool slowRendering;
 extern bool ignoreZBuffer;
+extern bool nearestFilter;
 extern bool Do_VP_Clipping;
 
 // SDL specific functions

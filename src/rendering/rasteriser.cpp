@@ -1,46 +1,78 @@
 #include "rasteriser.h"
 
-Rasteriser::Rasteriser( shared_ptr< SafeDynArray< VPOO > > in, Window* window, shared_ptr< std::vector< float > > z_buffer,
+Rasteriser::Rasteriser( shared_ptr< SafeDeque< VPOO > > in, Window* window, shared_ptr<SDL_Surface> surface,
                         const Uint16& y_begin, Uint16& y_end )
 {
     //ctor
     this->in_vpoos = in;
     this->w_window = window;
-    this->z_buffer = z_buffer;
+    this->framebuffer = surface;
+    this->pixels_raw = (Uint32*) surface->pixels;
     this->y_begin = y_begin;
     this->y_end   = y_end;
+
+    // init z_buffer
+    size_t zemptysize = w_window->Getwidth() * w_window->Getheight();
+    z_buffer_empty.resize( zemptysize );
+    z_buffer_empty.shrink_to_fit();
+    for ( Uint32 i = 0; i < zemptysize; i++ )
+    {
+        z_buffer_empty.at( i ) = std::numeric_limits< float >::max();
+    }
+    z_buffer = z_buffer_empty;
+ 
+}
+
+void Rasteriser::initFramebuffer()
+{
+    if (SDL_LockSurface(framebuffer.get() ) )
+        cout << "Could not lock rasteriser surface! " << SDL_GetError() << endl;
+
+    // clearing
+    z_buffer = z_buffer_empty;
+    const SDL_Color clear_colour = { 0, 0, 0, 0 };
+    SDL_FillRect( framebuffer.get(), 0, getPixelFor_SDLColor( &clear_colour ) );
+}
+
+void Rasteriser::finaliseFrame()
+{
+    SDL_UnlockSurface( framebuffer.get() );
 }
 
 void Rasteriser::ProcessVPOOArray()
 {
+    initFramebuffer();
+
     int i = 0;
 
-    while ( !in_vpoos->isLast( i ) )
+    while ( !in_vpoos->isLast( i-1 ) )
     {
-        current_vpoo = in_vpoos->at( i );
+        current_vpoo = in_vpoos->at(i);
         ProcessCurrentVPOO();
         i++;
     }
+
+    finaliseFrame();
 }
 
 float Rasteriser::GetZ( const Uint32& index ) const
 {
-    if ( index < y_begin * w_window->Getwidth() || index >= y_end * w_window->Getwidth() )
+    if ( index < 0 || index >= (y_end-y_begin) * w_window->Getwidth() )
     {
-//        throw std::out_of_range( "Illegal z_buffer read in Rasteriser." );
+        throw std::out_of_range( "Illegal z_buffer read in Rasteriser." );
         return 0;
     }
-    return z_buffer->at( index );
+    return z_buffer[ index ];
 }
 
 void Rasteriser::SetZ( const Uint32& index, const float& z_value )
 {
-    if ( index < y_begin * w_window->Getwidth() || index >= y_end * w_window->Getwidth() )
+    if ( index < 0 || index >= (y_end-y_begin) * w_window->Getwidth() )
     {
-//        throw std::out_of_range( "Illegal z_buffer write in Rasteriser." );
+        throw std::out_of_range( "Illegal z_buffer write in Rasteriser." );
         return;
     }
-    z_buffer->at( index ) = z_value;
+    z_buffer[ index ] = z_value;
 }
 
 
@@ -65,8 +97,8 @@ void Rasteriser::ScanEdges( Edgef& a, Edgef& b, bool isRightHanded )
     // Scans triangle edges by iterating over each line.
     // Edges keep track of texcoords and slope
 
-    Edgef& left  = isRightHanded || b.GetCurrentX() < a.GetCurrentX() ? b : a;
-    Edgef& right = isRightHanded || b.GetCurrentX() < a.GetCurrentX() ? a : b;
+    Edgef& left  = ( isRightHanded || b.GetCurrentX() < a.GetCurrentX() ) ? b : a;
+    Edgef& right = ( isRightHanded || b.GetCurrentX() < a.GetCurrentX() ) ? a : b;
 //    Edgef& left  = isRightHanded ? b : a;
 //    Edgef& right = isRightHanded ? a : b;
 
@@ -99,8 +131,6 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     // stop here if both x are exactly the same
     if ( xDist == 0 )
     {
-        if ( printDebug )
-	    cout << "Scanline had xDist of 0!" << endl;
         return;
     }
 
@@ -131,7 +161,7 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     // loop through each x and draw pixel, clip ensures that pixels outside of screen are not iterated over
     for ( int x = clipNumber( xMin , 0, (int) w_window->Getwidth() ); x < clipNumber( xMax , xMin, (int) w_window->Getwidth() ); x++ )
     {
-        if ( current_vpoo.drawWithTexture )
+        if ( current_vpoo.texture != nullptr )
         {
             float z = 1.0f / current_oneOverZ;
 
@@ -163,12 +193,11 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     }
 }
 
+__attribute__((target_clones("avx2","arch=westmere","default")))
 void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 texcoordX, Uint16 texcoordY )
 {
-    if ( !current_vpoo.drawWithTexture )
-    {
-        throw std::runtime_error( "WARNING: Attempting to draw fragment with texcoords although draw with no texture was defined!" );
-    }
+    // convert from final framebuffer to subbuffer
+    y -= y_begin;
 
     // depth test
 //    if ( ignoreZBuffer || ( current_depth <= GetZ( x * y ) && current_depth >= near_z && current_depth <= far_z ) )
@@ -178,23 +207,22 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 t
 //        {
 //            cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
 //        }
-        if ( y < y_begin || y > y_end )
+        if ( y < 0 || y > y_end-y_begin )
         {
             throw std::out_of_range( "Illegal pixel write in Rasteriser." );
             return;
         }
         SetZ( x, y, current_depth );
-        w_window->drawPixel( x, y,
-                             current_vpoo.texture->GetPixel( texcoordX, texcoordY ) );
+        int offset = y * w_window->Getwidth() + x;
+        pixels_raw[ offset ] = getPixelFor_SDLColor( current_vpoo.texture->GetPixel( texcoordX, texcoordY ) );
     }
 }
 
+__attribute__((target_clones("avx2","arch=westmere","default")))
 void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
 {
-    if ( current_vpoo.drawWithTexture )
-    {
-        throw std::runtime_error( "WARNING: Attempting to draw fragment without texcoords although drawWithTexture was set!" );
-    }
+    // convert from final framebuffer to subbuffer
+    y -= y_begin;
 
     // depth test
 //    if ( ignoreZBuffer || ( current_depth <= GetZ( x, y ) && current_depth >= near_z && current_depth <= far_z ) )
@@ -202,21 +230,24 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
     {
 //        if ( printDebug )
 //        {
-//        cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
+//            cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
 //        }
-        if ( y < y_begin || y > y_end )
+        if ( y < 0 || y > y_end-y_begin )
         {
             throw std::out_of_range( "Illegal pixel write in Rasteriser." );
             return;
         }
         SetZ( x, y, current_depth );
-        w_window->drawPixel( x, y, current_vpoo.colour );
+        int offset = y * framebuffer->pitch + x;
+        pixels_raw[ offset ] = getPixelFor_SDLColor( &current_vpoo.colour );
     }
 }
 
 Rasteriser::~Rasteriser()
 {
     //dtor
+
+    //SDL_FreeSurface( framebuffer.get() );
 
     if ( printDebug )
     {

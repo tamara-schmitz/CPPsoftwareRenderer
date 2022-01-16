@@ -139,7 +139,7 @@ void ScanRenderer::DrawLine( Vector2f yMinVert, Vector2f yMaxVert, bool isMinX )
 }
 
 
-void ScanRenderer::FillShape( int yMin, int yMax, SDL_Color color )
+void ScanRenderer::FillShape( int yMin, int yMax, SDL_Color* color )
 {
     yMin = clipNumber( yMin, 0, w_height );
     yMax = clipNumber( yMax, 0, w_height );
@@ -193,7 +193,7 @@ void ScanRenderer::DrawTriangle( Vector2f yMinVert, Vector2f yMidVert,
     DrawLine( yMidVert, yMaxVert, !rightHanded );
 }
 
-void ScanRenderer::FillTriangle( Vector2f v1, Vector2f v2, Vector2f v3, SDL_Color color )
+void ScanRenderer::FillTriangle( Vector2f v1, Vector2f v2, Vector2f v3, SDL_Color* color )
 {
     // set up alias for input vectors
     Vector2f& yMinVert = v1;
@@ -230,7 +230,7 @@ void ScanRenderer::FillTriangle( Vector2f v1, Vector2f v2, Vector2f v3, SDL_Colo
     FillShape( std::ceil(yMinVert.y), std::ceil(yMaxVert.y), color );
 }
 
-void ScanRenderer::FillTriangle( Vector4f v1, Vector4f v2, Vector4f v3, SDL_Color color )
+void ScanRenderer::FillTriangle( Vector4f v1, Vector4f v2, Vector4f v3, SDL_Color* color )
 {
     // get Vector4s and apply screenspace transformation
     Vector2f yMinVert = ( vpMatrix * v1 ).screenspaceVec3( w_halfwidth, w_halfheight ).xy();

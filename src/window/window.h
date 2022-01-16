@@ -29,9 +29,11 @@ class Window
         Timer timer;
 
         // Render functions
+        void drawSurface( SDL_Surface* surface, const SDL_Rect* dstrect );
+        void drawPixel( int x, int y, const SDL_Color* color );
+        void drawPixel( int x, int y, const SDL_Color& color );
         void reserveAddLines( Uint64 amount ); // reserves specified amount of lines (in addition to current reservation)
-        void drawPixel( int x, int y, SDL_Color color );
-        void drawLine( SDL_Point p1, SDL_Point p2, SDL_Color color );
+        void drawLine( SDL_Point p1, SDL_Point p2, SDL_Color* color );
         void updateWindow();
         void clearBuffers();
 
@@ -54,7 +56,7 @@ class Window
 
         // Pixel access pointers
         Uint32 *pixels_direct = nullptr;
-        Uint32 *null_pixels;
+        unique_ptr< Uint32[] >null_pixels = nullptr;
 
         // Line vectors
         std::vector< SDL_Point > line_points;

@@ -8,6 +8,7 @@ class Triangle
 {
     public:
         Triangle(); // init triangle with "empty" vertices
+        Triangle( const Triangle& t );
         Triangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 ); // copy 3 vertices
         Triangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3, const Vector3f& normal ); // copy 3 vertices
         virtual ~Triangle();

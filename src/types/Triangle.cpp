@@ -11,15 +11,14 @@ Triangle::Triangle()
     verts[0] = Vertexf();
     verts[1] = Vertexf();
     verts[2] = Vertexf();
+}
 
-    // reset each of them to default values
-    for ( Vertexf& vv : verts )
-    {
-        // reset posVec
-        vv.posVec.x = vv.posVec.y = vv.posVec.z = vv.posVec.w = 0;
-        // reset texVec
-        vv.texVec.x = vv.texVec.y = 0;
-    }
+Triangle::Triangle( const Triangle& t )
+{
+    verts[0] = Vertexf(t.verts[0]);
+    verts[1] = Vertexf(t.verts[1]);
+    verts[2] = Vertexf(t.verts[2]);
+    normal_vec = Vector3f(t.normal_vec);
 }
 
 Triangle::Triangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 )

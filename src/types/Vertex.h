@@ -8,15 +8,19 @@
 template< typename T >
 struct Vertex
 {
-    Vector4<T> posVec;
-    Vector2<T> texVec;
+    Vector4<T> posVec = Vector4<T>();
+    Vector2<T> texVec = Vector2<T>();
 
-    // ctor that inits with 0
     Vertex()
     {
-        posVec.x = posVec.y = posVec.z = 0;
-        posVec.w = 1;
-        texVec.x = texVec.y = 0;
+        posVec = Vector4<T>();
+        texVec = Vector2<T>();
+    }
+    
+    Vertex( const Vertex& v )
+    {
+        posVec =  Vector4<T>(v.posVec);
+        texVec = Vector2<T>(v.texVec);
     }
 
     Vertex& lerp( Vertex other, T lerpamount )

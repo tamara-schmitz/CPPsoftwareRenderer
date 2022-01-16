@@ -6,8 +6,7 @@
 #include "types/Triangle.h"
 #include "types/Mesh.h"
 #include "types/Texture.h"
-#include "types/SafeQueue.h"
-#include "types/SafeDynArray.h"
+#include "types/SafeDeque.h"
 #include "types/VertexProcessorObjs.h"
 #include "rendering/vertexprocessor.h"
 #include "rendering/rasteriser.h"
@@ -31,7 +30,8 @@ class Renderer
 
         // render functions
         void ClearBuffers();
-        void DrawMesh( shared_ptr<Mesh> mesh );
+        void DrawMesh( const Matrix4f& objMat, shared_ptr<Mesh> mesh, const SDL_Color& colour);
+        void DrawMesh( const Matrix4f& objMat, shared_ptr<Mesh> mesh, shared_ptr< Texture >& texture);
         void FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 );
         void FillTriangle( Triangle tris );
 	void InitiateRendering();
@@ -44,16 +44,14 @@ class Renderer
     private:
         Window* w_window;
         bool drawWithTexture = false; // determines whether a texture or a colour should be drawn
-        shared_ptr< SDL_Color > current_colour;
-        shared_ptr< Texture > current_texture;
+        shared_ptr< SDL_Color > current_colour = make_shared< SDL_Color >();
+        shared_ptr< Texture > current_texture = make_shared< Texture >();
 
         float near_z = 0;
         float far_z  = 1;
 
-        shared_ptr< SafeQueue< VPIO > > in_vpios;
-        shared_ptr< SafeDynArray< VPOO > > out_vpoos;
-        shared_ptr< std::vector< float > > z_buffer;
-        std::vector< float > z_buffer_empty;
+        shared_ptr< SafeDeque< VPIO > > in_vpios;
+        shared_ptr< SafeDeque< VPOO > > out_vpoos;
 
         std::vector< shared_ptr< std::thread > > vp_threads;
         std::vector< shared_ptr< std::thread > > rast_threads;
@@ -61,8 +59,7 @@ class Renderer
         std::vector< shared_ptr< Rasteriser > > rasterisers;
 
         shared_ptr< Matrix4f > objMatrix = make_shared< Matrix4f >();
-        Matrix4f viewMatrix, perspMatrix, screenMatrix;
-        Matrix4f perspScreenMatrix;
+        Matrix4f viewMatrix = Matrix4f(), perspMatrix = Matrix4f(), screenMatrix = Matrix4f();
 
         void DrawDebugPlane( float z_value );
 };

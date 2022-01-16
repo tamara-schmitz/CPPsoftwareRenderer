@@ -6,17 +6,8 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
     SetPerspectiveToScreenSpaceMatrix();
 
     // init vars with defaults
-    in_vpios = make_shared< SafeQueue< VPIO > >();
-    out_vpoos = make_shared< SafeDynArray< VPOO > >();
-    z_buffer = make_shared< std::vector< float > >();
-
-    z_buffer_empty.resize( w_window->Getwidth() * w_window->Getheight() );
-    z_buffer_empty.shrink_to_fit();
-    for ( Uint32 i = 0; i < w_window->Getwidth() * w_window->Getheight(); i++ )
-    {
-        z_buffer_empty.at( i ) = std::numeric_limits< float >::max();
-    }
-    *z_buffer = z_buffer_empty;
+    in_vpios = make_shared< SafeDeque< VPIO > >();
+    out_vpoos = make_shared< SafeDeque< VPOO > >();
 
     // create workers (vps and rasterisers)
     for ( Uint8 i = 0; i < vp_thread_count; i++ )
@@ -29,10 +20,11 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
     if ( printDebug )
         cout << "Spawned " << vertex_processors.size() << " vertex processing threads." << endl;
 
-    // For the rasterisers we split the rendering surface vertically into even parts that do not overlap. All rasterisers write to the same framebuffer and z_buffer without any locking mechanism in place which requires some extra check to prevent interference with other threads.
+    // For the rasterisers we split the rendering surface vertically into even parts that do not overlap. Each one has their own SDL_Surface.
     float y_count = 0;
     float y_incre = (float) (w_window->Getheight() - 1) / (float) raster_thread_count;
     for ( Uint8 i = 0; i < raster_thread_count; i++ )
+    //for ( Uint8 i = 0; i < 1; i++ )
     {
         Uint16 y_begin;
         if ( y_count > 0 && y_count == (float) y_count )
@@ -41,8 +33,18 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
             y_begin = std::ceil( y_count );
         y_count += y_incre;
         Uint16 y_end   = std::floor( y_count );
-
-        rasterisers.push_back( make_shared< Rasteriser >( out_vpoos, w_window, z_buffer, y_begin, y_end ) );
+    
+        SDL_Surface* new_surface = SDL_CreateRGBSurfaceWithFormat(0, w_window->Getwidth(), y_end - y_begin, 32, SDL_PIXELFORMAT_ARGB8888);
+        SDL_SetSurfaceRLE( new_surface, 0 ); // disable hw acceleration
+        if ( new_surface == nullptr )
+        {
+            cout << "Could not create rasteriser surface! " << SDL_GetError() << endl;
+        }
+        else
+        {
+            rasterisers.push_back( make_shared< Rasteriser >( out_vpoos, w_window, shared_ptr< SDL_Surface >(new_surface), y_begin, y_end ) );
+            cout << "Rasteriser " << i << " has y_begin " << y_begin << " and y_end " << y_end << endl;
+        }
     }
 
     if ( printDebug )
@@ -67,12 +69,10 @@ void Renderer::SetViewToPerspectiveMatrix( const float &fov, const float &zNear,
     near_z = zNear;
     far_z  = zFar;
     perspMatrix = Matrix4f::perspectiveTransform( fov, (float) w_window->Getwidth() / (float) w_window->Getheight(), zNear, zFar );
-    perspScreenMatrix = screenMatrix * perspMatrix;
 
     for ( Uint32 i = 0; i < vertex_processors.size(); i++ )
     {
         vertex_processors[i]->perspMatrix = perspMatrix;
-        vertex_processors[i]->perspScreenMatrix = perspScreenMatrix;
     }
     for ( Uint32 i = 0; i < rasterisers.size(); i++ )
     {
@@ -83,12 +83,10 @@ void Renderer::SetViewToPerspectiveMatrix( const float &fov, const float &zNear,
 void Renderer::SetPerspectiveToScreenSpaceMatrix()
 {
     screenMatrix = Matrix4f::screenspaceTransform( w_window->Getwidth() / 2.0f, w_window->Getheight() / 2.0f );;
-    perspScreenMatrix = screenMatrix * perspMatrix;
 
     for ( Uint32 i = 0; i < vertex_processors.size(); i++ )
     {
         vertex_processors[i]->screenMatrix = screenMatrix;
-        vertex_processors[i]->perspScreenMatrix = perspScreenMatrix;
     }
 }
 
@@ -109,16 +107,18 @@ void Renderer::ClearBuffers()
 {
     in_vpios->clear();
     out_vpoos->clear();
-    *z_buffer = z_buffer_empty;
 }
 
-void Renderer::DrawMesh( shared_ptr<Mesh> mesh )
+void Renderer::DrawMesh( const Matrix4f& objMat, shared_ptr<Mesh> mesh, shared_ptr< Texture >& texture)
 {
-    // iterate over each triangle
-    for ( Uint32 i = 0; i < mesh->GetTriangleCount(); i++ )
-    {
-        FillTriangle( mesh->GetTriangle( i ) );
-    }
+    VPIO vpio = VPIO( mesh, objMat, texture );
+    in_vpios->push_back( vpio );
+}
+
+void Renderer::DrawMesh( const Matrix4f& objMat, shared_ptr<Mesh> mesh, const SDL_Color& colour)
+{
+    VPIO vpio = VPIO( mesh, objMat, colour );
+    in_vpios->push_back( vpio );
 }
 
 void Renderer::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 )
@@ -131,11 +131,13 @@ void Renderer::FillTriangle( Triangle tris )
 {
     if ( drawWithTexture )
     {
-        in_vpios->push( VPIO( tris, *objMatrix, current_texture ) );
+        VPIO vpio = VPIO( tris, *objMatrix, current_texture );
+        in_vpios->push_back( vpio );
     }
     else
     {
-        in_vpios->push( VPIO( tris, *objMatrix, *current_colour ) );
+        VPIO vpio = VPIO( tris, *objMatrix, *current_colour );
+        in_vpios->push_back( vpio );
     }
 }
 
@@ -161,31 +163,50 @@ void Renderer::WaitUntilFinished()
 
 
     // TODO turn this into a thread.join() at some point
-    in_vpios->block_new();
-//    assert( vertex_processors.size() == vp_threads.size() );
 
-    int i = 0; // tracks vertex_processor processed in queue.
+    // Wait for vertex processors
+    in_vpios->block_new();
+    int i_vp = 0; // tracks vertex_processor processed in queue.
     for ( auto it = vp_threads.begin(); it != vp_threads.end(); )
     {
         vp_threads[0]->join(); // always 0 because we empty the queue and never skip an elemen
-	vp_threads.erase( it );
+        vp_threads.erase( it );
 
-        if ( printDebug)
-            cout << "VP " << i << " has processed a total of " << (int) vertex_processors[ i ]->GetProcessedVPIOsCount() << " VPIOs." << endl;
+        if ( printDebug )
+            cout << "VP " << i_vp << " has processed a total of " << (int) vertex_processors[ i_vp ]->GetProcessedVPIOsCount() << " VPIOs." << endl;
 
-	i++;
+        i_vp++;
     }
 
     if ( printDebug )
         cout << "out_vpoos queue size after all vps are finished: " << out_vpoos->size() << endl;
-
+    
+    // Wait for rasterisers and draw their surfaces
     out_vpoos->block_new();
+    int i_rr = 0;
     for ( auto it = rast_threads.begin(); it != rast_threads.end(); )
     {
-        rast_threads[0]->join(); // always 0 because we empty the queue and never skip an elemen
-	rast_threads.erase( it );
+        rast_threads[0]->join(); // always 0 because we empty the queue and never skip an element
+        rast_threads.erase( it );
 
-	i++;
+        Uint32* pixelss = (Uint32*) rasterisers[i_rr]->framebuffer.get()->pixels;
+        pixelss[0] = 0xff00ffff;
+        pixelss[1] = 0xff00ffff;
+        pixelss[2] = 0xff00ffff;
+        pixelss[500] = 0xff00ffff;
+        pixelss[501] = 0xff00ffff;
+        pixelss[502] = 0xff00ffff;
+
+        SDL_Rect dstrect;
+        dstrect.x = 0;
+        dstrect.y = rasterisers[i_rr]->y_begin;
+        dstrect.w = w_window->Getwidth();
+        dstrect.h = rasterisers[i_rr]->y_end - rasterisers[i_rr]->y_begin;
+        w_window->drawSurface( rasterisers[i_rr]->framebuffer.get(), &dstrect );
+
+        cout << "h " << dstrect.h << " y " << dstrect.y << endl;
+
+        i_rr++;
     }
 }
 
@@ -193,10 +214,10 @@ void Renderer::DrawDebugPlane( float z_value )
 {
     // Sorry but this is quite hacky...
 
-    shared_ptr< SDL_Color > colour = make_shared< SDL_Color >();
-    colour->r = colour->b = 255;
-    colour->g = 0;
-    colour->a = SDL_ALPHA_OPAQUE;
+    SDL_Color colour = SDL_Color();
+    colour.r = colour.b = 255;
+    colour.g = 0;
+    colour.a = SDL_ALPHA_OPAQUE;
     // Generate 2 big triangles in perspective space that cover the screen with z = far_z.
     // Then apply screenspace matrix to triangles and add to out_vpoos
     Triangle tri1, tri2;
@@ -230,8 +251,11 @@ void Renderer::DrawDebugPlane( float z_value )
     bool tri1_handedness = triangleArea< float >( tri1.verts[0].posVec, tri1.verts[1].posVec, tri1.verts[2].posVec ) < 0;
     bool tri2_handedness = triangleArea< float >( tri2.verts[0].posVec, tri2.verts[1].posVec, tri2.verts[2].posVec ) < 0;
 
-    out_vpoos->push_back( VPOO( tri1.verts[0], tri1.verts[1], tri1.verts[2], tri1_handedness, *colour ) );
-    out_vpoos->push_back( VPOO( tri2.verts[0], tri2.verts[1], tri2.verts[2], tri2_handedness, *colour ) );
+    VPOO vpoo;
+    vpoo = VPOO( tri1.verts[0], tri1.verts[1], tri1.verts[2], tri1_handedness, colour );
+    out_vpoos->push_back( vpoo );
+    vpoo = VPOO( tri2.verts[0], tri2.verts[1], tri2.verts[2], tri2_handedness, colour );
+    out_vpoos->push_back( vpoo );
 }
 
 Renderer::~Renderer()

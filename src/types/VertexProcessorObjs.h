@@ -4,6 +4,7 @@
 #include "types/Vertex.h"
 #include "types/Triangle.h"
 #include "types/Texture.h"
+#include "types/Mesh.h"
 #include "SDL2/SDL_types.h"
 
 struct VertexProcessorInputObject
@@ -12,24 +13,29 @@ struct VertexProcessorInputObject
     // triangle handedness.
     // Vertices are expected to always be sorted by their posVec.y component.
 
-    Triangle tri;
+    Triangle tri = Triangle();
+    shared_ptr< Mesh > mesh = shared_ptr< Mesh >(nullptr);
     bool isEmpty = true;
 
-    Matrix4f objMatrix;
-    bool drawWithTexture;
-    SDL_Color colour;
-    shared_ptr< Texture > texture;
+    Matrix4f objMatrix = Matrix4f();
+    SDL_Color colour = SDL_Color();
+    shared_ptr< Texture > texture = shared_ptr< Texture >(nullptr);
 
     // ctors
     VertexProcessorInputObject()
     {
         isEmpty = false;
-        tri = Triangle();
-
-        drawWithTexture = false;
         colour = SDL_Color();
         colour.r = colour.g = colour.b = 200;
         colour.a = SDL_ALPHA_OPAQUE;
+    }
+    VertexProcessorInputObject( const VertexProcessorInputObject& vpio)
+    {
+        tri = vpio.tri;
+        isEmpty = vpio.isEmpty;
+        objMatrix = vpio.objMatrix;
+        colour = vpio.colour;
+        texture = vpio.texture;
     }
     VertexProcessorInputObject( const Triangle& triangle, const Matrix4f& objMatrix, const SDL_Color& colour )
     {
@@ -37,7 +43,6 @@ struct VertexProcessorInputObject
         tri = triangle;
 
         this->objMatrix = objMatrix;
-        drawWithTexture = false;
         this->colour = colour;
     }
     VertexProcessorInputObject( const Triangle& triangle, const Matrix4f& objMatrix, const shared_ptr< Texture >& texture )
@@ -46,9 +51,26 @@ struct VertexProcessorInputObject
         tri = triangle;
 
         this->objMatrix = objMatrix;
-        drawWithTexture = true;
         this->texture = texture;
     }
+    VertexProcessorInputObject( const shared_ptr< Mesh >& mesh, const Matrix4f& objMatrix, const shared_ptr< Texture >& texture )
+    {
+        isEmpty = false;
+        this->mesh = mesh;
+
+        this->objMatrix = objMatrix;
+        this->texture = texture;
+    }
+
+    VertexProcessorInputObject( const shared_ptr< Mesh >& mesh, const Matrix4f& objMatrix, const SDL_Color& colour )
+    {
+        isEmpty = false;
+        this->mesh = mesh;
+
+        this->objMatrix = objMatrix;
+        this->colour = colour;
+    }
+  
     VertexProcessorInputObject createEmpty()
     {
         isEmpty = true;
@@ -62,21 +84,15 @@ struct VertexProcessorOutputObject
     // triangle handedness.
     // Vertices are expected to always be sorted by their posVec.y component.
 
-    Vertexf tris_verts[3];
-    bool isRightHanded;
+    Vertexf tris_verts[3] = { Vertexf(), Vertexf(), Vertexf() };
+    bool isRightHanded = false;
 
-    bool drawWithTexture;
-    SDL_Color colour;
-    shared_ptr< Texture > texture;
+    SDL_Color colour = SDL_Color();
+    shared_ptr< Texture > texture = shared_ptr< Texture >(nullptr);
 
     // ctors
     VertexProcessorOutputObject()
     {
-        tris_verts[0] = tris_verts[1] = tris_verts[2] = Vertexf();
-        isRightHanded = false;
-
-        drawWithTexture = false;
-        colour = SDL_Color();
         colour.r = colour.g = colour.b = 200;
         colour.a = SDL_ALPHA_OPAQUE;
     }
@@ -89,7 +105,6 @@ struct VertexProcessorOutputObject
         sortVertsByY();
         this->isRightHanded = isRightHanded;
 
-        drawWithTexture = false;
         this->colour = colour;
     }
     VertexProcessorOutputObject( const Vertexf& vertMin, const Vertexf& vertMid,
@@ -101,9 +116,23 @@ struct VertexProcessorOutputObject
         sortVertsByY();
         this->isRightHanded = isRightHanded;
 
-        drawWithTexture = true;
         this->texture = texture;
     }
+
+    VertexProcessorOutputObject( const Vertexf& vertMin, const Vertexf& vertMid,
+                                 const Vertexf& vertMax, bool isRightHanded,
+                                 const shared_ptr< Texture >& texture, const SDL_Color& colour )
+    {
+        tris_verts[0] = vertMin;
+        tris_verts[1] = vertMid;
+        tris_verts[2] = vertMax;
+        sortVertsByY();
+        this->isRightHanded = isRightHanded;
+
+        this->texture = texture;
+        this->colour = colour;
+    }
+
 
     void sortVertsByY()
     {

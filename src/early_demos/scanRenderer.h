@@ -18,7 +18,7 @@ class ScanRenderer
         void ClearScanBuffer();
         void UpdatePerspective( float fov, float zNear, float zFar );
         void DrawToScanBuffer( int yCoord, int xMin, int xMax );
-        void FillShape( int yMin, int yMax, SDL_Color color );
+        void FillShape( int yMin, int yMax, SDL_Color* color );
         void DrawLine( Vector2f yMinVert, Vector2f yMaxVert, bool isMinX );
         void DrawTriangle( Vector2f yMinVert,
                            Vector2f yMidVert,
@@ -27,11 +27,11 @@ class ScanRenderer
         void FillTriangle( Vector2f v1,
                            Vector2f v2,
                            Vector2f v3,
-                           SDL_Color color );
+                           SDL_Color* color );
         void FillTriangle( Vector4f v1,
                            Vector4f v2,
                            Vector4f v3,
-                           SDL_Color color );
+                           SDL_Color* color );
 
     protected:
 

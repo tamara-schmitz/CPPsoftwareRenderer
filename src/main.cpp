@@ -93,7 +93,7 @@ void demo_randomPixels( Window* window )
             color.b = rand() % 256;
             color.g = rand() % 256;
             color.r = rand() % 256;
-            window->drawPixel( x, y, color );
+            window->drawPixel( x, y, &color );
         }
 
         window->updateWindow();
@@ -176,9 +176,9 @@ void demo_shapes( Window *window )
         v3_no2 = rotationMatrix_no2 * v3_no2;
 
         // draw triangles
-        renderer->FillTriangle( v1_2d, v2_2d, v3_2d, color2D );
-        renderer->FillTriangle( v1, v2, v3, triangleColor );
-        renderer->FillTriangle( v1_no2, v2_no2, v3_no2, triangleColor2 );
+        renderer->FillTriangle( v1_2d, v2_2d, v3_2d, &color2D );
+        renderer->FillTriangle( v1, v2, v3, &triangleColor );
+        renderer->FillTriangle( v1_no2, v2_no2, v3_no2, &triangleColor2 );
 
         window->updateWindow();
         if ( printDebug )
@@ -200,8 +200,8 @@ void demo_rasteriser( Window *window )
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
     auto bmpTexture = make_shared<Texture>( "examples/tree.bmp" );
     auto sphereModel = make_shared<Mesh>( "examples/sphere.obj" );
-    //auto chaletTexture = make_shared<Texture>( "examples/chalet.bmp" );
-    //auto chaletModel = make_shared<Mesh>( "examples/chalet.obj" );
+    auto chaletTexture = make_shared<Texture>( "examples/chalet.bmp" );
+    auto chaletModel = make_shared<Mesh>( "examples/chalet.obj" );
 
     float absoluteRotation = 0.0f;
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 0, 90 );
@@ -234,8 +234,8 @@ void demo_rasteriser( Window *window )
 
         if ( !ignoreZBuffer )
         {
-//            render->DrawFarPlane();
-//            render->DrawNearPlane();
+            render->DrawFarPlane();
+            //render->DrawNearPlane();
         }
 
         // get per frame rotation factor
@@ -257,10 +257,8 @@ void demo_rasteriser( Window *window )
 
         // draw mesh
         objMatrix_mesh = Matrix4f::createTranslation( 0, 2.5f * sin( 0.01f * absoluteRotation ), .25f * sin( 0.01f * absoluteRotation ) ) * Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
-        render->SetObjectToWorldMatrix( objMatrix_mesh );
-        render->DrawMesh( sphereModel );
-        //render->SetDrawTexture( chaletTexture );
-        //render->DrawMesh( chaletModel );
+        render->DrawMesh( objMatrix_mesh, sphereModel, SDL_Colour());
+        render->DrawMesh( objMatrix_mesh, chaletModel, chaletTexture );
 
         render->WaitUntilFinished();
         window->updateWindow();
@@ -274,22 +272,29 @@ void demo_rasteriser( Window *window )
 
 void demo_DisplayTexture( Window* window )
 {
-    auto texture1 = make_shared<Texture>( "examples/tree.bmp" );
+    auto texture1 = make_unique<Texture>( "examples/tree.bmp" );
 
     // draw loop
     bool running = true;
+    Vector2f pos = Vector2f();
+    Vector2f dir = Vector2f(-3,-4);
+    float scale = 0.1f;
     while ( running )
     {
         running = !checkQuit();
 
         window->clearBuffers();
 
+        // offset per second
+        pos += dir * (5 * window->timer.GetDeltaTime() / 1000000000.0f);
+        scale += 0.15f * window->timer.GetDeltaTime() / 1000000000.0f;
+
         //draw texture
         for ( Uint16 y = 0; y < texture1->GetHeight(); y++ ) // iterate over ys
         {
             for ( Uint16 x = 0; x < texture1->GetWidth(); x++ ) // iterate over xs
             {
-                window->drawPixel( x, y, texture1->GetPixel( x, y ) );
+                window->drawPixel( roundf(pos.x + x * scale), roundf(pos.y + y * scale), texture1->GetPixel( x, y ) );
             }
         }
 
@@ -309,13 +314,17 @@ int main( int argc, char* argv[] )
     {
         // configure and parse command line arguments
         TCLAP::CmdLine cmd( "Software renderer written in C++", ' ' );
-        TCLAP::ValueArg<int> demo_index( "i", "demo-index", "Index of the demo you would like to run", false, 3, "Integer from 0 to 4" );
-        cmd.add( demo_index );
-        TCLAP::SwitchArg printDebugStuff( "v", "verbose", "Prints extra debug information in console", cmd, false );
+        TCLAP::ValueArg<int> demo_index( "i", "demo-index", "Index of the demo you would like to run", false, 3, "Integer from 0 to 4", cmd );
+        TCLAP::SwitchArg printDebugStuff( "p", "verbose", "Prints extra debug information in console", cmd, false );
         TCLAP::SwitchArg headless( "l", "headless", "Runs renderer without creating a window", cmd, false );
         TCLAP::SwitchArg testing( "t", "test-mode", "Automatically stops program execution some time", cmd, false );
-        TCLAP::SwitchArg slowRender( "s", "slow-rendering", "(demo 3 only!) Update window each time a triangle line was drawn", cmd, false );
+        TCLAP::SwitchArg slowRender( "c", "slow-rendering", "(demo 3 only!) Update window each time a triangle line was drawn", cmd, false );
         TCLAP::SwitchArg ignoreZ( "z", "ignoreZ", "(demo 3 only!) Ignore Z value stored in Z-buffer during fragment depth test", cmd, false );
+        TCLAP::ValueArg< int > framerate( "r", "framerate-limit", "Set a maximum framerate limit", false, 60, "Frames per Second", cmd );
+        TCLAP::ValueArg< int > width( "w", "width", "Set the initial window width", false, 1024, "Horizontal Pixel count", cmd);
+        TCLAP::ValueArg< int > height( "v", "vertical", "Set the initial window vertical height", false, 768, "Vertical Pixel count", cmd);
+        TCLAP::ValueArg< float > scaling( "s", "scaling", "Ratio between initial window size and render buffer. 0.5 halfs render resolution, 2.0 doubles render resolution", false, 1.0f, "Internal rendering scale factor, 1.0 is 100%", cmd );
+        TCLAP::SwitchArg nearestFiltering( "n", "nearfilter", "Determines which scaler is used when you resize the window.", cmd, false );
         cmd.parse( argc, argv );
         current_demo_index = demo_index.getValue();
         printDebug = printDebugStuff.getValue();
@@ -323,9 +332,14 @@ int main( int argc, char* argv[] )
         testMode = testing.getValue();
         slowRendering = slowRender.getValue();
         ignoreZBuffer = ignoreZ.getValue();
+        nearestFilter = nearestFiltering.getValue();
+        int fps = framerate.getValue();
+        int wwidth = width.getValue();
+        int wheight = height.getValue();
+        float rscale = scaling.getValue();
 
         // create window and run demos
-        window = new Window( 1024, 768, 1, "Software Renderer", 30 );
+        window = new Window( wwidth, wheight, rscale, "Software Renderer", fps );
         window->timer.SetDeltaLimits( (1.0/20.0) * 1000 ); // delta time >= 20 FPS
 
         // --switch between demos

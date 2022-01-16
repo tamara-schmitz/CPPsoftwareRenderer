@@ -7,6 +7,7 @@ bool headlessMode;
 bool testMode;
 bool slowRendering;
 bool ignoreZBuffer;
+bool nearestFilter;
 bool Do_VP_Clipping;
 
 bool compSDL_Color( SDL_Color c1, SDL_Color c2 )

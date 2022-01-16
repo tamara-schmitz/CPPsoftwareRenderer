@@ -85,13 +85,13 @@ void Texture::ImportFromSurface( SDL_Surface* surface )
     SDL_UnlockSurface( surface );
 }
 
-SDL_Color Texture::GetPixel( const Uint16& x, const Uint16& y ) const
+const SDL_Color* Texture::GetPixel( const Uint16& x, const Uint16& y ) const
 {
     if ( x < 0 || x >= t_width || y < 0 || y >= t_height )
     {
         throw ( std::runtime_error("Invalid coordinates for texture access!") );
     }
-    return t_pixels.at( y * t_width + x );
+    return &t_pixels.at( y * t_width + x );
 }
 
 void Texture::SetPixel( const Uint16& x, const Uint16& y, const SDL_Color& colour )
