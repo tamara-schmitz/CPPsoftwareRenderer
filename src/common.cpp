@@ -44,6 +44,17 @@ Uint32 getPixelFor_SDLColor( const SDL_Color* colour )
     return colour->a << 24 | colour->r << 16 | colour->g << 8 | colour->b;
 }
 
+SDL_Color getSDLColorFor_Pixel( const Uint32& pixel )
+{
+    SDL_Color ret = SDL_Color();
+    // assumes that pixelformat is ARGB8888
+    ret.a = pixel >> 24;
+    ret.r = pixel >> 16;
+    ret.g = pixel >> 8;
+    ret.b = pixel >> 0;
+    return ret;
+}
+
 Uint32 getPixelOn_SDLSurface(SDL_Surface* surface, Uint16 x, Uint16 y)
 {
     Uint32 offset = y * surface->w + x;

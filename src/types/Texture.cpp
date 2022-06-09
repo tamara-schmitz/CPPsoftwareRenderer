@@ -85,24 +85,25 @@ void Texture::ImportFromSurface( SDL_Surface* surface )
     SDL_UnlockSurface( surface );
 }
 
-const SDL_Color* Texture::GetPixel( const Uint16& x, const Uint16& y ) const
+const SDL_Color Texture::GetPixel( const Uint16& x, const Uint16& y ) const
 {
     if ( x < 0 || x >= t_width || y < 0 || y >= t_height )
     {
         throw ( std::runtime_error("Invalid coordinates for texture access!") );
     }
-    return &t_pixels.at( y * t_width + x );
+    return getSDLColorFor_Pixel(t_pixels.at( y * t_width + x ));
 }
 
 void Texture::SetPixel( const Uint16& x, const Uint16& y, const SDL_Color& colour )
 {
-    t_transparent = colour.a != SDL_ALPHA_OPAQUE;
+    if (colour.a != SDL_ALPHA_OPAQUE)
+        t_transparent = true;
 
     // check if not out of bounds
     if ( x >= 0 && x < GetWidth() &&
          y >= 0 && y < GetHeight() )
     {
-        t_pixels.at( y * t_width + x ) = colour;
+        t_pixels.at( y * t_width + x ) = getPixelFor_SDLColor(colour);
     }
 }
 
@@ -111,26 +112,23 @@ void Texture::FillWithRandomPixels()
     t_transparent = false;
 
     // iterate over pixels
-    for ( Uint32 i = 0; i < t_pixels.size(); i++ )
-    {
-        SDL_Color randomPixel;
-        randomPixel.a = SDL_ALPHA_OPAQUE;
-        randomPixel.r = rand() % 256;
-        randomPixel.g = rand() % 256;
-        randomPixel.b = rand() % 256;
-        t_pixels.at( i ) = randomPixel;
-    }
+    Uint32 randomPixel;
+    randomPixel = SDL_ALPHA_OPAQUE << 24;
+    randomPixel |= rand() % 16777216;
+    std::fill( t_pixels.begin(), t_pixels.end(), randomPixel );
 }
 
-void Texture::FillWithColour( SDL_Color colour )
+void Texture::FillWithColour( const SDL_Color& colour )
 {
     t_transparent = colour.a != SDL_ALPHA_OPAQUE;
 
     // iterate over pixels
-    for ( Uint32 i = 0; i < t_pixels.size(); i++ )
-    {
-        t_pixels.at( i ) = colour;
-    }
+    std::fill( t_pixels.begin(), t_pixels.end(), getPixelFor_SDLColor( colour ) );
+}
+
+void Texture::clear()
+{
+    std::fill( t_pixels.begin(), t_pixels.end(), 0 );
 }
 
 Texture::~Texture()

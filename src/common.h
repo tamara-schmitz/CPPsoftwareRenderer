@@ -42,6 +42,7 @@ extern bool Do_VP_Clipping;
 bool compSDL_Color( SDL_Color c1, SDL_Color c2 );
 bool compSDL_Point( SDL_Point p1, SDL_Point p2 );
 Uint32 getPixelFor_SDLColor( const SDL_Color* colour );
+SDL_Color getSDLColorFor_Pixel( const Uint32 pixel );
 Uint32 getPixelOn_SDLSurface( SDL_Surface *surface, Uint32 i );
 Uint32 getPixelOn_SDLSurface( SDL_Surface *surface, Uint16 x, Uint16 y );
 

@@ -45,7 +45,7 @@ class Renderer
         Window* w_window;
         bool drawWithTexture = false; // determines whether a texture or a colour should be drawn
         shared_ptr< SDL_Color > current_colour = make_shared< SDL_Color >();
-        shared_ptr< Texture > current_texture = make_shared< Texture >();
+        shared_ptr< Texture > current_texture = make_shared< Texture >(nullptr);
 
         float near_z = 0;
         float far_z  = 1;

@@ -24,7 +24,6 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
     float y_count = 0;
     float y_incre = (float) (w_window->Getheight() - 1) / (float) raster_thread_count;
     for ( Uint8 i = 0; i < raster_thread_count; i++ )
-    //for ( Uint8 i = 0; i < 1; i++ )
     {
         Uint16 y_begin;
         if ( y_count > 0 && y_count == (float) y_count )
@@ -33,18 +32,9 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
             y_begin = std::ceil( y_count );
         y_count += y_incre;
         Uint16 y_end   = std::floor( y_count );
-    
-        SDL_Surface* new_surface = SDL_CreateRGBSurfaceWithFormat(0, w_window->Getwidth(), y_end - y_begin, 32, SDL_PIXELFORMAT_ARGB8888);
-        SDL_SetSurfaceRLE( new_surface, 0 ); // disable hw acceleration
-        if ( new_surface == nullptr )
-        {
-            cout << "Could not create rasteriser surface! " << SDL_GetError() << endl;
-        }
-        else
-        {
-            rasterisers.push_back( make_shared< Rasteriser >( out_vpoos, w_window, shared_ptr< SDL_Surface >(new_surface), y_begin, y_end ) );
-            cout << "Rasteriser " << i << " has y_begin " << y_begin << " and y_end " << y_end << endl;
-        }
+
+        rasterisers.push_back( make_shared< Rasteriser >( out_vpoos, w_window, y_begin, y_end ) );
+        cout << "Rasteriser " << i << " has y_begin " << y_begin << " and y_end " << y_end << endl;
     }
 
     if ( printDebug )
@@ -189,7 +179,7 @@ void Renderer::WaitUntilFinished()
         rast_threads[0]->join(); // always 0 because we empty the queue and never skip an element
         rast_threads.erase( it );
 
-        Uint32* pixelss = (Uint32*) rasterisers[i_rr]->framebuffer.get()->pixels;
+        Uint32* pixelss = (Uint32*) rasterisers[i_rr]->r_texture->t_pixels;
         pixelss[0] = 0xff00ffff;
         pixelss[1] = 0xff00ffff;
         pixelss[2] = 0xff00ffff;
@@ -197,12 +187,9 @@ void Renderer::WaitUntilFinished()
         pixelss[501] = 0xff00ffff;
         pixelss[502] = 0xff00ffff;
 
-        SDL_Rect dstrect;
-        dstrect.x = 0;
-        dstrect.y = rasterisers[i_rr]->y_begin;
-        dstrect.w = w_window->Getwidth();
-        dstrect.h = rasterisers[i_rr]->y_end - rasterisers[i_rr]->y_begin;
-        w_window->drawSurface( rasterisers[i_rr]->framebuffer.get(), &dstrect );
+        // copy to r_texture
+        int offset = w_window->Getwidth() * rasterisers[i_rr]->y_begin;
+        std::copy( rasterisers[i_rr]->r_texture->t_pixels.begin(), rasterisers[i_rr]->r_texture->t_pixels.end(), 
 
         cout << "h " << dstrect.h << " y " << dstrect.y << endl;
 
