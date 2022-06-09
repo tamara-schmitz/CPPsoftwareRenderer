@@ -1,0 +1,10 @@
+Software Renderer:
+- Done: erstelle raw buffer pro thread der dann mit memset gecleart wird pro frame.
+- Dann Comp die in einer neuen Textures im main thread -> kopier diesen mem aus
+  threads raus
+
+rasteriser processor:
+- cache index of last vpoo
+
+    last_known_vpoo = 5
+    while (last > i || last = getXXXX )
