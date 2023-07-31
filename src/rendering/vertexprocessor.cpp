@@ -29,7 +29,7 @@ void VertexProcessor::ProcessQueue()
     } while ( queue_not_empty );
 }
 
-__attribute__((target_clones("avx2","arch=westmere","default")))
+__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ProcessMesh( VPIO& current_vpio )
 {
     if ( current_vpio.isEmpty )
@@ -44,7 +44,7 @@ void VertexProcessor::ProcessMesh( VPIO& current_vpio )
     }
 }
 
-__attribute__((target_clones("avx2","arch=westmere","default")))
+__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
 {
     // From here on current coordinate space of tri will be
@@ -59,7 +59,7 @@ void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
     ProcessTriangle( current_vpio.tri, matrix, current_vpio.colour, current_vpio.texture );
 }
 
-__attribute__((target_clones("avx2","arch=westmere","default")))
+__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ProcessTriangle( const Triangle& tri, const Matrix4f& mat, SDL_Color colour, shared_ptr< Texture > tex )
 {
     std::vector< Vertexf > tri_verts = { tri.verts[0], tri.verts[1], tri.verts[2] };
@@ -139,7 +139,7 @@ void VertexProcessor::ProcessTriangle( const Triangle& tri, const Matrix4f& mat,
     }
 }
 
-__attribute__((target_clones("avx2","arch=westmere","default")))
+__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ClipTriangle( std::vector< Vertexf >& result_vertices )
 {
     ClipPolygonAxis( result_vertices, 0);
@@ -147,7 +147,7 @@ void VertexProcessor::ClipTriangle( std::vector< Vertexf >& result_vertices )
     ClipPolygonAxis( result_vertices, 2);
 }
 
-__attribute__((target_clones("avx2","arch=westmere","default")))
+__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, uint_fast8_t componentIndex )
 {
     // clips all vertices of a certain axis. results overwrite existing vertices
@@ -163,7 +163,7 @@ void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, uint_fast
     result_temp.clear();
 }
 
-__attribute__((target_clones("avx2","arch=westmere","default")))
+__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices, uint_fast8_t componentIndex, float componentFactor, std::vector<Vertexf>& result )
 {
     // iterate over each vertex and do one dimensional lerping

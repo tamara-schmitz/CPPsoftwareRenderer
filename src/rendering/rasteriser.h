@@ -16,7 +16,7 @@ class Rasteriser
     //
     // Our fill convention is top-left (so make sure to use ceil!)
     public:
-        Rasteriser( shared_ptr< SafeDeque< VPOO > > in, const Uint16& y_begin, Uint16& y_end );
+        Rasteriser( shared_ptr< SafeDeque< VPOO > > in, const Uint16& frame_width, const Uint16& frame_height , const Uint16& y_begin, const Uint16& y_end );
         virtual ~Rasteriser();
 
         shared_ptr< std::thread > ProcessVPOOArrayAsThread() { return make_shared< std::thread >( &Rasteriser::ProcessVPOOArray, this ); }
@@ -24,8 +24,9 @@ class Rasteriser
 
         float near_z = 0, far_z = 0; // contains current near and far plane for culling
         Uint16 y_begin = 0, y_end = 0; // area in which rasteriser is supposed to draw in.
+        Uint16 frame_width = 0, frame_height = 0; // area in which rasteriser is supposed to draw in.
 
-        shared_ptr< Texture > r_texture = make_shared< Texture >();
+        shared_ptr< Texture > r_texture;
 
     private:
 

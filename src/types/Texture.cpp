@@ -103,7 +103,7 @@ void Texture::SetPixel( const Uint16& x, const Uint16& y, const SDL_Color& colou
     if ( x >= 0 && x < GetWidth() &&
          y >= 0 && y < GetHeight() )
     {
-        t_pixels.at( y * t_width + x ) = getPixelFor_SDLColor(colour);
+        t_pixels.at( y * t_width + x ) = getPixelFor_SDLColor(&colour);
     }
 }
 
@@ -123,7 +123,7 @@ void Texture::FillWithColour( const SDL_Color& colour )
     t_transparent = colour.a != SDL_ALPHA_OPAQUE;
 
     // iterate over pixels
-    std::fill( t_pixels.begin(), t_pixels.end(), getPixelFor_SDLColor( colour ) );
+    std::fill( t_pixels.begin(), t_pixels.end(), getPixelFor_SDLColor( &colour ) );
 }
 
 void Texture::clear()

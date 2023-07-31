@@ -1,12 +1,14 @@
 #include "rasteriser.h"
 
-Rasteriser::Rasteriser( shared_ptr< SafeDeque< VPOO > > in, const Uint16& y_begin, Uint16& y_end )
+Rasteriser::Rasteriser( shared_ptr< SafeDeque< VPOO > > in, const Uint16& frame_width, const Uint16& frame_height , const Uint16& y_begin, const Uint16& y_end )
 {
     //ctor
     this->in_vpoos = in;
-    this->r_texture = render_texture;
     this->y_begin = y_begin;
     this->y_end   = y_end;
+    this->frame_width = frame_width;
+    this->frame_height = frame_height;
+    this->r_texture = make_shared< Texture >(frame_width, frame_height);
 
     // init z_buffer
     size_t zsize = r_texture->GetWidth() * r_texture->GetHeight();
@@ -19,6 +21,11 @@ void Rasteriser::initFramebuffer()
     // clearing
     std::fill( z_buffer.begin(), z_buffer.end(), std::numeric_limits< float >::max() );
     r_texture->clear();
+}
+
+void Rasteriser::finaliseFrame()
+{
+    // TODO
 }
 
 void Rasteriser::ProcessVPOOArray()
@@ -86,7 +93,7 @@ void Rasteriser::ScanEdges( Edgef& a, Edgef& b, bool isRightHanded )
     }
 }
 
-__attribute__((target_clones("avx2","arch=westmere","default")))
+__attribute__((target_clones("arch=x86-64-v3","default")))
 void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCoord )
 {
     // ceil xMin and xMax for compliance with our top-left fill convention
@@ -158,7 +165,7 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     }
 }
 
-__attribute__((target_clones("avx2","arch=westmere","default")))
+__attribute__((target_clones("arch=x86-64-v3","default")))
 void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 texcoordX, Uint16 texcoordY )
 {
     // depth test
@@ -176,7 +183,7 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 t
     }
 }
 
-__attribute__((target_clones("avx2","arch=westmere","default")))
+__attribute__((target_clones("arch=x86-64-v3","default")))
 void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
 {
     // depth test

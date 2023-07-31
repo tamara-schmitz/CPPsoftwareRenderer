@@ -33,7 +33,7 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
         y_count += y_incre;
         Uint16 y_end   = std::floor( y_count );
 
-        rasterisers.push_back( make_shared< Rasteriser >( out_vpoos, w_window, y_begin, y_end ) );
+        rasterisers.push_back( make_shared< Rasteriser >( out_vpoos, w_window->Getwidth(), w_window->Getheight(), y_begin, y_end ) );
         cout << "Rasteriser " << i << " has y_begin " << y_begin << " and y_end " << y_end << endl;
     }
 
@@ -178,20 +178,22 @@ void Renderer::WaitUntilFinished()
     {
         rast_threads[0]->join(); // always 0 because we empty the queue and never skip an element
         rast_threads.erase( it );
-
-        Uint32* pixelss = (Uint32*) rasterisers[i_rr]->r_texture->t_pixels;
+        
+        /*
+        Uint32* pixelss = (Uint32*) rasterisers[i_rr]->r_texture->t_pixels.begin();
         pixelss[0] = 0xff00ffff;
         pixelss[1] = 0xff00ffff;
         pixelss[2] = 0xff00ffff;
         pixelss[500] = 0xff00ffff;
         pixelss[501] = 0xff00ffff;
         pixelss[502] = 0xff00ffff;
+        */
 
         // copy to r_texture
         int offset = w_window->Getwidth() * rasterisers[i_rr]->y_begin;
-        std::copy( rasterisers[i_rr]->r_texture->t_pixels.begin(), rasterisers[i_rr]->r_texture->t_pixels.end(), 
+        //std::copy( rasterisers[i_rr]->r_texture->t_pixels.begin(), rasterisers[i_rr]->r_texture->t_pixels.end(),
 
-        cout << "h " << dstrect.h << " y " << dstrect.y << endl;
+        //cout << "h " << dstrect.h << " y " << dstrect.y << endl;
 
         i_rr++;
     }
