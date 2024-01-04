@@ -87,7 +87,7 @@ Window::Window( int width, int height, double scale, std::string title, double f
     cout << "Init complete!" << endl;
 }
 
-void Window::drawSurface( SDL_Surface* surface, const SDL_Rect* dstrect )
+void Window::drawSurface( SDL_Surface* surface, const SDL_Rect& dstrect )
 {
     if ( headlessMode )
         return;
@@ -109,11 +109,35 @@ void Window::drawSurface( SDL_Surface* surface, const SDL_Rect* dstrect )
     **/
 
     Uint32* pixelss = (Uint32*) surface->pixels;
-    // TODO make memcopy for verbose, add checks
-    memcpy ( pixels_direct + r_pitch * dstrect->y, pixelss, r_pitch * dstrect->h ); // WARNING! DIRECT MEMORY ACCESS
+    // TODO make memcopy more verbose, add checks
+    memcpy ( pixels_direct + r_pitch * dstrect.y, pixelss, r_pitch * dstrect.h ); // WARNING! DIRECT MEMORY ACCESS
 }
 
-void Window::drawPixel( int x, int y, const SDL_Color* color)
+void Window::drawTexture( const shared_ptr< Texture >& texture, const SDL_Rect& dstrect )
+{
+    if ( headlessMode )
+        return;
+
+    // return if outside of screen bounds
+    if ( dstrect.x >= (int) r_width ||
+            dstrect.x + texture->GetWidth() < 0 ||
+            dstrect.y >= (int) r_height ||
+            dstrect.y + texture->GetHeight() < 0 )
+    {
+        return;
+    }
+
+    // TODO replace this naive implementation
+    for ( int y = 0; y < texture->GetHeight(); y++ )
+    {
+        for ( int x = 0; x < texture->GetWidth(); x++ )
+        {
+            this->drawPixel( dstrect.x + x, dstrect.y + y, texture->GetPixelRaw( x, y ));
+        }
+    }
+}
+
+void Window::drawPixel( int x, int y, const SDL_Color& color)
 {
     if ( headlessMode )
         return;
@@ -129,13 +153,26 @@ void Window::drawPixel( int x, int y, const SDL_Color* color)
 
     // obtain fast write access to texture
     LockRTexture();
-    pixels_direct[ offset ] = getPixelFor_SDLColor( color );
+    pixels_direct[ offset ] = getPixelFor_SDLColor( &color );
 }
 
-void Window::drawPixel( int x, int y, const SDL_Color& color)
+void Window::drawPixel( int x, int y, const Uint32& raw_pixel)
 {
-    SDL_Color col = color;
-    drawPixel( x, y, &col );
+    if ( headlessMode )
+        return;
+
+    // return if outside of screen bounds
+    if ( x >= (int) r_width  || x < 0 ||
+         y >= (int) r_height || y < 0 )
+    {
+        return;
+    }
+
+    int offset = y * r_width + x;
+
+    // obtain fast write access to texture
+    LockRTexture();
+    pixels_direct[ offset ] = raw_pixel;
 }
 
 void Window::reserveAddLines( Uint64 amount )
@@ -146,7 +183,7 @@ void Window::reserveAddLines( Uint64 amount )
 }
 
 
-void Window::drawLine( SDL_Point p1, SDL_Point p2, SDL_Color* color )
+void Window::drawLine( SDL_Point p1, SDL_Point p2, const SDL_Color& color )
 {
     if ( headlessMode )
         return;
@@ -161,7 +198,7 @@ void Window::drawLine( SDL_Point p1, SDL_Point p2, SDL_Color* color )
         // adds line to vectors
         line_points.push_back( p1 );
         line_points.push_back( p2 );
-        line_colors.push_back( *color );
+        line_colors.push_back( color );
     }
 }
 
@@ -223,10 +260,11 @@ void Window::updateWindow()
     // Upload pixel texture
     UnlockRTexture();
     SDL_SetRenderTarget( r_renderer, NULL );
-    SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_BLEND );
+    SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_NONE );
     SDL_RenderCopy( r_renderer, r_ptexture, NULL, NULL );
     if ( line_points.size() > 0 )
     {
+        SDL_SetRenderDrawBlendMode( r_renderer, SDL_BLENDMODE_BLEND );
         SDL_RenderCopy( r_renderer, r_ltexture, NULL, NULL );
     }
     SDL_RenderPresent( r_renderer );
@@ -282,7 +320,7 @@ void Window::updateTitleWithFPS( int updateInterval )
     }
 }
 
-void Window::LockRTexture()
+inline void Window::LockRTexture()
 {
     if ( headlessMode )
         return;
@@ -294,7 +332,7 @@ void Window::LockRTexture()
     }
 }
 
-void Window::UnlockRTexture()
+inline void Window::UnlockRTexture()
 {
     if ( headlessMode )
         return;
@@ -303,7 +341,8 @@ void Window::UnlockRTexture()
     {
         SDL_UnlockTexture( r_ptexture );
         pixels_direct = nullptr;
-        r_pitch = r_pitch_div_4 = 0;
+        r_pitch = 0;
+        r_pitch_div_4 = 0;
     }
 }
 

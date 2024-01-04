@@ -170,7 +170,7 @@ void ScanRenderer::FillShape( int yMin, int yMax, SDL_Color* color )
         // SDL method
         if ( w_useRenderDrawFuncs )
         {
-            w_window->drawLine( SDL_Point { xMin, i }, SDL_Point { xMax, i }, color );
+            w_window->drawLine( SDL_Point { xMin, i }, SDL_Point { xMax, i }, *color );
         }
         // "traditional" per-pixel manipulation
         else
@@ -178,7 +178,7 @@ void ScanRenderer::FillShape( int yMin, int yMax, SDL_Color* color )
             // iterate through every x
             for ( int j = xMin; j < xMax; j++ )
             {
-                w_window->drawPixel( j, i, color );
+                w_window->drawPixel( j, i, *color );
             }
         }
     }

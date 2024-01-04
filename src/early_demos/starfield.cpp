@@ -121,7 +121,7 @@ void Starfield::processStar( unsigned int id )
             color.b = pixelColor;
             color.g = pixelColor;
             color.r = pixelColor;
-            w_window->drawPixel( pos.x, pos.y, &color );
+            w_window->drawPixel( pos.x, pos.y, color );
         }
 
     }

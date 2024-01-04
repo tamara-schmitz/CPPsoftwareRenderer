@@ -16,11 +16,17 @@ struct Vertex
         posVec = Vector4<T>();
         texVec = Vector2<T>();
     }
-    
+
     Vertex( const Vertex& v )
     {
         posVec =  Vector4<T>(v.posVec);
         texVec = Vector2<T>(v.texVec);
+    }
+
+    Vertex( const Vector4<T>& posVec, const Vector2<T>& texVec )
+    {
+        posVec = posVec;
+        texVec = texVec;
     }
 
     Vertex& lerp( Vertex other, T lerpamount )

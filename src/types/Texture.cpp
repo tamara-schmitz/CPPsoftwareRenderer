@@ -94,6 +94,15 @@ const SDL_Color Texture::GetPixel( const Uint16& x, const Uint16& y ) const
     return getSDLColorFor_Pixel(t_pixels.at( y * t_width + x ));
 }
 
+const Uint32 Texture::GetPixelRaw( const Uint16& x, const Uint16& y ) const
+{
+    if ( x < 0 || x >= t_width || y < 0 || y >= t_height )
+    {
+        throw ( std::runtime_error("Invalid coordinates for texture access!") );
+    }
+    return t_pixels.at( y * t_width + x );
+}
+
 void Texture::SetPixel( const Uint16& x, const Uint16& y, const SDL_Color& colour )
 {
     if (colour.a != SDL_ALPHA_OPAQUE)
@@ -107,7 +116,7 @@ void Texture::SetPixel( const Uint16& x, const Uint16& y, const SDL_Color& colou
     }
 }
 
-void Texture::FillWithRandomPixels()
+void Texture::FillWithRandomColour()
 {
     t_transparent = false;
 

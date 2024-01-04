@@ -16,10 +16,11 @@ class Texture
         Uint16 GetWidth() const { return t_width; }
         Uint16 GetHeight() const { return t_height; }
         const SDL_Color GetPixel( const Uint16& x, const Uint16& y ) const;
+        const Uint32 GetPixelRaw( const Uint16& x, const Uint16& y ) const;
         void SetPixel( const Uint16& x, const Uint16& y, const SDL_Color& colour );
 
         // texture modifiers
-        void FillWithRandomPixels();
+        void FillWithRandomColour();
         void FillWithColour( const SDL_Color& colour );
         void clear();
 

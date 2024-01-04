@@ -8,7 +8,7 @@ Rasteriser::Rasteriser( shared_ptr< SafeDeque< VPOO > > in, const Uint16& frame_
     this->y_end   = y_end;
     this->frame_width = frame_width;
     this->frame_height = frame_height;
-    this->r_texture = make_shared< Texture >(frame_width, frame_height);
+    this->r_texture = make_shared< Texture >(frame_width, y_end - y_begin);
 
     // init z_buffer
     size_t zsize = r_texture->GetWidth() * r_texture->GetHeight();
@@ -20,7 +20,8 @@ void Rasteriser::initFramebuffer()
 {
     // clearing
     std::fill( z_buffer.begin(), z_buffer.end(), std::numeric_limits< float >::max() );
-    r_texture->clear();
+    //r_texture->clear();
+    r_texture->FillWithRandomColour();
 }
 
 void Rasteriser::finaliseFrame()
@@ -32,24 +33,21 @@ void Rasteriser::ProcessVPOOArray()
 {
     initFramebuffer();
 
-    int i = 0;
-
-    while ( !in_vpoos->isLast( i-1 ) )
+    for ( int i = 0; !in_vpoos->isLastBlocked( i ); i++ )
     {
         current_vpoo = in_vpoos->at(i);
         ProcessCurrentVPOO();
-        i++;
     }
 
     finaliseFrame();
 }
 
-float Rasteriser::GetZ( const Uint32& index ) const
+inline float Rasteriser::GetZ( const Uint32& index ) const
 {
     return z_buffer.at(index);
 }
 
-void Rasteriser::SetZ( const Uint32& index, const float& z_value )
+inline void Rasteriser::SetZ( const Uint32& index, const float& z_value )
 {
     z_buffer.at(index) = z_value;
 }
@@ -150,11 +148,11 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
             Uint16 textureY = clipNumber< Uint16 >( std::ceil((current_texCoordY * z) * (current_vpoo.texture->GetHeight() - 1) + 0.5f ),
                                                                                       0, current_vpoo.texture->GetHeight() - 1  + 0.5f );
 
-            DrawFragment( x, yCoord, current_depth, textureX, textureY );
+            DrawFragment( x, yCoord - y_begin, current_depth, textureX, textureY );
         }
         else
         {
-            DrawFragment( x, yCoord, current_depth );
+            DrawFragment( x, yCoord - y_begin, current_depth );
         }
 
         // add steps
@@ -166,16 +164,18 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
 }
 
 __attribute__((target_clones("arch=x86-64-v3","default")))
-void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 texcoordX, Uint16 texcoordY )
+inline void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 texcoordX, Uint16 texcoordY )
 {
     // depth test
 //    if ( ignoreZBuffer || ( current_depth <= GetZ( x * y ) && current_depth >= near_z && current_depth <= far_z ) )
     if ( ignoreZBuffer || current_depth <= GetZ( x, y ) )
     {
-//        if ( printDebug )
-//        {
-//            cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
-//        }
+        /*
+        if ( printDebug )
+        {
+            cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) y ) << endl;
+        }
+        */
         SetZ( x, y, current_depth );
         int offset = y * r_texture->GetWidth() + x;
         r_texture->t_pixels.at( offset ) = current_vpoo.texture->t_pixels.at( 
@@ -184,16 +184,18 @@ void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 t
 }
 
 __attribute__((target_clones("arch=x86-64-v3","default")))
-void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
+inline void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
 {
     // depth test
 //    if ( ignoreZBuffer || ( current_depth <= GetZ( x, y ) && current_depth >= near_z && current_depth <= far_z ) )
     if ( ignoreZBuffer || current_depth <= GetZ( x, y ) )
     {
-//        if ( printDebug )
-//        {
-//            cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) yCoord ) << endl;
-//        }
+        /*
+        if ( printDebug )
+        {
+            cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) y ) << endl;
+        }
+        */
         SetZ( x, y, current_depth );
         int offset = y * r_texture->GetWidth() + x;
         r_texture->t_pixels.at( offset ) = getPixelFor_SDLColor( &current_vpoo.colour );

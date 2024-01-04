@@ -24,8 +24,7 @@ class VertexProcessor
         shared_ptr< SafeDeque< VPOO > > output_vpoos;
 
         Uint32 processedVPIOs_count = 0;
-        void ProcessMesh( VPIO& current_vpio );
-        void ProcessTriangle( VPIO& current_vpio );
+        void ProcessMesh( const VPIO& current_vpio );
         void ProcessTriangle( const Triangle& tri, const Matrix4f& mat, SDL_Color colour, shared_ptr< Texture > tex );
         void ClipTriangle( std::vector< Vertexf >& result_vertices );
         void ClipPolygonAxis( std::vector<Vertexf>& vertices, uint_fast8_t componentIndex );

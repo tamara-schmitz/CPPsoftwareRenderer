@@ -13,49 +13,41 @@ struct VertexProcessorInputObject
     // triangle handedness.
     // Vertices are expected to always be sorted by their posVec.y component.
 
-    Triangle tri = Triangle();
-    shared_ptr< Mesh > mesh = shared_ptr< Mesh >(nullptr);
-    bool isEmpty = true;
+    shared_ptr< Mesh > mesh = nullptr;
 
     Matrix4f objMatrix = Matrix4f();
     SDL_Color colour = SDL_Color();
-    shared_ptr< Texture > texture = shared_ptr< Texture >(nullptr);
+    shared_ptr< Texture > texture = nullptr;
 
     // ctors
     VertexProcessorInputObject()
     {
-        isEmpty = false;
-        colour = SDL_Color();
         colour.r = colour.g = colour.b = 200;
         colour.a = SDL_ALPHA_OPAQUE;
     }
     VertexProcessorInputObject( const VertexProcessorInputObject& vpio)
     {
-        tri = vpio.tri;
-        isEmpty = vpio.isEmpty;
+        mesh = vpio.mesh;
         objMatrix = vpio.objMatrix;
         colour = vpio.colour;
         texture = vpio.texture;
     }
     VertexProcessorInputObject( const Triangle& triangle, const Matrix4f& objMatrix, const SDL_Color& colour )
     {
-        isEmpty = false;
-        tri = triangle;
+        mesh = make_shared< Mesh >(triangle);
 
         this->objMatrix = objMatrix;
         this->colour = colour;
     }
     VertexProcessorInputObject( const Triangle& triangle, const Matrix4f& objMatrix, const shared_ptr< Texture >& texture )
     {
-        isEmpty = false;
-        tri = triangle;
+        mesh = make_shared< Mesh >(triangle);
 
         this->objMatrix = objMatrix;
         this->texture = texture;
     }
     VertexProcessorInputObject( const shared_ptr< Mesh >& mesh, const Matrix4f& objMatrix, const shared_ptr< Texture >& texture )
     {
-        isEmpty = false;
         this->mesh = mesh;
 
         this->objMatrix = objMatrix;
@@ -64,17 +56,10 @@ struct VertexProcessorInputObject
 
     VertexProcessorInputObject( const shared_ptr< Mesh >& mesh, const Matrix4f& objMatrix, const SDL_Color& colour )
     {
-        isEmpty = false;
         this->mesh = mesh;
 
         this->objMatrix = objMatrix;
         this->colour = colour;
-    }
-  
-    VertexProcessorInputObject createEmpty()
-    {
-        isEmpty = true;
-        return *this;
     }
 };
 
@@ -88,7 +73,7 @@ struct VertexProcessorOutputObject
     bool isRightHanded = false;
 
     SDL_Color colour = SDL_Color();
-    shared_ptr< Texture > texture = shared_ptr< Texture >(nullptr);
+    shared_ptr< Texture > texture = nullptr;
 
     // ctors
     VertexProcessorOutputObject()

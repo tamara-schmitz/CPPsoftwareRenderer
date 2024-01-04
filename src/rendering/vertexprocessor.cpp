@@ -9,31 +9,23 @@ VertexProcessor::VertexProcessor( shared_ptr< SafeDeque< VPIO > > in, shared_ptr
 void VertexProcessor::ProcessQueue()
 {
     processedVPIOs_count = 0;
-    bool queue_not_empty;
-    VPIO current_vpio;
+    unique_ptr< VPIO > current_vpio;
     do
     {
-        queue_not_empty = in_vpios->pop( current_vpio );
-        if ( queue_not_empty )
+        current_vpio = in_vpios->pop();
+        if ( current_vpio )
         {
-            if ( current_vpio.mesh != nullptr )
-            {
-                ProcessMesh( current_vpio );
-            }
-            else {
-                ProcessTriangle( current_vpio );
-            }
+            ProcessMesh( *current_vpio );
             processedVPIOs_count++;
-	}
+        }
 
-    } while ( queue_not_empty );
+    } while ( !in_vpios->blocked() );
 }
 
 __attribute__((target_clones("arch=x86-64-v3","default")))
-void VertexProcessor::ProcessMesh( VPIO& current_vpio )
+void VertexProcessor::ProcessMesh( const VPIO& current_vpio )
 {
-    if ( current_vpio.isEmpty )
-        return;
+    assert ( current_vpio.mesh != nullptr );
 
     // calculate mesh matrix
     Matrix4f transMatrix = perspMatrix * viewMatrix * current_vpio.objMatrix;
@@ -42,21 +34,6 @@ void VertexProcessor::ProcessMesh( VPIO& current_vpio )
     {
         ProcessTriangle( current_vpio.mesh->GetTriangle( i ), transMatrix, current_vpio.colour, current_vpio.texture );
     }
-}
-
-__attribute__((target_clones("arch=x86-64-v3","default")))
-void VertexProcessor::ProcessTriangle( VPIO& current_vpio )
-{
-    // From here on current coordinate space of tri will be
-    // indicated through comments.
-    // Possible spaces: object, world, view, perspective, screen
-
-    if ( current_vpio.isEmpty )
-        return;
-
-    Matrix4f matrix = perspMatrix * viewMatrix * Matrix4f(current_vpio.objMatrix); // -- to World Space
-    
-    ProcessTriangle( current_vpio.tri, matrix, current_vpio.colour, current_vpio.texture );
 }
 
 __attribute__((target_clones("arch=x86-64-v3","default")))
@@ -81,8 +58,8 @@ void VertexProcessor::ProcessTriangle( const Triangle& tri, const Matrix4f& mat,
     }
     if ( cull_early )
     {
-        //if ( printDebug )
-        //    cout << "Tri was culled before vp clipping." << endl;
+        if ( printDebug )
+            cout << "Tri was culled before vp clipping." << endl;
         return;
     }
     
@@ -132,9 +109,9 @@ void VertexProcessor::ProcessTriangle( const Triangle& tri, const Matrix4f& mat,
         if ( abs( area ) < 0.1 )
             continue;
         */
-        
+
         VPOO vpoo = VPOO( tri_verts[i], tri_verts[i+1], tri_verts[i+2],
-                                           handedness, tex );
+                                           handedness, tex, colour );
         output_vpoos->push_back( vpoo );
     }
 }

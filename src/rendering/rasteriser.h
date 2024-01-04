@@ -26,7 +26,7 @@ class Rasteriser
         Uint16 y_begin = 0, y_end = 0; // area in which rasteriser is supposed to draw in.
         Uint16 frame_width = 0, frame_height = 0; // area in which rasteriser is supposed to draw in.
 
-        shared_ptr< Texture > r_texture;
+        shared_ptr< Texture > r_texture = nullptr;
 
     private:
 
@@ -36,13 +36,13 @@ class Rasteriser
         void initFramebuffer();
         void finaliseFrame();
 
-        shared_ptr< SafeDeque< VPOO > > in_vpoos;
+        shared_ptr< SafeDeque< VPOO > > in_vpoos = nullptr;
         VPOO current_vpoo;
 
         float GetZ( const Uint32& index ) const;
-        float GetZ( const Uint16& x, const Uint16& y ) const { return GetZ( y*r_texture->GetWidth() + x ); }
+        inline float GetZ( const Uint16& x, const Uint16& y ) const { return GetZ( y*r_texture->GetWidth() + x ); }
         void SetZ( const Uint32& index, const float& z_value );
-        void SetZ( const Uint16& x, const Uint16& y, const float& z_value ) { SetZ( y*r_texture->GetWidth() + x, z_value ); }
+        inline void SetZ( const Uint16& x, const Uint16& y, const float& z_value ) { SetZ( y*r_texture->GetWidth() + x, z_value ); }
 
         void ProcessCurrentVPOO();
         void ScanTriangle( const Vertexf& vertMin, const Vertexf& vertMid, const Vertexf& vertMax, bool isRightHanded );

@@ -40,7 +40,7 @@ bool checkQuit()
             }
 
             if ( e.type == SDL_WINDOWEVENT )
-	    {
+            {
                 if ( e.window.event == SDL_WINDOWEVENT_CLOSE )
                 {
                     cout << "SDL WINDOW CLOSE!" << endl;
@@ -93,7 +93,7 @@ void demo_randomPixels( Window* window )
             color.b = rand() % 256;
             color.g = rand() % 256;
             color.r = rand() % 256;
-            window->drawPixel( x, y, &color );
+            window->drawPixel( x, y, color );
         }
 
         window->updateWindow();
@@ -194,7 +194,7 @@ void demo_shapes( Window *window )
 
 void demo_rasteriser( Window *window )
 {
-    auto render = make_shared<Renderer>( window );
+    auto render = make_unique<Renderer>( window );
     Do_VP_Clipping = true;
 
     SDL_Color triangleColor = { 250, 60, 50, SDL_ALPHA_OPAQUE };
@@ -205,10 +205,12 @@ void demo_rasteriser( Window *window )
 
     float absoluteRotation = 0.0f;
     Matrix4f objMatrix_mesh = Matrix4f::createRotationAroundAxis( 0, 0, 90 );
-    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 0 );
-    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, .75f ) * Matrix4f::createScale( 0.25f, 0.25f, 0.25f );
+    Matrix4f objMatrix_triangle = Matrix4f::createTranslation( 0, 0, 1 );
+    //Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 1.0f );
+    Matrix4f viewMatrix = Matrix4f::createTranslation( 0, 0, 5.0f ) * Matrix4f::createScale( 25.0f, 5.0f, 25.0f );
     render->SetWorldToViewMatrix( viewMatrix );
     render->SetViewToPerspectiveMatrix( 70, 0.2f, 100.0f );
+    render->SetViewToPerspectiveMatrix( 70, 2.0f, 2000.0f );
 
     render->SetDrawColour( triangleColor );
     render->SetDrawTexture( bmpTexture );
@@ -230,7 +232,7 @@ void demo_rasteriser( Window *window )
         window->clearBuffers();
         render->ClearBuffers();
 
-	render->InitiateRendering();
+        render->InitiateRendering();
 
         if ( !ignoreZBuffer )
         {
@@ -257,7 +259,7 @@ void demo_rasteriser( Window *window )
 
         // draw mesh
         objMatrix_mesh = Matrix4f::createTranslation( 0, 2.5f * sin( 0.01f * absoluteRotation ), .25f * sin( 0.01f * absoluteRotation ) ) * Matrix4f::createRotationAroundAxis( 90, 0, absoluteRotation );
-        render->DrawMesh( objMatrix_mesh, sphereModel, SDL_Colour());
+        render->DrawMesh( objMatrix_mesh, sphereModel, triangleColor);
         render->DrawMesh( objMatrix_mesh, chaletModel, chaletTexture );
 
         render->WaitUntilFinished();
@@ -277,8 +279,8 @@ void demo_DisplayTexture( Window* window )
     // draw loop
     bool running = true;
     Vector2f pos = Vector2f();
-    Vector2f dir = Vector2f(-3,-4);
-    float scale = 0.1f;
+    Vector2f dir = Vector2f(-1,-0.25);
+    float scale = 0.042f;
     while ( running )
     {
         running = !checkQuit();
@@ -287,7 +289,7 @@ void demo_DisplayTexture( Window* window )
 
         // offset per second
         pos += dir * (5 * window->timer.GetDeltaTime() / 1000000000.0f);
-        scale += 0.15f * window->timer.GetDeltaTime() / 1000000000.0f;
+        scale += scale * 0.42f * window->timer.GetDeltaTime() / 1000000000.0f;
 
         //draw texture
         for ( Uint16 y = 0; y < texture1->GetHeight(); y++ ) // iterate over ys

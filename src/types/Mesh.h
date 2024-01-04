@@ -11,6 +11,7 @@ class Mesh
 {
     public:
         Mesh();
+        Mesh( const Triangle& tri );
         Mesh( std::string pathToOBJ ); // imports mesh from OBJ
         virtual ~Mesh();
 

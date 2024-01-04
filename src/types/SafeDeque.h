@@ -18,27 +18,42 @@ public:
 
     SafeDeque() {}
 
-    T at ( std::size_t pos ) const
+    inline T at ( std::size_t pos ) const
     {
-        return deque.at( pos );
+        return T( deque.at( pos ) );
     }
 
-    size_t size() const
+    inline const size_t size()
     {
         return deque.size();
     }
 
-    bool isLast( size_t index )
+    inline bool empty()
+    {
+        return deque.empty();
+    }
+
+    inline bool blocked()
+    {
+        return new_blocked;
+    }
+
+    inline bool isLast( size_t index )
+    {
+        return index >= deque.size();
+    }
+
+    bool isLastBlocked( size_t index )
     {
         std::unique_lock< std::mutex > lock( mutex );
-        if ( index >= deque.size() )
+        if ( isLast( index ) )
         {
-            while ( !new_blocked )
+            while ( !blocked() )
                 cond_islast.wait( lock );
-            return true;
+            return isLast( index );
+        } else {
+            return false;
         }
-
-        return false;
     }
 
 
@@ -58,11 +73,11 @@ public:
         cond_islast.notify_all();
     }
 
-    void unblock_new()
+    inline void unblock_new()
     {
-        new_blocked=false;
+        new_blocked = false;
     }
-    
+
     void push_back( T& obj )
     {
         std::lock_guard< std::mutex > lock( mutex );
@@ -74,32 +89,31 @@ public:
         cond_mod.notify_one();
     }
 
-    bool pop( T& obj )
+    unique_ptr< T > pop( )
     {
         // By default in blocking mode (waits for new objects if queue
         // is empty). However returns false if queue is
         // empty AND new_blocked == true.
-
-        if ( new_blocked && deque.empty() )
-        {
-            return false;
+        if ( blocked() ) {
+            return nullptr;
         }
 
         std::unique_lock< std::mutex > lock( mutex );
 
         // wait until data arrives or queue is blocked
-        while ( !new_blocked && deque.empty() )
+        while ( !blocked() && empty() )
         {
             cond_mod.wait( lock );
         }
 
-        if ( new_blocked )
-            return false;
+        if ( blocked() || empty() ) {
+            return nullptr;
+        }
 
-        obj = T(deque.front());
+        unique_ptr< T > ret = make_unique<T> ( T( deque.front() ) );
         deque.pop_front();
 
-        return true;
+        return ret;
     }
 
 private:

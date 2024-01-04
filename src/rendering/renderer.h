@@ -15,7 +15,7 @@
 class Renderer
 {
     public:
-        Renderer( Window* window, Uint8 vp_thread_count = 1, Uint8 raster_thread_count = 4 );
+        Renderer( Window* window, Uint8 vp_thread_count = 1, Uint8 raster_thread_count = 2 );
         virtual ~Renderer();
 
         // settings
@@ -32,6 +32,7 @@ class Renderer
         void ClearBuffers();
         void DrawMesh( const Matrix4f& objMat, shared_ptr<Mesh> mesh, const SDL_Color& colour);
         void DrawMesh( const Matrix4f& objMat, shared_ptr<Mesh> mesh, shared_ptr< Texture >& texture);
+        void DrawMesh( const Matrix4f& objMat, shared_ptr<Mesh> mesh );
         void FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 );
         void FillTriangle( Triangle tris );
 	void InitiateRendering();
@@ -45,7 +46,7 @@ class Renderer
         Window* w_window;
         bool drawWithTexture = false; // determines whether a texture or a colour should be drawn
         shared_ptr< SDL_Color > current_colour = make_shared< SDL_Color >();
-        shared_ptr< Texture > current_texture = make_shared< Texture >(nullptr);
+        shared_ptr< Texture > current_texture = nullptr;
 
         float near_z = 0;
         float far_z  = 1;

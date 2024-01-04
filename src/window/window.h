@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "timer.h"
+#include "types/Texture.h"
 
 class Window
 {
@@ -29,11 +30,12 @@ class Window
         Timer timer;
 
         // Render functions
-        void drawSurface( SDL_Surface* surface, const SDL_Rect* dstrect );
-        void drawPixel( int x, int y, const SDL_Color* color );
+        void drawSurface( SDL_Surface* surface, const SDL_Rect& dstrect );
+        void drawTexture( const shared_ptr< Texture >& texture, const SDL_Rect& dstrect );
         void drawPixel( int x, int y, const SDL_Color& color );
+        void drawPixel( int x, int y, const Uint32& raw_pixel );
         void reserveAddLines( Uint64 amount ); // reserves specified amount of lines (in addition to current reservation)
-        void drawLine( SDL_Point p1, SDL_Point p2, SDL_Color* color );
+        void drawLine( SDL_Point p1, SDL_Point p2, const SDL_Color& color );
         void updateWindow();
         void clearBuffers();
 
@@ -68,8 +70,8 @@ class Window
         std::chrono::system_clock::time_point w_title_fps_time = std::chrono::system_clock::now(); // contains time at which we are supposed to update window title 
 
         // Internal functions
-        void LockRTexture();
-        void UnlockRTexture();
+        inline void LockRTexture();
+        inline void UnlockRTexture();
 };
 
 #endif // WINDOW_H

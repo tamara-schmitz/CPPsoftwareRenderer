@@ -8,6 +8,17 @@ Mesh::Mesh()
     //ctor
 }
 
+Mesh::Mesh( const Triangle& tri )
+{
+    m_vertices.push_back( tri.verts[0] );
+    m_vertices.push_back( tri.verts[1] );
+    m_vertices.push_back( tri.verts[2] );
+    m_indices.push_back( 0 );
+    m_indices.push_back( 1 );
+    m_indices.push_back( 2 );
+    m_normals.push_back( tri.normal_vec );
+}
+
 Mesh::Mesh( std::string pathToOBJ )
 {
     //ctor

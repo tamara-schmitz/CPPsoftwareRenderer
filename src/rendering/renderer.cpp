@@ -18,7 +18,7 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
     }
 
     if ( printDebug )
-        cout << "Spawned " << vertex_processors.size() << " vertex processing threads." << endl;
+        cout << "Spawned " << vertex_processors.size() << " vertex processors." << endl;
 
     // For the rasterisers we split the rendering surface vertically into even parts that do not overlap. Each one has their own SDL_Surface.
     float y_count = 0;
@@ -38,7 +38,7 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
     }
 
     if ( printDebug )
-        cout << "Spawned " << rasterisers.size() << " rasteriser threads." << endl;
+        cout << "Spawned " << rasterisers.size() << " rasterisers." << endl;
 }
 void Renderer::SetObjectToWorldMatrix( const Matrix4f& objectMatrix )
 {
@@ -111,6 +111,20 @@ void Renderer::DrawMesh( const Matrix4f& objMat, shared_ptr<Mesh> mesh, const SD
     in_vpios->push_back( vpio );
 }
 
+void Renderer::DrawMesh( const Matrix4f& objMat, shared_ptr<Mesh> mesh)
+{
+    if ( drawWithTexture )
+    {
+        VPIO vpio = VPIO( mesh, objMat, current_texture );
+        in_vpios->push_back( vpio );
+    }
+    else
+    {
+        VPIO vpio = VPIO( mesh, objMat, *current_colour );
+        in_vpios->push_back( vpio );
+    }
+}
+
 void Renderer::FillTriangle( const Vertexf& v1, const Vertexf& v2, const Vertexf& v3 )
 {
     Triangle triangle = Triangle( v1, v2, v3 );
@@ -152,48 +166,48 @@ void Renderer::WaitUntilFinished()
     // returns once frame is completed
 
 
-    // TODO turn this into a thread.join() at some point
-
     // Wait for vertex processors
     in_vpios->block_new();
     int i_vp = 0; // tracks vertex_processor processed in queue.
     for ( auto it = vp_threads.begin(); it != vp_threads.end(); )
     {
         vp_threads[0]->join(); // always 0 because we empty the queue and never skip an elemen
-        vp_threads.erase( it );
 
         if ( printDebug )
             cout << "VP " << i_vp << " has processed a total of " << (int) vertex_processors[ i_vp ]->GetProcessedVPIOsCount() << " VPIOs." << endl;
 
         i_vp++;
+
+        vp_threads.erase( it );
     }
 
     if ( printDebug )
         cout << "out_vpoos queue size after all vps are finished: " << out_vpoos->size() << endl;
-    
-    // Wait for rasterisers and draw their surfaces
+
+    // Wait for rasterisers and then draw their surfaces
     out_vpoos->block_new();
     int i_rr = 0;
     for ( auto it = rast_threads.begin(); it != rast_threads.end(); )
     {
         rast_threads[0]->join(); // always 0 because we empty the queue and never skip an element
         rast_threads.erase( it );
-        
-        /*
-        Uint32* pixelss = (Uint32*) rasterisers[i_rr]->r_texture->t_pixels.begin();
-        pixelss[0] = 0xff00ffff;
-        pixelss[1] = 0xff00ffff;
-        pixelss[2] = 0xff00ffff;
-        pixelss[500] = 0xff00ffff;
-        pixelss[501] = 0xff00ffff;
-        pixelss[502] = 0xff00ffff;
-        */
+
+        rasterisers[i_rr]->r_texture->t_pixels[0] = 0xff00ffff;
+        rasterisers[i_rr]->r_texture->t_pixels[1] = 0xff00ffff;
+        rasterisers[i_rr]->r_texture->t_pixels[2] = 0xff00ffff;
+        rasterisers[i_rr]->r_texture->t_pixels[500] = 0xff00ffff;
+        rasterisers[i_rr]->r_texture->t_pixels[501] = 0xff00ffff;
+        rasterisers[i_rr]->r_texture->t_pixels[502] = 0xff00ffff;
 
         // copy to r_texture
-        int offset = w_window->Getwidth() * rasterisers[i_rr]->y_begin;
-        //std::copy( rasterisers[i_rr]->r_texture->t_pixels.begin(), rasterisers[i_rr]->r_texture->t_pixels.end(),
+        SDL_Rect drect;
+        drect.x = 0;
+        drect.y = rasterisers[i_rr]->y_begin;
+        drect.w = 0;
+        drect.h = 0;
+        w_window->drawTexture( rasterisers[i_rr]->r_texture, drect );
 
-        //cout << "h " << dstrect.h << " y " << dstrect.y << endl;
+        cout << "h " << drect.x << " y " << drect.y << endl;
 
         i_rr++;
     }
