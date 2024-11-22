@@ -17,35 +17,24 @@ class Edge
         virtual ~Edge();
 
         // getters
-        T GetYStart()   const { return yStart;   }
-        T GetYEnd()     const { return yEnd;     }
-        T GetCurrentX() const { return currentX; }
-        T GetCurrentTexCoordX() const { return texCoord_currentX; }
-        T GetCurrentTexCoordY() const { return texCoord_currentY; }
-        T GetCurrentOneOverZ() const { return texCoord_currentOneOverZ; }
-        T GetCurrentDepth() const { return currentDepth; }
+        inline T GetYStart()   const { return yStart;   }
+        inline T GetYEnd()     const { return yEnd;     }
+        inline T GetCurrentX() const { return currentX; }
+        inline T GetCurrentTexCoordX() const { return texCoord_currentX; }
+        inline T GetCurrentTexCoordY() const { return texCoord_currentY; }
+        inline T GetCurrentOneOverZ() const { return texCoord_currentOneOverZ; }
+        inline T GetCurrentDepth() const { return currentDepth; }
 
         // functions
         void DoYStep(); // add xStep to currentX
         void GoToStep( int newY ); // set currentX to new Y (start is 0)
 
     protected:
-        //-- constructor vars
-        Vertex<T> vertMini;
-        Vertex<T> vertMidi;
-        Vertex<T> vertMaxi;
-        TexCoordsForEdge<T> texcoords;
-        int vertMini_Index;
-        int yStart;
-        int yEnd;
-
         //-- runtime vars
 
         // pixel x and steps
-        T yPrestep;
-        T xPrestep;
-        T xStep;
         T currentX;
+        T xStep;
         // texcoord x/y and steps
         T texCoord_currentX;
         T texCoordX_step;
@@ -56,6 +45,16 @@ class Edge
         T currentDepth; // used for depth testing
         T depth_step;
 
+        T yPrestep;
+
+        //-- constructor vars
+        Vertex<T> vertMini;
+        Vertex<T> vertMidi;
+        Vertex<T> vertMaxi;
+        TexCoordsForEdge<T> texcoords;
+        int vertMini_Index;
+        int yStart;
+        int yEnd;
 };
 
 typedef Edge< float > Edgef;

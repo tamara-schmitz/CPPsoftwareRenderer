@@ -38,6 +38,7 @@ build/*
 
 # Profile dumps
 callgrind.out.*
+cachegrind.out.*
 
 # G++ perf profile dumps
 *.gcda

@@ -53,7 +53,8 @@ linux64-test : $(OBJS)
 	$(OBJ_NAME_PREFIX)linux64-test -ptl
 linux64-valgrind : $(OBJS)
 	$(CXX) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(COMPILER_FLAGS_DEBUG) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_PREFIX)linux64-test
-	valgrind --tool=memcheck --leak-check=yes $(OBJ_NAME_PREFIX)linux64-test -ptl
+	valgrind --tool=memcheck --leak-check=yes $(OBJ_NAME_PREFIX)linux64-test -tl
+	valgrind --tool=cachegrind --cache-sim=yes $(OBJ_NAME_PREFIX)linux64-test -tl
 
 # default
 all := linux64

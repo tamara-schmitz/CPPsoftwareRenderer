@@ -72,7 +72,7 @@ void Edge<T>::GoToStep( int newY )
                                             xStep * newY;
 
     // update xPrestep (depends on currentX)
-    xPrestep = currentX - vertMini.posVec.x;
+    T xPrestep = currentX - vertMini.posVec.x;
 
     // set new current texCoord values. Also incorporate yPrestep and xPrestep.
     texCoord_currentX = texcoords.GetTexCoordX( vertMini_Index ) +
