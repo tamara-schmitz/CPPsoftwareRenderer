@@ -204,8 +204,11 @@ void Window::drawLine( SDL_Point p1, SDL_Point p2, const SDL_Color& color )
 
 void Window::updateWindow()
 {
-    if ( headlessMode )
+    if ( headlessMode ) {
+        // TickCall (after every frame!)
+        timer.TickCall();
         return;
+    }
 
     // Draw lines to line texture
     if ( line_points.size() > 1 && line_points.size() % 2 == 0 &&

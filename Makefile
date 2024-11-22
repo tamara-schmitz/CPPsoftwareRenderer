@@ -19,8 +19,9 @@ INCLUDE_PATHS = -Iinclude -Isrc -Iinclude/vmath-0.12
 # -Wl,-subsystem,windows gets rid of the console window
 COMPILER_FLAGS_COMMON = -Wall -pedantic-errors -std=c++11 -Wno-unused-variable $(CPPFLAGS)
 COMPILER_FLAGS_GRAPHITE = -fgraphite-identity -ftree-loop-distribution -floop-nest-optimize
-COMPILER_FLAGS_RELEASE = -O3 -fomit-frame-pointer -flto -ftree-vectorize ${COMPILER_FLAGS_GRAPHITE}
-COMPILER_FLAGS_DEBUG = -g -fno-omit-frame-pointer
+COMPILER_FLAGS_OPTIMIZE = -O3 -flto -ftree-vectorize ${COMPILER_FLAGS_GRAPHITE}
+COMPILER_FLAGS_RELEASE = ${COMPILER_FLAGS_OPTIMIZE} -fomit-frame-pointer
+COMPILER_FLAGS_DEBUG = ${COMPILER_FLAGS_OPTIMIZE} -g -fno-omit-frame-pointer
 COMPILER_FLAGS_WIN = $(COMPILER_FLAGS_COMMON) -Wl,-subsystem,windows -static-libgCXX -static-libstdc++
 COMPILER_FLAGS_LINUX = $(COMPILER_FLAGS_COMMON)
 
@@ -49,10 +50,10 @@ linux64-debug : $(OBJS)
 	$(CXX) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(COMPILER_FLAGS_DEBUG) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_PREFIX)linux64-debug
 linux64-test : $(OBJS)
 	$(CXX) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(COMPILER_FLAGS_DEBUG) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_PREFIX)linux64-test
-	$(OBJ_NAME_PREFIX)linux64-test -vtl
+	$(OBJ_NAME_PREFIX)linux64-test -ptl
 linux64-valgrind : $(OBJS)
 	$(CXX) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_LINUX) $(COMPILER_FLAGS_DEBUG) $(LINKER_FLAGS_LINUX) -o $(OBJ_NAME_PREFIX)linux64-test
-	valgrind --tool=memcheck --leak-check=yes $(OBJ_NAME_PREFIX)linux64-test -vtl
+	valgrind --tool=memcheck --leak-check=yes $(OBJ_NAME_PREFIX)linux64-test -ptl
 
 # default
 all := linux64
