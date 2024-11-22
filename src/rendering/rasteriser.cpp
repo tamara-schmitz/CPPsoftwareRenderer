@@ -91,7 +91,6 @@ void Rasteriser::ScanEdges( Edgef& a, Edgef& b, bool isRightHanded )
     }
 }
 
-__attribute__((target_clones("arch=x86-64-v3","default")))
 void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCoord )
 {
     // ceil xMin and xMax for compliance with our top-left fill convention
@@ -163,7 +162,6 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     }
 }
 
-__attribute__((target_clones("arch=x86-64-v3","default")))
 inline void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, Uint16 texcoordX, Uint16 texcoordY )
 {
     // depth test
@@ -183,7 +181,6 @@ inline void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, U
     }
 }
 
-__attribute__((target_clones("arch=x86-64-v3","default")))
 inline void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
 {
     // depth test

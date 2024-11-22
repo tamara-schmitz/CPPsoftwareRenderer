@@ -21,8 +21,8 @@ COMPILER_FLAGS_COMMON = -Wall -pedantic-errors -std=c++11 -Wno-unused-variable $
 COMPILER_FLAGS_GRAPHITE = -fgraphite-identity -ftree-loop-distribution -floop-nest-optimize
 COMPILER_FLAGS_RELEASE = -O3 -fomit-frame-pointer -flto -ftree-vectorize ${COMPILER_FLAGS_GRAPHITE}
 COMPILER_FLAGS_DEBUG = -g -fno-omit-frame-pointer
-COMPILER_FLAGS_WIN = $(COMPILER_FLAGS_COMMON) -Wl,-subsystem,windows -march=x86-64-v3 -static-libgCXX -static-libstdc++
-COMPILER_FLAGS_LINUX = $(COMPILER_FLAGS_COMMON) -march=x86-64-v3
+COMPILER_FLAGS_WIN = $(COMPILER_FLAGS_COMMON) -Wl,-subsystem,windows -static-libgCXX -static-libstdc++
+COMPILER_FLAGS_LINUX = $(COMPILER_FLAGS_COMMON)
 
 #LINKER_FLAGS specifies the libraries we're linking against
 LINKER_FLAGS_WIN =  -Wl,-Bstatic -lmingw32 -lwinpthread -lpthread -lSDL2main -Wl,-Bdynamic -lSDL2

@@ -65,7 +65,6 @@ void Edge<T>::DoYStep()
 }
 
 template< typename T >
-__attribute__((target_clones("arch=x86-64-v3","default")))
 void Edge<T>::GoToStep( int newY )
 {
     // set currentX to new Y. Also incorporate yPrestep.

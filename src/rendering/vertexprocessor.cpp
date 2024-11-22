@@ -22,7 +22,6 @@ void VertexProcessor::ProcessQueue()
     } while ( !in_vpios->blocked() );
 }
 
-__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ProcessMesh( const VPIO& current_vpio )
 {
     assert ( current_vpio.mesh != nullptr );
@@ -36,7 +35,6 @@ void VertexProcessor::ProcessMesh( const VPIO& current_vpio )
     }
 }
 
-__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ProcessTriangle( const Triangle& tri, const Matrix4f& mat, SDL_Color colour, shared_ptr< Texture > tex )
 {
     std::vector< Vertexf > tri_verts = { tri.verts[0], tri.verts[1], tri.verts[2] };
@@ -116,7 +114,6 @@ void VertexProcessor::ProcessTriangle( const Triangle& tri, const Matrix4f& mat,
     }
 }
 
-__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ClipTriangle( std::vector< Vertexf >& result_vertices )
 {
     ClipPolygonAxis( result_vertices, 0);
@@ -124,7 +121,6 @@ void VertexProcessor::ClipTriangle( std::vector< Vertexf >& result_vertices )
     ClipPolygonAxis( result_vertices, 2);
 }
 
-__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, uint_fast8_t componentIndex )
 {
     // clips all vertices of a certain axis. results overwrite existing vertices
@@ -140,7 +136,6 @@ void VertexProcessor::ClipPolygonAxis( std::vector<Vertexf>& vertices, uint_fast
     result_temp.clear();
 }
 
-__attribute__((target_clones("arch=x86-64-v3","default")))
 void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices, uint_fast8_t componentIndex, float componentFactor, std::vector<Vertexf>& result )
 {
     // iterate over each vertex and do one dimensional lerping
