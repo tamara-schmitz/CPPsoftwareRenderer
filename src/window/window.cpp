@@ -314,7 +314,7 @@ void Window::updateTitleWithFPS( int updateInterval )
         return;
 
     // updates windows title every updateInterval (in seconds)
-    if ( w_title_fps_time < std::chrono::system_clock::now() )
+    if ( w_title_fps_time < std::chrono::system_clock::now() ) [[unlikely]]
     {
         w_title_fps_time = std::chrono::system_clock::now() + std::chrono::seconds( updateInterval );
         std::stringstream title;
@@ -364,7 +364,7 @@ Window::~Window()
     SDL_Quit();
 
 
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
     {
         cout << "Dtor of Window object was called!" << endl;
     }

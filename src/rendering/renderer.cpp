@@ -12,12 +12,12 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
     // create workers (vps and rasterisers)
     for ( Uint8 i = 0; i < vp_thread_count; i++ )
     {
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
             cout << "'in_vpios' uses: " << in_vpios.use_count() << " 'out_vpoos' uses: " << out_vpoos.use_count() << endl;
         vertex_processors.push_back( make_shared< VertexProcessor >( in_vpios, out_vpoos ) );
     }
 
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
         cout << "Spawned " << vertex_processors.size() << " vertex processors." << endl;
 
     // For the rasterisers we split the rendering surface vertically into even parts that do not overlap. Each one has their own SDL_Surface.
@@ -37,7 +37,7 @@ Renderer::Renderer( Window* window, Uint8 vp_thread_count, Uint8 raster_thread_c
         cout << "Rasteriser " << i << " has y_begin " << y_begin << " and y_end " << y_end << endl;
     }
 
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
         cout << "Spawned " << rasterisers.size() << " rasterisers." << endl;
 }
 void Renderer::SetObjectToWorldMatrix( const Matrix4f& objectMatrix )
@@ -173,7 +173,7 @@ void Renderer::WaitUntilFinished()
     {
         vp_threads[0]->join(); // always 0 because we empty the queue and never skip an elemen
 
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
             cout << "VP " << i_vp << " has processed a total of " << (int) vertex_processors[ i_vp ]->GetProcessedVPIOsCount() << " VPIOs." << endl;
 
         i_vp++;
@@ -181,7 +181,7 @@ void Renderer::WaitUntilFinished()
         vp_threads.erase( it );
     }
 
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
         cout << "out_vpoos queue size after all vps are finished: " << out_vpoos->size() << endl;
 
     // Wait for rasterisers and then draw their surfaces
@@ -265,7 +265,7 @@ Renderer::~Renderer()
 {
     //dtor
 
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
     {
         cout << "Dtor of Renderer object was called!" << endl;
     }

@@ -13,8 +13,8 @@ class Texture
         ~Texture(); // default deconstructor
 
         // getters and setters
-        Uint16 GetWidth() const { return t_width; }
-        Uint16 GetHeight() const { return t_height; }
+        inline Uint16 GetWidth() const { return t_width; }
+        inline Uint16 GetHeight() const { return t_height; }
         const SDL_Color GetPixel( const Uint16& x, const Uint16& y ) const;
         const Uint32 GetPixelRaw( const Uint16& x, const Uint16& y ) const;
         void SetPixel( const Uint16& x, const Uint16& y, const SDL_Color& colour );

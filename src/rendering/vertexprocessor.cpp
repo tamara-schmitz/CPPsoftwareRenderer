@@ -56,7 +56,7 @@ void VertexProcessor::ProcessTriangle( const Triangle& tri, const Matrix4f& mat,
     }
     if ( cull_early )
     {
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
             cout << "Tri was culled before vp clipping." << endl;
         return;
     }
@@ -142,7 +142,7 @@ void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices
 
     if ( vertices.size() <= 0 )
     {
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
             cout << "There were no verts left for component " << (int) componentIndex << "!" << endl;
 
         return;
@@ -161,7 +161,7 @@ void VertexProcessor::ClipPolygonComponent( const std::vector<Vertexf>& vertices
         bool currentInside = currentComponent <= vertices.at( i ).posVec.w;
 
         /* 
-        if ( printDebug && componentIndex > 0 )
+        if ( printDebug && componentIndex > 0 ) [[unlikely]]
             cout << "Vertex with index " << (int) i << " for component " << (int) componentIndex
                  << " has w of " << vertices.at( i ).posVec.w << " compared to currentComponent " << currentComponent 
                  << ". Hence inside: " << currentInside << endl;
@@ -190,7 +190,7 @@ VertexProcessor::~VertexProcessor()
 {
     //dtor
 
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
     {
         cout << "Dtor of VertexProcessor object was called!" << endl;
     }

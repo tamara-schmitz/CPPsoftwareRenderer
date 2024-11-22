@@ -127,7 +127,7 @@ void Starfield::processStar( unsigned int id )
     }
 
 
-    if ( printDebug && id == 3)
+    if ( printDebug && id == 3) [[unlikely]]
     {
         int offset = pos.y * w_width + pos.x;
         std::cout << "Star id: " << id << std::endl;
@@ -157,7 +157,7 @@ Starfield::~Starfield()
     z_buffer.clear();
     null_z_buffer.clear();
 
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
     {
         std::cout << "Dtor of Starfield object was called!" << std::endl;
     }

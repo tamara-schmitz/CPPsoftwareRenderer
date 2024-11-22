@@ -17,12 +17,12 @@ class Mesh
 
         // getters
         Triangle GetTriangle( Uint32 index ) const;
-        Vertexf GetVertex( Uint32 index ) const { return m_vertices.at(index); }
-        Uint32  GetIndex( Uint32 index  ) const { return m_indices.at(index);  }
-        Vector3f GetNormal( Uint32 index  ) const { return m_normals.at(index);  }
-        Uint32 GetTriangleCount() const { return m_indices.size() / 3; }
-        Uint32 GetVertexCount() const { return m_vertices.size(); }
-        Uint32 GetIndicesCount() const { return m_indices.size(); }
+        inline Vertexf GetVertex( Uint32 index ) const { return m_vertices.at(index); }
+        inline Uint32  GetIndex( Uint32 index  ) const { return m_indices.at(index);  }
+        inline Vector3f GetNormal( Uint32 index  ) const { return m_normals.at(index);  }
+        inline Uint32 GetTriangleCount() const { return m_indices.size() / 3; }
+        inline Uint32 GetVertexCount() const { return m_vertices.size(); }
+        inline Uint32 GetIndicesCount() const { return m_indices.size(); }
 
     protected:
 

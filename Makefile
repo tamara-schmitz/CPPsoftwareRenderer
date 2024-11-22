@@ -17,7 +17,7 @@ INCLUDE_PATHS = -Iinclude -Isrc -Iinclude/vmath-0.12
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -Wl,-subsystem,windows gets rid of the console window
-COMPILER_FLAGS_COMMON = -Wall -pedantic-errors -std=c++11 -Wno-unused-variable $(CPPFLAGS)
+COMPILER_FLAGS_COMMON = -Wall -pedantic-errors -std=c++20 -Wno-unused-variable $(CPPFLAGS)
 COMPILER_FLAGS_GRAPHITE = -fgraphite-identity -ftree-loop-distribution -floop-nest-optimize
 COMPILER_FLAGS_OPTIMIZE = -O3 -flto -ftree-vectorize ${COMPILER_FLAGS_GRAPHITE}
 COMPILER_FLAGS_RELEASE = ${COMPILER_FLAGS_OPTIMIZE} -fomit-frame-pointer

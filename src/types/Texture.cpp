@@ -87,7 +87,7 @@ void Texture::ImportFromSurface( SDL_Surface* surface )
 
 const SDL_Color Texture::GetPixel( const Uint16& x, const Uint16& y ) const
 {
-    if ( x < 0 || x >= t_width || y < 0 || y >= t_height )
+    if ( x < 0 || x >= t_width || y < 0 || y >= t_height ) [[unlikely]]
     {
         throw ( std::runtime_error("Invalid coordinates for texture access!") );
     }
@@ -96,7 +96,7 @@ const SDL_Color Texture::GetPixel( const Uint16& x, const Uint16& y ) const
 
 const Uint32 Texture::GetPixelRaw( const Uint16& x, const Uint16& y ) const
 {
-    if ( x < 0 || x >= t_width || y < 0 || y >= t_height )
+    if ( x < 0 || x >= t_width || y < 0 || y >= t_height ) [[unlikely]]
     {
         throw ( std::runtime_error("Invalid coordinates for texture access!") );
     }
@@ -143,7 +143,7 @@ void Texture::clear()
 Texture::~Texture()
 {
     //dtor
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
     {
         cout << "Dtor of Texture object was called!" << endl;
     }

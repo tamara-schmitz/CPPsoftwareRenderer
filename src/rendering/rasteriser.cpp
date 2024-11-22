@@ -74,8 +74,9 @@ void Rasteriser::ScanEdges( Edgef& a, Edgef& b, bool isRightHanded )
     // Scans triangle edges by iterating over each line.
     // Edges keep track of texcoords and slope
 
-    Edgef& left  = ( isRightHanded || b.GetCurrentX() < a.GetCurrentX() ) ? b : a;
-    Edgef& right = ( isRightHanded || b.GetCurrentX() < a.GetCurrentX() ) ? a : b;
+    bool leftEdgeIsB = isRightHanded || b.GetCurrentX() < a.GetCurrentX();
+    Edgef& left  = leftEdgeIsB ? b : a;
+    Edgef& right = leftEdgeIsB ? a : b;
 //    Edgef& left  = isRightHanded ? b : a;
 //    Edgef& right = isRightHanded ? a : b;
 
@@ -105,7 +106,7 @@ void Rasteriser::DrawScanLine( const Edgef& left, const Edgef& right, Uint16 yCo
     float xDist = right.GetCurrentX() - left.GetCurrentX();
 
     // stop here if both x are exactly the same
-    if ( xDist == 0 )
+    if ( xDist == 0 ) [[unlikely]]
     {
         return;
     }
@@ -169,7 +170,7 @@ inline void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth, U
     if ( ignoreZBuffer || current_depth <= GetZ( x, y ) )
     {
         /*
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
         {
             cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) y ) << endl;
         }
@@ -188,7 +189,7 @@ inline void Rasteriser::DrawFragment( Uint16 x, Uint16 y, float current_depth )
     if ( ignoreZBuffer || current_depth <= GetZ( x, y ) )
     {
         /*
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
         {
             cout << "Pixel passed z-test with " << current_depth << ". Z-Buffer was " << GetZ( x * (int) y ) << endl;
         }
@@ -205,7 +206,7 @@ Rasteriser::~Rasteriser()
 
     //SDL_FreeSurface( framebuffer.get() );
 
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
     {
         cout << "Dtor of Rasteriser object was called!" << endl;
     }

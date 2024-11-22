@@ -237,7 +237,7 @@ void ScanRenderer::FillTriangle( Vector4f v1, Vector4f v2, Vector4f v3, SDL_Colo
     Vector2f yMidVert = ( vpMatrix * v2 ).screenspaceVec3( w_halfwidth, w_halfheight ).xy();
     Vector2f yMaxVert = ( vpMatrix * v3 ).screenspaceVec3( w_halfwidth, w_halfheight ).xy();
 
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
     {
         // debug print
         std::cout << "v1::" << " x: " << v1.x << " y: " << v1.y << " z: " << v1.z << " w: " << v1.w << std::endl;
@@ -258,7 +258,7 @@ ScanRenderer::~ScanRenderer()
     null_scanBuffer.clear();
     r_scanBuffer.clear();
 
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
     {
         std::cout << "Dtor of scanRenderer object was called!" << std::endl;
     }

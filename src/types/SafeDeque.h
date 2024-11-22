@@ -46,12 +46,12 @@ public:
     bool isLastBlocked( size_t index )
     {
         std::unique_lock< std::mutex > lock( mutex );
-        if ( isLast( index ) )
+        if ( isLast( index ) ) [[unlikely]]
         {
             while ( !blocked() )
                 cond_islast.wait( lock );
             return isLast( index );
-        } else {
+        } else { [[likely]]
             return false;
         }
     }
@@ -81,7 +81,7 @@ public:
     void push_back( T& obj )
     {
         std::lock_guard< std::mutex > lock( mutex );
-        if ( new_blocked )
+        if ( new_blocked ) [[unlikely]]
         {
             unblock_new();
         }

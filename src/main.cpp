@@ -97,7 +97,7 @@ void demo_randomPixels( Window* window )
         }
 
         window->updateWindow();
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
         {
             window->timer.printTimes();
         }
@@ -119,7 +119,7 @@ void demo_starfield( Window *window )
         field->drawStarfield();
 
         window->updateWindow();
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
         {
             window->timer.printTimes();
         }
@@ -181,7 +181,7 @@ void demo_shapes( Window *window )
         renderer->FillTriangle( v1_no2, v2_no2, v3_no2, &triangleColor2 );
 
         window->updateWindow();
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
         {
             window->timer.printTimes();
         }
@@ -247,7 +247,7 @@ void demo_rasteriser( Window *window )
 
         tris *= rotationMatrix;
 
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
         {
             cout << "v1 - x: " << tris.verts[0].posVec.x << " y: " << tris.verts[0].posVec.y << " z: " << tris.verts[0].posVec.z << endl;
         }
@@ -264,7 +264,7 @@ void demo_rasteriser( Window *window )
 
         render->WaitUntilFinished();
         window->updateWindow();
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
         {
             window->timer.printTimes();
         }
@@ -301,7 +301,7 @@ void demo_DisplayTexture( Window* window )
         }
 
         window->updateWindow();
-        if ( printDebug )
+        if ( printDebug ) [[unlikely]]
         {
             window->timer.printTimes();
         }

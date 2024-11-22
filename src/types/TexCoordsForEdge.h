@@ -16,18 +16,18 @@ struct TexCoordsForEdge
         virtual ~TexCoordsForEdge();
 
         // getters
-        T GetTexCoordX_XStep() const { return texCoordX_XStep; }
-        T GetTexCoordX_YStep() const { return texCoordX_YStep; }
-        T GetTexCoordY_XStep() const { return texCoordY_XStep; }
-        T GetTexCoordY_YStep() const { return texCoordY_YStep; }
-        T GetOneOverZ_XStep() const { return oneOverZ_XStep; }
-        T GetOneOverZ_YStep() const { return oneOverZ_YStep; }
-        T GetDepth_XStep() const { return depth_XStep; }
-        T GetDepth_YStep() const { return depth_YStep; }
-        T GetTexCoordX( int index ) const { return texCoordX_values[index]; }
-        T GetTexCoordY( int index ) const { return texCoordY_values[index]; }
-        T GetOneOverZ( int index ) const { return oneOverZ_values[index]; }
-        T GetDepth( int index ) const { return depth_values[index]; }
+        inline T GetTexCoordX_XStep() const { return texCoordX_XStep; }
+        inline T GetTexCoordX_YStep() const { return texCoordX_YStep; }
+        inline T GetTexCoordY_XStep() const { return texCoordY_XStep; }
+        inline T GetTexCoordY_YStep() const { return texCoordY_YStep; }
+        inline T GetOneOverZ_XStep() const { return oneOverZ_XStep; }
+        inline T GetOneOverZ_YStep() const { return oneOverZ_YStep; }
+        inline T GetDepth_XStep() const { return depth_XStep; }
+        inline T GetDepth_YStep() const { return depth_YStep; }
+        inline T GetTexCoordX( int index ) const { return texCoordX_values[index]; }
+        inline T GetTexCoordY( int index ) const { return texCoordY_values[index]; }
+        inline T GetOneOverZ( int index ) const { return oneOverZ_values[index]; }
+        inline T GetDepth( int index ) const { return depth_values[index]; }
 
     private:
         //-- vars

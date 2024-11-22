@@ -168,7 +168,7 @@ int64_t Mesh::OBJindexToNewIndex( const tinyobj::attrib_t& attrib, const tinyobj
 Mesh::~Mesh()
 {
     //dtor
-    if ( printDebug )
+    if ( printDebug ) [[unlikely]]
     {
         cout << "Dtor of Mesh object was called!" << endl;
     }
